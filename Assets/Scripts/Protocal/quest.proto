@@ -1,0 +1,77 @@
+
+//
+// 任务相关协议
+//
+package Cmd;
+
+import "basetype.proto";
+import "questtype.proto";
+
+// 获取任务列表
+message MessageGetQuestList
+{
+optional EProtoId	id			= 1 [default = GET_QUESTLIST_C];
+}
+
+
+// 任务列表
+message MessageQuestList
+{
+optional EProtoId 		id			= 1 [default = GET_QUESTLIST_S];
+repeated int32			showids		= 2;		// 可显示列表(待触发)
+repeated int32			acceptids	= 3;		// 可接领列表(可领取)
+repeated QuestInfoBase	doings		= 4;		// 正在进行的任务列表
+}
+
+// 获取日常任务列表
+message MessageGetDailyQuestList
+{
+optional EProtoId   id          = 1 [default = GET_DAILYQUEST_C];
+}
+
+// 日常任务列
+message MessageDailyQuestList
+{
+optional EProtoId 		id 			= 1 [default = GET_DAILYQUEST_S];
+optional uint32         time        = 2;        // 上次刷新时间
+repeated QuestInfoBase 	lists 		= 3;        //
+optional uint32         nowtime     = 4;        // 当前服务器时间
+}
+
+// 接受任务
+message MessageAcceptQuestRequest
+{
+optional EProtoId 		id 			= 1 [default = ACCEPT_QUEST_C];
+required int32			questid		= 2;		// 任务ID
+}
+
+// 接受任务返回
+message MessageAcceptQuestResponse
+{
+optional EProtoId 		id 			= 1 [default = ACCEPT_QUEST_S];
+required int32			questid		= 2;		// 任务ID
+required QuestInfoBase	progress	= 3;		//
+}
+
+// 提交任务
+message MessageSubmitQuestRequest
+{
+optional EProtoId 		id 			= 1 [default = SUBMIT_QUEST_C];
+required int32			questid		= 2;		// 任务ID
+}
+
+// 提交任务返回
+message MessageSubmitQuestResponse
+{
+optional EProtoId 					id 			= 1 [default = SUBMIT_QUEST_S];
+required uint32						questid		= 2;		// 任务ID
+repeated QuestResourceReward		resource 	= 3; 		// 资源奖励
+repeated QuestItemReward 			items 		= 4; 		// 道具奖励
+}
+
+// 任务进度更新
+message MessageQuestProgressNotice
+{
+optional EProtoId 		id 			= 1 [default = QUEST_PROGRESS_S];
+optional QuestInfoBase	progress	= 2;		// 任务进度
+}

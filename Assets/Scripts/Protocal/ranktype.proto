@@ -1,0 +1,27 @@
+package Cmd;
+
+message BPRankPlayer 
+{
+	required uint64 roleid = 1; //角色id
+	required uint32 score = 2;  //分数
+	optional uint32 level = 3;  //等级
+	required bytes name = 4;    //姓名
+}
+
+message RankPlayer 
+{
+	required uint64 roleid = 1;      //角色id
+	required uint32 score = 2;       //分数
+	required uint32 level = 3;		 //等级
+	required uint32 vipLevel = 4;   //vip等级
+	required bytes  name = 5;		 //姓名
+	required uint32 avatar = 6;		 //脸部信息
+	required uint32 type = 7;	//角色类型
+}
+
+//排行榜信息
+message RankUnit 
+{
+	required uint64 roleid = 1;		// 角色id
+	optional uint32 score = 2;		// 分数
+}

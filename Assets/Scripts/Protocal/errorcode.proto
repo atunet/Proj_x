@@ -1,0 +1,188 @@
+package Cmd;
+
+import "basetype.proto";
+
+/**
+ *	@brief	错误码定义,尽量使用通用返回码,不能满足需求时再到对应的类别中定义特殊错误码
+ */
+
+enum EErrorCode
+{
+	/// 通用返回码定义
+	FAILED						=	0x17e6ffff;			// 操作失败
+	SUCCESS						=	0x17e60000;			// 操作成功
+	DB_ERROR					=	0x17e60001;			// 数据库操作出错
+    CONF_ERROR					=	0x17e60002;			// 后端配置错误
+	NAME_EXISTED				=	0x17e60003;			// 角色名称已存在
+	MAX_ITEM_NUM				=	0x17e60004;			// 包裹已满
+	ROLE_LV_LIMIT				=	0x17e60005;			// 不允许超过角色当前等级
+    LV_NOT_ENOUGH				=	0x17e60006;			// 玩家等级不足
+    TOKEN_OVERDUE				=	0x17e60007;			// token过期,重连失败
+    SERVER_IS_BUSY				=	0x17e60008;			// 服务器忙
+    SDK_OPT_ERROR				=	0x17e60009;			// sdk相关操作发生错误
+	CASH_NOT_ENOUGH				=	0x17e60010;			// 魂钻不足
+	GOLD_NOT_ENOUGH				=	0x17e60011;			// 金币不足
+	NAME_LEN_INVALID			=	0x17e60012;			// 名字长度不合法
+	CONTENT_HAVE_DIRTY			=   0x17e60013;			// 输入内容非法
+	PROTO_INVALID				=   0x17e60014;			// 协议解析失败
+	ITEM_NOT_FIND				=	0x17e60015;			// 没有找到对应物品
+	VIP_NOT_SATISFY				=	0x17e60016;			// vip等级不满足
+	BANK_OPEN_FAILED			=	0x17e60017;			// 打开交易失败
+	BANK_CLOSED_FAILED			=	0x17e60018;			// 关闭交易失败
+    TOKEN_NOT_FOUND				=	0x17e60019;			// token找不到
+    TOKEN_ERROR					=	0x17e6001a;			// token错误
+    IDLE_TIMEOUT				=	0x17e6001b;			// 空闲超时,长时间未操作
+	DAILY_REACH_LIMIT			=	0x17e6001c;			// 达到每日次数上限
+	IN_FORBID_TIME				=	0x17e6001d;			// 玩家处于禁言状态
+	FULL_OF_ROLE				=	0x17e6001e;			// 注册角色数已满
+	REWARD_HAVE_GOT				=	0x17e6001f;			// 奖励已经领取
+	REWARD_TIME_LIMIT			=	0x17e60020;		    // 领奖时间未到
+	SOULDUST_NOT_ENOUGH			=	0x17e60021;			// 灵魂之尘不足
+	ON_CREATING_ROLE			=	0x17e60022;			// 正在创角中,请稍候
+	MAX_ROLE_NUM_LIMIT			=	0x17e60023;			// 已达创角最大数量
+	CREATE_SAME_ROLE_FORBID		=	0x17e60024;			// 不允许重复创建相同类型的角色
+	TIMES_REACH_LIMIT			=	0x17e60025;			// 次数达到上限
+	SYSTEM_NOT_OPEN				=	0x17e60026;			// 系统未开放
+
+	/// 登录返回码定义 - 老涂
+	USER_ID_ERROR				=	0x17e60101;			// 用户帐号非法
+	LOGIN_TOO_OFTEN				=	0x17e60102;			// 用户登录太频繁
+	USER_RE_LOGIN				=	0x17e60103;			// 用户重复上线
+	GATEWAY_NOT_FOUND			=	0x17e60104;			// 找不到可用的网关服务器
+	SYSTEM_KICK_OFF				=	0x17e60105;			// 系统踢下线
+
+    /// 角色返回定义 - 海滨
+    DRESS_NOT_FIND              =   0x17e60201;         // 时装不存在
+    DRESS_LV_MAX                =   0x17e60202;         // 时装进阶已达最大值
+    DRESSCONF_NOT_FIND          =   0x17e60203;         // 时装配置未找到
+    DRESSCONF_COSTITEM_ERROR    =   0x17e60204;         // 升阶消耗道具数量出错
+    DRESS_ITEM_NOT_ENOUGH       =   0x17e60205;         // 升阶消耗道具数量不够
+	STAR_NOT_ENOUGH				=	0x17e60206;			// 副本星数不够 - 章节奖励星数
+	BP_NOT_ENOUGH				=	0x17e60207;			// 战斗力不够 - 锁结，bug过滤
+	CONSUME_NOT_ENOUGH			=	0x17e60208;			// 累计消费不够 - 锁结，bug过滤
+	DUNGEON_NOT_ENOUGH			=	0x17e60209;			// 副本没有通过- 锁结，bug过滤
+	ROLE_DATA_ERROR				=	0x17e60210;			// 角色数据异常- 封号
+    DRESS_EXP_FULL              =   0x17e60211;         // 时装经验满了未升级- bug 前后端数据不统一
+    CLIMBTOWER_IS_NULL          =   0x17e60212;         // 爬塔功能未开启
+    SELECT_TOWER_TYPE_ERROR     =   0x17e60213;         // 爬塔类型出错
+    HAVE_BEEN_SELECT            =   0x17e60214;         // 爬塔类型已经选择
+    FIRST_TOWER_COPY_ERROR      =   0x17e60215;         // 爬塔初始关卡id出错
+    TOWER_RESETTIMES_FULL       =   0x17e60216;         // 今日爬塔重置次数已满
+    COST_CASH_IS_NULL           =   0x17e60217;         // 扣除魂钻数量不足
+    RESETTOWER_NOREWARDS        =   0x17e60218;         // 未领取奖励不得重置
+    HAVE_BEEN_RESET             =   0x17e60219;         // 爬塔已经重置
+    RESETTIMES_NOT_ENOUGHT      =   0x17e6021a;         // 爬塔重置次数不足
+	CLIMBTOWER_REWARD_GET 		= 	0x17e6021b; 		// 爬塔奖励已经领取
+	NO_CLIMBTOWER_RWARD 		= 	0x17e6021c; 		// 没有爬塔奖励
+	CLIMBTOWER_REWARD_INDEX_ERR = 	0x17e6021d; 		// 爬塔奖励索引出错
+	CLIMBTOWER_REWARD_DROP_ERR 	= 	0x17e6021e; 		// 爬塔奖励掉落报解析出错
+    CLIMBTOWER_IS_TOP           =   0x17e6021f;         // 已经爬到塔顶无需挑战
+    CLIMBTOWER_REVIVE_NULL      =   0x17e60220;         // 爬塔强力复活次数用完
+    CLIMBTOWER_VIP_NOT_REW      =   0x17e60221;         // vip不足无法领取双倍奖励
+    CLIMBTOWER_CASH_NOT_REW     =   0x17e60222;         // 魂钻不足无法领取双倍奖励
+    ACTION_ISNOT_EXIST          =   0x17e60223;         // 活动不存在
+    ACTION_ISCLOSE              =   0x17e60224;         // 活动已经关闭
+    ACTION_COND_ISNOT_EXIST     =   0x17e60225;         // 活动条件已不存在
+    ACTION_COND_ISDONE          =   0x17e60226;         // 活动条件已提交
+    ACTION_NOT_COMPLEATE        =   0x17e60227;         // 活动未完成
+    ACTION_NOT_REWARD_GET       =   0x17e60228;         // 该活动无需领奖
+    ACTION_REWARDTIME_NOTARRI   =   0x17e60229;         // 排行榜奖励未到领奖时间
+    ACTION_RANKREWARD_GET       =   0x17e6022a;         // 排行奖励已经领取
+    ACTION_NOTIN_RANK           =   0x17e6022b;         // 未能上榜
+    ACTION_SETGETREWARD_ERR     =   0x17e6022c;         // 设置排行奖励已领出错
+    ACTION_NO_SPECIAL           =   0x17e6022d;         // 没有特殊活动
+    ACTION_EXCHANGE_NOT_OK      =   0x17e6022e;         // 兑换条件不满足
+
+	/// 场景返回码定义 - 海滨
+    LEADEROFFLINE				=	0x17e60301;			// 队长不在线 - 出Bug了
+    MEMBEROFFLINE				=	0x17e60302;			// 队员不在线
+    COPYINVALID					=	0x17e60303;			// 副本不存在 - 配置不存在
+    CREATECOPYFAIL				=	0x17e60304;			// 创建副本失败 - battleType不匹配
+    INICOPYFAIL					=	0x17e60305;			// 实例化出副本失败 -mapid不存在
+    PLAYINFIGHT					=	0x17e60306;			// 玩家正在战斗中 - 各种PK时的对手
+    PLAYSTRNOTENOUGH			=	0x17e60307;			// 玩家体力不足 - 会出现
+    CITYINVALID					=	0x17e60308;			// 城镇配置不存在 - bug了
+    CITY_NOT_OPEN				=	0x17e60309;			// 城镇暂未开放 - bug了
+    INVALID						=	0x17e6030a;			// 非法场景无法进入 - bug了
+    BEINSCENE					=	0x17e6030b;			// 已经在该场景中 - bug了
+    INCOPY						=	0x17e6030c;			// 玩家已经在副本中- bug了，重登陆
+    READYCOPYINVALID			=	0x17e6030d;			// 进入副本不存在 - bug了，关卡id不存在
+	NOTINCOPY					= 	0x17e6030e;         // 玩家不再副本中 - bug了
+    NOTHASBLADE                 =   0x17e6030f;         // 没有带一把斩魄刀进战斗 - bug了
+    COPYNOTACTIVE               =   0x17e60310;         // 关卡未激活 - bug了，任务未关联
+    TELEIDFAILED                =   0x17e60311;         // 章节id错误 - bug了
+    REVIVEFAILED                =   0x17e60312;         // 玩家复活失败- bug了
+    REVIVECOINNOTENOUGH         =   0x17e60313;         // 复活币不足 - 前端过滤
+    REVIVETIMESNOTENOUGH        =   0x17e60314;         // 复活次数不足- 前端过滤
+    REVIVECASHNOTENOUGH         =   0x17e60315;         // 复活魂钻不足- 前端过滤
+    REFRESHSHOPCASHFAIL         =   0x17e60316;         // 刷新商城魂钻不足- 前端过滤
+    REFRESHSHOPFAIL             =   0x17e60317;         // 刷新商城道具失败- bug了，配置问题
+    SHOPSNOTEXIST               =   0x17e60318;         // 非法商品- bug了，配置问题
+    SHOPSNOTENOUGH              =   0x17e60319;         // 商品数量不足- bug了，前端限制
+    BUYITEMRESNOTENOUGH         =   0x17e6031a;         // 购买资源不足- 所有的商店统一用（策划出需求，前端做表现）
+    COPYIDINVALID               =   0x17e6031b;         // 关卡id配置不存在 - bug了，配置问题
+	COPYNOTALLOWRUSH 			= 	0x17e6031c; 		// 关卡不允许扫荡  bug了，前端过滤
+	RUSHSTARNOTENOUGH 			= 	0x17e6031d; 		// 关卡星级不够无法扫荡 bug了，前端过滤
+	SWEEPITEMNOTENOUGH 			= 	0x17e6031e; 		// 扫荡劵不够
+	SWEEPCASHNOTENOUGH 			= 	0x17e6031f; 		// 扫荡魂钻不足
+	SWEEPNUMSNOTENOUGH 			= 	0x17e60320; 		// 扫荡次数不足
+	SWEEPPAYTYPEERROR 			= 	0x17e60321; 		// 扫荡付费类型不对 - bug了，前端错误
+    COPYNUMNOTENOUGH            =   0x17e60322;         // 关卡次数已用完 - bug了，前端过滤
+	BUYCOPYNUMTYPEERROR 		= 	0x17e60323; 		// 该关卡类型无需挑战次数 - bug了，前端过滤
+	COPYNUMNOTUSEOUT 			= 	0x17e60324; 		// 关卡剩余挑战次数未用完 - bug了，前端过滤
+	VIPCONFFAIL 				= 	0x17e60325; 		// vip配置出错 - bug了
+	COPYNUMUSEOUT 				= 	0x17e60326; 		// 今日购买次数已经用完 - bug了，前端过滤
+	BUYCOPYNUMCASHNOTENOUGH 	= 	0x17e60327; 		// 购买关卡挑战次数魂钻不够 - bug了，前端过滤
+    CHAPTERREWARD_STARERROR     =   0x17e60328;         // 领取章节奖励星级不足 - bug了，前端过滤
+    SWEEP_NOTUSECASH_VIP        =   0x17e60329;         // vip等级不够不能使用魂钻扫荡 - bug了，前端过滤
+    SWEEP_NUMS_ERROR            =   0x17e6032a;         // 非法的扫荡次数 - bug了
+    SWEEP_NOTTEN_VIP            =   0x17e6032b;         // 扫荡10次vip等级不足 -bug了
+    CHAPTER_REWARD_GET_DONE     =   0x17e6032c;         // 章节奖励已经领取 - bug了
+    CHAPTER_REWARD_TYPE_ERROR   =   0x17e6032d;         // 章节类型出错 - bug了
+    CHAPTER_REWARD_VIP_FAIL     =   0x17e6032e;         // 领取章节奖励vip等级不够 - bug了，前端过滤
+    DB_OPERATOR_ERROR           =   0x17e6032f;         // db操作失误 -bug了，后端错误
+    HAVE_NO_THIS_GIFT           =   0x17e60330;         // 没有该礼品码 -正常，需描述
+    DB_UPDATE_ERROR             =   0x17e60331;         // db更新失败 -bug了，后端错误
+    GIFT_SOME_CONFIG_USED       =   0x17e60332;         // 同批次礼品码已使用 -正常，需描述
+    DB_INSERT_ERROR             =   0x17e60333;         // db插入出错 -bug了，后端错误
+    GIFT_GROUP_ERROR            =   0x17e60334;         // 礼品码组别信息错误 -礼品码发生错误（配置错）
+    GIFT_SOME_GROUP_USED        =   0x17e60335;         // 同组的礼品码已被使用 -正常，需描述
+    GIFT_LIMITNUM_ERROR         =   0x17e60336;         // 礼品码使用次数配置出错 -礼品码发生错误（配置错）
+    GIFT_NOTIMES_TO_USE         =   0x17e60337;         // 礼品码次数使用完毕 -正常，需描述
+    GIFT_TYPE_ERROR             =   0x17e60338;         // 码类型不存在 -礼品码发生错误（配置错）
+    GIFT_LEN_ERROR              =   0x17e60339;         // 非法礼品码 -礼品码发生错误（配置错）
+    GIFT_REWARD_PARSEERROR      =   0x17e6033a;         // 礼包奖励解析失败 -礼品码发生错误（配置错）
+    GIFT_STARTTIME_ERROR        =   0x17e6033b;         // 开启礼包码时间未到 -正常，需描述
+    GIFT_ENDTIME_EXPIRE         =   0x17e6033c;         // 使用礼包吗已结束 -正常，需描述
+    GIFT_HAVE_USED              =   0x17e6033d;         // 码已被使用 -正常，需描述
+    BATTLESQUARE_NOT_OPEN       =   0x17e6033e;         // 演武场功能未开启
+    BATTLESQUARE_HAVE_BET       =   0x17e6033f;         // 演武场已经押注无需押注
+    BATTLESQUARE_WIN_NOTENOUGH  =   0x17e60340;         // 演武场连胜奖励次数不够
+    BATTLESQUARE_WINRWD_GET     =   0x17e60341;         // 连胜奖励已经领取
+    BATTLESQUARE_DROP_ERROR     =   0x17e60342;         // 演武场掉落包解析错误
+    BATTLESQUARE_BETCONF_ERR    =   0x17e60343;         // 押注价格配置出错
+    BATTLESQUARE_VIP_NOTBET     =   0x17e60344;         // vip等级不足不能押注
+    STRONGREWARD_HAVE_GOT       =   0x17e60345;         // 变强奖励已经领取
+    STRONGREWARD_INDEX_ERR      =   0x17e60346;         // 变强奖励索引出错
+    STRONGREWARD_BP_NOTENOU     =   0x17e60347;         // 变强战力不够
+    STRONGREWARD_DROP_ERR       =   0x17e60348;         // 变强奖励掉落包解析出错
+    BSCOIN_NOT_ENOUGHT          =   0x17e60349;         // 演武币不足
+
+	/// 刀灵返回码定义 - 老涂
+	MAX_STRENGTH_LV				=	0x17e60401;			// 达到最大强化等级
+	ITEM_NOT_ENOUGH				=	0x17e60402;			// 道具"{0}"不足 -？
+	MAX_BREAK_LV				=	0x17e60403;			// 达到最大突破等级 -？
+	SKILL_POINT_NOT_ENOUGH		=	0x17e60404;			// 灵子不足
+	MAX_SKILL_LV				=	0x17e60405;			// 达到最大技能等级
+	ILLEGAL_SKILL_ID			=	0x17e60406;			// 非法的技能id,刀灵不包含该技能
+	FRONT_NODE_1ST				=	0x17e60407;			// 请先解放前一个节点
+	BUY_LIBERATION_LIMIT		=	0x17e60408;			// 不允许购买,受vip等级限制
+}
+
+
+/// 操作错误时统一返回以下协议,通过不同的返回码来区分
+message MessageErrorCode
+{
+	optional EProtoId	id		=	1		[default = ERROR_CODE_S];
+	required EErrorCode	code	=	2;		// 错误码
+}

@@ -1,0 +1,22 @@
+package Cmd;
+
+message ItemInfo
+{
+	required uint64 thisid			=	1;		/**< 实例Id */
+	required uint32 itemid			=	2;		/**< 道具Id */
+	required uint32 createtime		=	3;		/**< 创建时间 */
+	required uint32 num				=	4;		/**< 叠加数量 */
+}
+
+message ItemNotiType
+{
+	required uint32 type = 1;  /**< 类型*/
+	required uint32 itemid = 2;/**< 物品id*/
+	required uint32 count = 3; /**< 数量*/
+}
+
+message ItemCountType
+{
+	required uint32 itemid = 1;
+	required uint32 count = 2;
+}

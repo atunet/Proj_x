@@ -1,0 +1,75 @@
+package Cmd;
+
+import "basetype.proto";
+import "errorcode.proto";
+
+
+/// 客户端发送版本号
+message VerifyVersion
+{
+	optional EProtoId	id				=	1		[default = VERIFY_VERSION];
+	required uint32		clientversion	=	2;		// 客户端版本号
+}
+
+/// 请求临时凭据
+message TempCredentialReq
+{
+	optional EProtoId	id	=	1		[default = TEMP_CREDENTIAL_REQ];
+}
+
+/// 返回临时凭据
+message TempCredentialRet
+{
+	optional EProtoId	id				=	1		[default = TEMP_CREDENTIAL_RET];
+	required string		tempcredential	=	2;		// 临时凭据
+}
+
+/// 请求登录登录服务器
+message LoginReq
+{
+	optional EProtoId	id				=	1		[default = LOGIN_LOGIN_REQ];
+	required uint64		accountid		=	2;		// 帐号id
+	optional string		verifier		=	3;		// 验证
+}
+
+/// 登录返回,成功则返回网关地址
+message LoginRet
+{
+	optional EProtoId	id				=	1		[default = LOGIN_LOGIN_RET];
+	optional uint64		accountid		=	2;		// 帐号id
+	optional uint32		token			=	3;		// 验证token
+	optional string		gatewayip		=	4;		// 网关ip
+	optional uint32		gatewayport		=	5;		// 网关端口
+	optional string 	transitip 		= 	6; 		// 中转ip
+	optional uint32 	transitport 	= 	7; 		// 中转端口
+}
+
+/// 请求登录网关服务器
+message LoginGatewayReq
+{
+	optional EProtoId	id				=	1		[default = LOGIN_GATEW_REQ];
+	required uint64		accountid		=	2;		// 帐号id
+	required uint32		token			=	3;		// 验证token
+	optional string		appVersion      =   4;		// 版本号 如1.1.2 不超过10位
+	optional uint32		deviceId		=   5;		// 8: iOS, 16:Android, 32: windows phone
+}
+
+/// 客户端登录网关成功
+message LoginGatewayRet
+{
+	optional EProtoId	id	=	1		[default = LOGIN_GATEW_RET];
+}
+
+/// 请求登录中转服务器
+message LoginTransitReq
+{
+    optional EProtoId   id              =   1       [default = LOGIN_TRANSIT_REQ];
+    required uint64     roleid          =   2;
+    required uint64     accountid       =   3;
+}
+
+// 请求登录中转服务器返回
+message LoginTransitRet
+{
+    optional EProtoId   id              =  1        [default = LOGIN_TRANSIT_RET];
+}

@@ -1,0 +1,33 @@
+package Cmd;
+
+/**
+ *	@brief	获取(刀/魂/道具/货币/体力)的来源途径枚举
+ */
+enum EFromType
+{
+	FROM_NONE				=	0x0000;			// 未知来源
+	FROM_COPY				=	0x0001;			// 普通副本掉落
+	FROM_CHAPTER			=	0x0002;			// 普通副本章节宝箱
+	FROM_CHAPTER1			=	0x0003;			// 精英副本掉落
+	FROM_CHAPTER2			=	0x0004;			// 精英副本章节宝箱
+	FROM_CHAPTER3			=	0x0005;			// 传令神机副本
+	FROM_CHAPTER4			=	0x0006;			// 魂屋特训
+	FROM_CHAPTER5			=	0x0007;			// 紧急特训
+	FROM_PACKAGE			=	0x0008;			// 背包合成
+	FROM_CONSUMABLE			=	0x0009;			// 消耗品使用
+	FROM_CHAPTER7			=	0x000a;			// 普通扭蛋
+	FROM_CHAPTER8			=	0x000b;			// 高级扭蛋
+	FROM_CHAPTER9			=	0x000c;			// 特级扭蛋
+	FROM_CHAPTER10			=	0x000d;			// 月卡领取
+	FROM_MAIL				=	0x000e;			// 邮件领取
+	FROM_CHAPTER11			=	0x000f;			// 每日必买
+	FROM_CHAPTER12			=	0x0010;			// 刷新商店
+	FROM_CHAPTER13			=	0x0011;			// 竞技场商店
+	FROM_CHAPTER14			=	0x0012;			// 任务奖励
+	FROM_CHAPTER15			=	0x0013;			// 每日签到
+	FROM_CHAPTER16			=	0x0014;			// 炼金机
+	FROM_CHAPTER17			=	0x0015;			// 灵魂热斗战斗
+	FROM_CHAPTER18			=	0x0016;			// 灵魂热斗通关
+	FROM_CHAPTER19			=	0x0017;			// 灵魂热斗翻牌
+	FROM_ARENA_RECORD		=   0x0018;			// 竞技场挑战战报
+}

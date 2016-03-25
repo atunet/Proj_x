@@ -1,0 +1,81 @@
+package Cmd;
+
+/**
+ *	@brief	已开启系统标志位定义,对应CharBase.mask中的每一位
+ */
+enum EMask
+{
+	///////////////////// 以下供客户端设置并使用 ////////////////////////
+
+	/*
+	GACHA_OPENED			=	1;			//1L << 0;		// 扭蛋是否开放
+	BLADE_OPENED			=	2;			//1L << 1;		// 斩魄刀是否开放
+	BLADE_STRENGTH_OPENED	=	4;			//1L << 2;		// 斩魄刀强化是否开放
+	ROLE_OPENED				=	8;			//1L << 3;		// 角色是否开放
+	SOUL_OPENED				=	16;			//1L << 4;		// 灵魂是否开放
+	SOUL_UPGRADE_OPENED		=	32;			//1L << 5;		// 灵魂升阶是否开放
+	SHOP_OPENED				=	64;			//1L << 6;		// 浦原商店是否开放
+	SOUL_ROOM_OPENED		=	128;		//1L << 7;		// 魂屋是否开放
+	GOLD_MACHINE_OPENED		=	256;		//1L << 8;		// 炼金机是否开放
+	DAILY_REG_OPENED		=	512;		//1L << 9;		// 签到是否开放
+	HIGH_PVE_OPENED			=	1024;		//1L << 10;		// 精英副本是否开放
+	ARENA_OPENED			=	2048;		//1L << 11;		// 竞技场是否开放
+	CMD_PHONE_OPENED		=	4096;		//1L << 12;		// 传令神机是否开放
+	LOCK_KONT_OPENED		=	8192;		//1L << 13;		// 传令神机是否开放
+	SOUL_FIGHT_OPENED		=	16384;		//1L << 14;		// 灵魂热斗是否开放
+	LIBERATION_OPENED		=	32768;		//1L << 15;		// 刀灵解放是否开放
+	TRAINING_OPENED			=	65536;		//1L << 16;		// 死神试练是否开放
+	BOSS_OPENED				=	131072;		//1L << 17;		// 世界boss开放标识
+	TOWER_OPENED			=	262144;		//1L << 18;		// 推塔系统开放标识
+	RANK_OPENED				=	524288;		//1L << 19;		// 排行榜开放标识
+	// 变强标识
+	SOULCORE_OPENED			=	1048576;	//1L << 20;		// 魄睡系统开放
+    BATTLESQUARE_OPENED     =   2097152;    //1L << 21;     // 演武场开放标识
+
+	*/
+
+	GACHA_OPENED			=	1;			//1L << 0;		// 扭蛋是否开放
+	BLADE_OPENED			=	2;			//1L << 1;		// 斩魄刀是否开放
+	BLADE_STRENGTH_OPENED	=	3;			//1L << 2;		// 斩魄刀强化是否开放
+	ROLE_OPENED				=	4;			//1L << 3;		// 角色是否开放
+	SOUL_OPENED				=	5;			//1L << 4;		// 灵魂是否开放
+	SOUL_UPGRADE_OPENED		=	6;			//1L << 5;		// 灵魂升阶是否开放
+	SHOP_OPENED				=	7;			//1L << 6;		// 浦原商店是否开放
+	SOUL_ROOM_OPENED		=	8;			//1L << 7;		// 魂屋是否开放
+	GOLD_MACHINE_OPENED		=	9;			//1L << 8;		// 炼金机是否开放
+	DAILY_REG_OPENED		=	10;			//1L << 9;		// 签到是否开放
+	HIGH_PVE_OPENED			=	11;			//1L << 10;		// 精英副本是否开放
+	ARENA_OPENED			=	12;			//1L << 11;		// 竞技场是否开放
+	CMD_PHONE_OPENED		=	13;			//1L << 12;		// 传令神机是否开放
+	LOCK_KONT_OPENED		=	14;			//1L << 13;		// 传令神机是否开放
+	SOUL_FIGHT_OPENED		=	15;			//1L << 14;		// 灵魂热斗是否开放
+	LIBERATION_OPENED		=	16;			//1L << 15;		// 刀灵解放是否开放
+	TRAINING_OPENED			=	17;			//1L << 16;		// 死神试练是否开放
+	BOSS_OPENED				=	18;			//1L << 17;		// 世界boss开放标识
+	TOWER_OPENED			=	19;			//1L << 18;		// 推塔系统开放标识
+	RANK_OPENED				=	20;			//1L << 19;		// 排行榜开放标识
+	SOULCORE_OPENED			=	21;			//1L << 20;		// 魄睡系统开放
+    BATTLESQUARE_OPENED     =   22;			//1L << 21;     // 演武场开放标识
+    FREE_REWARD_OPENED		=   23;			//1L << 22;     // 演武场开放标识
+
+	/*
+	PACKAGE_OPENED			=	8192;		//1L << 13;		// xxxx
+	QUEST_OPENED			=	16384;		//1L << 14;		// xxxx
+	x3xxxxxx_OPENED			=	32768;		//1L << 15;		// xxxx
+	x4xxxxxx_OPENED			=	65536;		//1L << 16;		// xxxx
+	x5xxxxxx_OPENED			=	131072;		//1L << 17;		// xxxx
+	x6xxxxxx_OPENED			=	262144;		//1L << 18;		// xxxx
+	x7xxxxxx_OPENED			=	524288;		//1L << 19;		// xxxx
+	x8xxxxxx_OPENED			=	1048576;	//1L << 20;		// xxxx
+	x9xxxxxx_OPENED			=	2097152;	//1L << 21;		// xxxx
+	x10xxxxxx_OPENED		=	4194304;	//1L << 22;		// xxxx
+	x11xxxxxx_OPENED		=	8388608;	//1L << 23;		// xxxx
+	x12xxxxxx_OPENED		=	16777216;	//1L << 24;		// xxxx
+	x13xxxxxx_OPENED		=	33554432;	//1L << 25;		// xxxx
+	x14xxxxxx_OPENED		=	67108864;	//1L << 26;		// xxxx
+	x15xxxxxx_OPENED		=	134217728;	//1L << 27;		// xxxx
+	x16xxxxxx_OPENED		=	268435456;	//1L << 28;		// xxxx
+	x17xxxxxx_OPENED		=	536870912;	//1L << 29;		// xxxx
+	MAX_OPENED				=	1073741824;	//1L << 30;		// pb最高支持使用32bit中的30个bit
+	*/
+}

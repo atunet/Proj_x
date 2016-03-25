@@ -1,0 +1,31 @@
+package http;
+
+message Zone {
+    required int32 serv_id = 1;     //服务器编号
+    required string serv_name = 2;  //服务器名字
+    required string remote_ip = 3;  //服务器ip
+    required int32 port = 4;        //服务器port
+    required int32 state = 5;       //状态 1-流畅 2-拥挤 3-维护
+    required int32 recommend_flag = 6; // 是否推荐 0-不推荐 1-推荐
+    required uint32 publish_time = 7;  // 发布时间
+}
+
+message SimpleZone {
+    required int32 serv_id = 1;     //服务器编号
+    required string serv_name = 2;  //服务器名字
+}
+
+//获取区列表信息
+message GetZoneList {
+    repeated Zone zone = 1;      // 区服信息
+}
+
+//获取单个区信息
+message GetZoneInfo {
+    required Zone zone = 1;     //区服信息
+}
+
+//获取所有梦宝谷id相关的区
+message GetRoleList {
+    repeated SimpleZone zone = 1;     //区服信息
+}

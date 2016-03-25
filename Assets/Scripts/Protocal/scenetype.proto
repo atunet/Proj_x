@@ -1,0 +1,146 @@
+package Cmd;
+
+import "basetype.proto";
+import "roletype.proto";
+
+message SceneUnitInfo
+{
+optional uint64	 	unitid	= 1;			// 角色ID
+optional bytes		rolename= 2;			// 角色名
+optional RoleAvatar	avatar	= 3;			// Avata信息
+optional int32 		pos_x	= 4;			// 位置X坐标
+optional int32 		pos_y	= 5;			// 位置Y坐标
+}
+
+enum FightMode
+{
+eFightMode_Single			= 1;				// 单人战斗
+eFightMode_Synchronization	= 2;				// 多人同步战斗
+}
+
+message FightSword
+{
+optional int32 		swordid 	= 1;			// 刀id
+optional int32 		cp 			= 2; 			// 灵压
+optional int32 		maxcp 		= 3; 			// 最大灵压
+optional int32      position    = 4;            // 位置
+repeated FightSpell spells      = 5;            // 刀上的技能
+}
+
+message FightSpell
+{
+optional int32		spellid		= 1;			// 技能ID
+optional int32 		level 		= 2; 			// 等级
+optional int32 		dam 		= 3; 			// 物理伤害
+optional int32 		exhpdam 	= 4; 			// 直接物理伤害
+optional int32 		excpdam 	= 5; 			// 直接灵压伤害
+optional int32 		cdtime		= 6; 			// cd时间
+optional int32 		cpcost 		= 7; 			// 灵压消耗
+}
+
+message FightFactor
+{
+optional int32		lv				= 1;			// 战士等级
+optional int32 		phy 			= 2; 			// 体力
+optional int32 		str 			= 3; 			// 力量
+optional int32 		inte 			= 4;			// 精神
+optional int32 		spi 			= 5; 			// 灵力
+
+optional int32 		maxhp 			= 6; 			// 最大血量
+optional int32 		cprev 			= 7; 			// 灵压恢复
+optional int32 		mp 				= 8; 			// 最大法术
+optional int32 		patt 			= 9; 			// 物理攻击
+optional int32 		pdef 			= 10; 			// 物理防御
+optional int32 		catt 			= 11; 			// 灵压攻击
+optional int32 		cdef 			= 12; 			// 灵压防御
+optional int32 		cp 				= 13; 			// 最大灵压
+
+optional int32 		hitrate 		= 14; 			// 命中
+optional int32 		dodgerate		= 15;			// 闪避
+optional int32 		crit 			= 16;			// 暴击
+optional int32 		tenacity 		= 17; 			// 韧性
+optional int32 		critmultiple 	= 18; 			// 暴击倍率
+optional int32 		critdecr 		= 19; 			// 暴击抵抗
+}
+
+message FightSoldier
+{
+optional uint64  		unitid 	= 1;		// ID
+optional int32 			soldier = 2;		// 战士ID
+optional FightFactor	factor 	= 3;		// 战斗因子
+}
+
+message CopyRewards
+{
+optional int32          key     = 1;        // id
+optional int32          type    = 2;        // 类型
+optional int32          value   = 3;        // 值
+}
+
+message CopyUnitInfo
+{
+optional uint64	 		unitid		= 1;		// 角色ID
+optional int32 			level 		= 2; 		// 角色等级
+optional bytes			rolename	= 3;		// 角色名
+optional int32			soldier		= 4;		// 战士ID
+optional DressRetUnit	dress		= 5;		// 时装 废了下次删了挪到PkCopyUnitInfo
+optional int32			seed		= 6;		// 随机种子
+optional FightFactor 	factor		= 7;		// 战斗参数
+repeated FightSoldier 	soldiers	= 8;		// 玩家战士信息(待定)
+repeated FightSword 	swords 		= 9; 		// 斩魄刀
+repeated CopyRewards 	rewards 	= 10;    	// 战斗内怪掉落
+repeated uint32 		soulbuff 	= 11;		// 灵魂buff
+}
+
+message PkCopyUnitInfo
+{
+optional uint64         unitid      = 1;        // 角色ID
+optional bytes			rolename    = 2;        // 角色名字
+optional uint32         level       = 3;        // 等级
+optional DressRetUnit   dress       = 4;        // 时装
+optional Avatar         avatar      = 5;        // 捏脸
+}
+
+message CopyStatusInfo
+{
+required uint32 		copyid 			= 1;	// 关卡ID
+required uint32 	    star            = 2;	// 星级
+required uint32         fighttimes      = 3;    // 今日已打次数
+required uint32         resettimes      = 4;    // 今日已购买的次数
+}
+
+message ShopUnitInfo
+{
+required uint32     shopid          = 1;    // 商品id
+required uint32     num             = 2;    // 剩余数量
+}
+
+message SweepUnitInfo
+{
+optional uint32     count           = 1;    // 扫单次数
+optional uint32     exp             = 2;    // 奖励经验
+optional uint32     gold            = 3;    // 奖励金币
+optional uint32     skillpoint      = 4;    // 灵子
+repeated CopyRewards rewards        = 5;    // 副本奖励
+}
+
+message RobotUnit
+{
+optional uint64 	roleid 			= 1; 	// 角色id
+optional bytes		rolename 		= 2; 	// 角色名
+optional uint32  	type			= 3; 	// 角色类型
+optional uint32 	vip 			= 4; 	// vip等级
+optional Avatar 	avatar 			= 5; 	// avatar信息
+optional uint32 	bladeid 		= 6; 	// 装备的刀id
+optional DressRetUnit dress         = 7;    // 装备的时装
+}
+
+message BattleSquareInfo
+{
+optional uint64 roleid      = 1;    // 对手id
+optional uint32 result      = 2;    // 1胜利0失败
+optional uint32 score       = 3;    // 获得或者扣除积分
+optional uint32 isatk       = 4;    // 1攻击者 0守击者
+optional uint32 rank 		= 5; 	// 掉落的名次
+optional uint32 timestamp   = 6;    // 时间戳
+}
