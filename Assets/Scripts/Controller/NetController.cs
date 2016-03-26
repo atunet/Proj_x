@@ -61,9 +61,14 @@ public class NetController : MonoBehaviour
         
         if(m_cmdList.Count > 0)
         {
-            foreach (byte[] cmd in m_cmdList)
-            {	
-                CmdHandler.Instance.CmdParse(new LuaInterface.LuaByteBuffer(cmd));
+            foreach (byte[] recvCmd in m_cmdList)
+			{	
+				byte[] realCmd = new byte[recvCmd.Length-TCPClient.PROTO_ID_LEN];
+				Array.Copy(recvCmd, TCPClient.PROTO_ID_LEN, realCmd, 0, realCmd.Length);
+
+				NetBuffer.s_recvProtoId = BitConverter.ToUInt16(recvCmd, 0);
+				NetBuffer.s_recvBytes =	new LuaInterface.LuaByteBuffer(realCmd);
+                CmdHandler.Instance.CmdParse();
             }
             
             m_cmdList.Clear();
@@ -100,4 +105,10 @@ public class NetController : MonoBehaviour
             m_thread = null;
         }
     }
+
+	void OnApplicationQuit()
+	{
+		Reset ();
+		CmdHandler.Instance.Dispose ();
+	}
 }

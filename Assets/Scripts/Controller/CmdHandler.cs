@@ -24,16 +24,10 @@ public class CmdHandler : IDisposable
 	public bool Init()
 	{
 		m_ls = new LuaState();
-		m_ls.Start();
 		m_ls.OpenLibs(LuaDLL.luaopen_pb);
-
-		m_ls.BeginModule(null);
-		m_ls.BeginStaticLibs("CSNetwork");
-		m_ls.RegVar("s_sendProtoId", GetProtoId, SetProtoId);
-		m_ls.RegVar("s_sendBytes", GetSendBytes, SetSendBytes);
-        m_ls.RegFunction("SendCmd", SendCmd);
-        m_ls.EndStaticLibs();
-        m_ls.EndModule();
+		m_ls.LuaSetTop(0);
+		LuaBinder.Bind(m_ls);
+		m_ls.Start();
 
 		m_ls.AddSearchPath(AppConst.LUA_TOLUA_PATH);
 		m_ls.AddSearchPath(AppConst.LUA_LOGIC_PATH);  
@@ -64,9 +58,9 @@ public class CmdHandler : IDisposable
 		Debugger.Log("CmdHander instance dispose");
 	}
 
-    public void CmdParse(LuaByteBuffer buf_)
+    public void CmdParse()
 	{
-        m_cmdHander.Call(buf_);
+       m_cmdHander.Call();
 	}
 
     public void LoginLoginServer()
@@ -80,44 +74,4 @@ public class CmdHandler : IDisposable
 
         loginFunc.Call();
     }
-
-
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    static int SendCmd(IntPtr L)
-    {
-		NetController.Instance.SendCmd(s_sendProtoId, s_sendBytes.buffer);
-        return 0;
-    }
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int GetProtoId(IntPtr L)
-	{
-		ToLua.Push(L, s_sendProtoId);
-		return 1;
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SetProtoId(IntPtr L)
-	{
-		s_sendProtoId = (UInt16)LuaDLL.tolua_tointeger(L, 1);
-		return 0;
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int GetSendBytes(IntPtr L)
-	{
-		ToLua.Push(L, s_sendBytes);
-		return 1;
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SetSendBytes(IntPtr L)
-	{
-		s_sendBytes = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
-		return 0;
-	}
-
-	public static UInt16 s_sendProtoId;
-	public static LuaByteBuffer s_sendBytes; 
 }

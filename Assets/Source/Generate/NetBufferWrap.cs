@@ -8,8 +8,10 @@ public class NetBufferWrap
 	{
 		L.BeginStaticLibs("NetBuffer");
 		L.RegFunction("SendCmd", SendCmd);
-		L.RegVar("s_protoId", get_s_protoId, set_s_protoId);
-		L.RegVar("s_bytes", get_s_bytes, set_s_bytes);
+		L.RegVar("s_recvProtoId", get_s_recvProtoId, set_s_recvProtoId);
+		L.RegVar("s_recvBytes", get_s_recvBytes, set_s_recvBytes);
+		L.RegVar("s_sendProtoId", get_s_sendProtoId, set_s_sendProtoId);
+		L.RegVar("s_sendBytes", get_s_sendBytes, set_s_sendBytes);
 		L.EndStaticLibs();
 	}
 
@@ -30,26 +32,40 @@ public class NetBufferWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_s_protoId(IntPtr L)
+	static int get_s_recvProtoId(IntPtr L)
 	{
-		LuaDLL.lua_pushinteger(L, NetBuffer.s_protoId);
+		LuaDLL.lua_pushinteger(L, NetBuffer.s_recvProtoId);
 		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_s_bytes(IntPtr L)
+	static int get_s_recvBytes(IntPtr L)
 	{
-		ToLua.Push(L, NetBuffer.s_bytes);
+		ToLua.Push(L, NetBuffer.s_recvBytes);
 		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_s_protoId(IntPtr L)
+	static int get_s_sendProtoId(IntPtr L)
+	{
+		LuaDLL.lua_pushinteger(L, NetBuffer.s_sendProtoId);
+		return 1;
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_s_sendBytes(IntPtr L)
+	{
+		ToLua.Push(L, NetBuffer.s_sendBytes);
+		return 1;
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_s_recvProtoId(IntPtr L)
 	{
 		try
 		{
 			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			NetBuffer.s_protoId = arg0;
+			NetBuffer.s_recvProtoId = arg0;
 			return 0;
 		}
 		catch(Exception e)
@@ -59,12 +75,42 @@ public class NetBufferWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_s_bytes(IntPtr L)
+	static int set_s_recvBytes(IntPtr L)
 	{
 		try
 		{
 			LuaByteBuffer arg0 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
-			NetBuffer.s_bytes = arg0;
+			NetBuffer.s_recvBytes = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_s_sendProtoId(IntPtr L)
+	{
+		try
+		{
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			NetBuffer.s_sendProtoId = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_s_sendBytes(IntPtr L)
+	{
+		try
+		{
+			LuaByteBuffer arg0 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
+			NetBuffer.s_sendBytes = arg0;
 			return 0;
 		}
 		catch(Exception e)

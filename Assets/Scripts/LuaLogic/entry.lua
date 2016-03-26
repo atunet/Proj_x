@@ -5,14 +5,13 @@
 require ("login_pb")
 --login_pb = require "Protol/login_pb"
 local login_pb = _G['Protol/login_pb']
-NetBuffer = require "NetBuffer"
+--NetBuffer = require "NetBuffer"
 
-function CmdParse(body_)
-	print ("protoId_" .. protoId_)
+function CmdParse()
 	--print ("body_" .. body_)
 
 	local cmd = login_pb.LoginRet()
-	cmd:ParseFromString(body_)
+	cmd:ParseFromString(NetBuffer.s_recvBytes)
 	print("ip:"..cmd.gatewayip .. ",port:" .. cmd.gatewayport .. ",accid:" .. cmd.accountid .. ",token:" .. cmd.token)
 
 	--local path = "/Users/aTunet/Desktop/repoGit/proj_x/Assets/Scripts/LuaLogic/protos/login.pb"
@@ -33,15 +32,15 @@ end
 
 
 function SendCmd(protoId_, bytes_)
-	NetBuffer.s_protoId = protoId_
-	NetBuffer.s_bytes = bytes_
-	NetBuffer:SendCmd()
+	NetBuffer.s_sendProtoId = protoId_
+	NetBuffer.s_sendBytes = bytes_
+	NetBuffer.SendCmd()
 end
 
 
 function LoginLoginServer()
 
-	print(tostring(VERIFY_VERSION))
+	--print(tostring(VERIFY_VERSION))
 	
 	local verifyCmd = login_pb.VerifyVersion()
 	verifyCmd.clientversion = 2016

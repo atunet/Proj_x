@@ -29,7 +29,7 @@ public class CmdMonoBehaviour : MonoBehaviour {
 	LuaByteBuffer buffer = new LuaByteBuffer(ms.ToArray());
 	
 	//CmdHandler.Instance.cmdParse(100, ms.ToArray());
-	CmdHandler.Instance.CmdParse(buffer);	
+	CmdHandler.Instance.CmdParse();	
 	}
 	
 	// Update is called once per frame

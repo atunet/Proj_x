@@ -40,7 +40,6 @@ internal class NetThread
 			
 			if(null == m_tcpClient || !m_tcpClient.Connected()) 
 			{
-				Debug.LogError("NetThread tcpclient error");
 				break;
 			}
 			
