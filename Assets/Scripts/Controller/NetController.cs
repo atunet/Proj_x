@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Xml.Linq;
 using System.IO;
 
 
@@ -32,11 +31,9 @@ public class NetController : MonoBehaviour
 
     public void Connect(string ip_, ushort port_)
 	{
-        Debug.Log("NetController Connect:[" + ip_ +":" + port_ + "]");
-
 		if (null != m_thread) 
 		{
-			Debug.Log("NetController Connect error: NetThread is running");
+			Debug.LogWarning("Connect server ignored: netthread already running");
 			return;
 		}
 

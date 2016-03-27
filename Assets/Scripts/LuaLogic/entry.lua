@@ -1,33 +1,26 @@
 
---local protobuf = require ("protobuf")
 
---local protobuf = require("protobuf")
 require ("login_pb")
---login_pb = require "Protol/login_pb"
 local login_pb = _G['Protol/login_pb']
---NetBuffer = require "NetBuffer"
+
+local  controllers = 
+{
+
+}
 
 function CmdParse()
-	--print ("body_" .. body_)
 
-	local cmd = login_pb.LoginRet()
-	cmd:ParseFromString(NetBuffer.s_recvBytes)
-	print("ip:"..cmd.gatewayip .. ",port:" .. cmd.gatewayport .. ",accid:" .. cmd.accountid .. ",token:" .. cmd.token)
+	local cmdFunc = controllers[NetBuffer.s_recvProtoId]
+	if null == cmdFunc then
+		print("unknown cmd, function  not found")
+		return
+	end
 
-	--local path = "/Users/aTunet/Desktop/repoGit/proj_x/Assets/Scripts/LuaLogic/protos/login.pb"
-	-- local path = "D:/repoGit/proj_x_client/Assets/Scripts/LuaLogic/protos/login.pb"
-
-	-- local pbBin = io.open(path, "rb")
-	-- local buffer = pbBin:read "*a"
-	-- pbBin:close()
-
-	-- protobuf.register(buffer)
-	-- print ("register ok")
-	-- local cmd = protobuf.decode("LoginRet", body_)
-
-	-- print("ip:"..cmd.gatewayip .. ",port:" .. cmd.gatewayport .. ",accid:" .. cmd.accid .. ",token:" .. cmd.token)
-
-
+	cmdFunc()
+	
+	--ocal cmd = login_pb.LoginRet()
+	--cmd:ParseFromString(NetBuffer.s_recvBytes)
+	--print("ip:"..cmd.gatewayip .. ",port:" .. cmd.gatewayport .. ",accid:" .. cmd.accountid .. ",token:" .. cmd.token)
 end
 
 
@@ -38,10 +31,7 @@ function SendCmd(protoId_, bytes_)
 end
 
 
-function LoginLoginServer()
-
-	--print(tostring(VERIFY_VERSION))
-	
+function LoginLoginServer()	
 	local verifyCmd = login_pb.VerifyVersion()
 	verifyCmd.clientversion = 2016
 	SendCmd(257, verifyCmd:SerializeToString())

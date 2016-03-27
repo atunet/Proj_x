@@ -22,12 +22,9 @@ public class TCPClient
 	{
 		if(m_socket.Connected)
 		{	
-            Debug.LogWarning("the socket is already connected");
+            Debug.LogWarning("Connect ignored,the socket is already connected");
 			return true;
 		}
-		
-        Debug.Log("TCPClient connect server:[" + m_serverIP + ":" + m_serverPort + "]");
-
 
 		IPEndPoint serverAddr = new IPEndPoint(IPAddress.Parse(m_serverIP), m_serverPort);
 		try
@@ -39,14 +36,18 @@ public class TCPClient
 			Debug.Log(e_.ToString());
 			return false;
 		}
-		
+
+		Debug.Log("TCPClient connect server ok:[" + m_serverIP + ":" + m_serverPort + "]");
 		return true;
 	}
 
 	public void Close ()
 	{
-        m_socket.Shutdown(SocketShutdown.Both);
-		m_socket.Disconnect(true);
+		if (m_socket.Connected) 
+		{
+			m_socket.Shutdown (SocketShutdown.Both);
+			m_socket.Disconnect (true);
+		}
 		Debug.Log("TCPClient closed!");
 	}
 	
@@ -66,7 +67,7 @@ public class TCPClient
 			offset += m_socket.Send(sendBytes, offset, sendBytes.Length-offset, SocketFlags.None);
 		}
 
-		Debug.Log("TCPClient Send msg:" + protoId_ + ",len:" + msg_.Length + ",cmd len:" + packetLen);
+		Debug.Log("TCPClient send msg:" + protoId_ + ",cmd len:" +  msg_.Length + ",total len:" + packetLen);
         return true;
 	}
 
