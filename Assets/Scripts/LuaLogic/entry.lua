@@ -3,26 +3,37 @@
 require ("login_pb")
 local login_pb = _G['Protol/login_pb']
 
+
+function ParseLoginRet()
+
+	local cmd = login_pb.LoginRet()
+	cmd:ParseFromString(NetBuffer.s_recvBytes)
+	print("ip:"..cmd.gatewayip .. ",port:" .. cmd.gatewayport .. ",accid:" .. cmd.accountid .. ",token:" .. cmd.token)
+	
+	NetBuffer.s_gateIp = cmd.gatewayip
+	NetBuffer.s_gatePort = cmd.gatewayport
+	NetBuffer.s_token = cmd.token
+
+	NetBuffer.DisconnectLoginServer()
+	NetBuffer.LoginGatewayServer()
+end
+
 local  controllers = 
 {
-
+	[259] = ParseLoginRet,
 }
 
 function CmdParse()
 
 	local cmdFunc = controllers[NetBuffer.s_recvProtoId]
-	if null == cmdFunc then
-		print("unknown cmd, function  not found")
+	if nil == cmdFunc 
+	then
+		print("unknown cmd, function  not found:" .. NetBuffer.s_recvProtoId)
 		return
 	end
 
 	cmdFunc()
-	
-	--ocal cmd = login_pb.LoginRet()
-	--cmd:ParseFromString(NetBuffer.s_recvBytes)
-	--print("ip:"..cmd.gatewayip .. ",port:" .. cmd.gatewayport .. ",accid:" .. cmd.accountid .. ",token:" .. cmd.token)
 end
-
 
 function SendCmd(protoId_, bytes_)
 	NetBuffer.s_sendProtoId = protoId_
