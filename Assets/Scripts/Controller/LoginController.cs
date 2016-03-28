@@ -25,7 +25,7 @@ public class LoginController : MonoBehaviour
 		// lua init: load the config data and cached role data ...
 		if(CmdHandler.Instance.Init())
 		{
-			NetController.Instance.Connect (ZoneListController.s_selectZoneIP, ZoneListController.s_selectZonePort);
+			NetController.Instance.Connect ();
 		}
 	}
 

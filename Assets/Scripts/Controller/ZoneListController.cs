@@ -4,9 +4,7 @@ using System.Collections;
 public class ZoneListController : MonoBehaviour 
 {
 	public static string s_zoneListURL = "";
-	public static string s_selectZoneIP;
-	public static ushort s_selectZonePort;
-	
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -27,13 +25,8 @@ public class ZoneListController : MonoBehaviour
         zoneListReq.Dispose();
         zoneListReq = null;
 
-
-		s_selectZoneIP = "121.199.48.63";
-		//s_selectZoneIP = "10.96.29.36";
-		s_selectZonePort = 8888;
-		//s_selectZonePort = 4444;
-
-		// after select the zone list info, show the login btn ...
+		NetController.Instance.ServerIP = "121.199.48.63";
+		NetController.Instance.ServerPort = 8888;
 
 		ShowLoginBtn();
 	}

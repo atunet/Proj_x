@@ -19,17 +19,42 @@ public class NetController : MonoBehaviour
             {
                 GameObject obj = new GameObject("NetController");
                 s_instance = obj.AddComponent<NetController>(); 
+                GameObject.DontDestroyOnLoad(obj);
             }
             
             return s_instance;
         }
     }
-	 
+
+    private NetController()
+    {
+    	m_serverType = 0;
+    }
+
+    private string m_serverIP;
+    public string ServerIP
+    {
+    	get { return m_serverIP; }
+    	set { m_serverIP = value; }
+    }
+    private ushort m_serverPort;
+    public ushort ServerPort
+    {
+    	get { return m_serverPort; }
+    	set { m_serverPort = value; }
+    }
+    private byte m_serverType;
+    public byte ServerType
+    {
+    	get { return m_serverType; }
+    	set { m_serverType = value; }
+    }
+
 	private NetThread m_thread = null;
     private ArrayList m_cmdList = new ArrayList();
     
 
-    public void Connect(string ip_, ushort port_)
+    public void Connect()
 	{
 		if (null != m_thread) 
 		{
@@ -37,7 +62,7 @@ public class NetController : MonoBehaviour
 			return;
 		}
 
-		TCPClient tcpClient = new TCPClient (ip_, port_);
+		TCPClient tcpClient = new TCPClient (m_serverIP, m_serverPort);
 		if (!tcpClient.Connect ()) 
 		{
             tcpClient = null;
@@ -47,7 +72,7 @@ public class NetController : MonoBehaviour
 		m_thread = new NetThread (tcpClient);
 		m_thread.Start ();
 
-		CmdHandler.Instance.LoginLoginServer();
+		CmdHandler.Instance.LoginToServer();
 
         Debug.Log("NetController connect server ok, netthread started");
 	}
@@ -60,25 +85,28 @@ public class NetController : MonoBehaviour
         {
             foreach (byte[] recvCmd in m_cmdList)
 			{	
+				CSInterface.s_recvProtoId = BitConverter.ToUInt16(recvCmd, 0);
 				byte[] realCmd = new byte[recvCmd.Length-TCPClient.PROTO_ID_LEN];
 				Array.Copy(recvCmd, TCPClient.PROTO_ID_LEN, realCmd, 0, realCmd.Length);
 
-				NetBuffer.s_recvProtoId = BitConverter.ToUInt16(recvCmd, 0);
-				NetBuffer.s_recvBytes =	new LuaInterface.LuaByteBuffer(realCmd);
-                CmdHandler.Instance.CmdParse();
+				if(0 == CSInterface.s_recvProtoId)
+				{
+					Debug.Log("recv tickcmd,just send back");
+					SendCmd((UInt16)CSInterface.s_recvProtoId, realCmd);
+				}
+				else
+				{					
+					CSInterface.s_recvBytes = new LuaInterface.LuaByteBuffer(realCmd);
+    	            CmdHandler.Instance.CmdParse();
+            	}
             }
             
             m_cmdList.Clear();
         }
         
         Monitor.Exit(m_cmdList);
-    }
-    
-    void OnDestroy()
-    {
-        Reset();
-    }
-    
+    }   
+  
     public void AddCmd(byte[] cmd_)
     {
         Monitor.Enter(m_cmdList);        
@@ -101,6 +129,11 @@ public class NetController : MonoBehaviour
             m_thread.Final();
             m_thread = null;
         }
+    }
+
+	void OnDestroy()
+    {
+        Reset();
     }
 
 	void OnApplicationQuit()

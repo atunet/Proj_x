@@ -47,12 +47,18 @@ public class CmdHandler : IDisposable
 
 	public void Dispose()
 	{
-		m_cmdHander.Dispose();
-		m_cmdHander = null;
+		if(null != m_cmdHander)
+		{
+			m_cmdHander.Dispose();
+			m_cmdHander = null;
+		}
 
-		m_ls.Dispose();
-		m_ls = null;
-		
+		if(null != m_ls)
+		{
+			m_ls.Dispose();
+			m_ls = null;
+		}
+
 		Debugger.Log("CmdHander instance dispose");
 	}
 
@@ -61,12 +67,12 @@ public class CmdHandler : IDisposable
        m_cmdHander.Call();
 	}
 
-    public void LoginLoginServer()
+    public void LoginToServer()
     {
-        LuaFunction loginFunc = m_ls.GetFunction("LoginLoginServer");
+        LuaFunction loginFunc = m_ls.GetFunction("LoginToServer");
         if (null == loginFunc)
         {
-			Debugger.LogError("lua function not found:LoginLoginServer");
+			Debugger.LogError("lua function not found:LoginToServer");
             return;
         }
 
