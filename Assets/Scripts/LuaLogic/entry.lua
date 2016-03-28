@@ -2,8 +2,8 @@
 
 require ("login_pb")
 local login_pb = _G['Protol/login_pb']
---require ("role_pb")
---local  role_pb = _G['Protol/role_pb']
+require ("role_pb")
+local  role_pb = _G['Protol/role_pb']
 
 function ParseLoginRet()
 	local cmd = login_pb.LoginRet()
@@ -26,10 +26,10 @@ function ParseLoginGateRet()
 end
 
 function ParseRoleList()
-	--local cmd = login_pb.RoleList()
-	--cmd:ParseFromString(CSInterface.s_recvBytes)
-	--print("recv role list success, role count:" .. table.getn(cmd.rolebase))
-	print("recv role list success")
+	local cmd = role_pb.RoleList()
+	cmd:ParseFromString(CSInterface.s_recvBytes)
+	print("recv role list success, role count:" .. table.getn(cmd.rolebase))
+	--print("recv role list success")
 end
 
 local controllers = 

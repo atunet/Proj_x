@@ -1,6 +1,6 @@
 
-ÿ
-masktype.protoCmd*ç
+ª
+masktype.protoCmd*’
 EMask
 GACHA_OPENED
 BLADE_OPENED
@@ -25,4 +25,6 @@
 RANK_OPENED
 SOULCORE_OPENED
 BATTLESQUARE_OPENED
-FREE_REWARD_OPENED
+FREE_REWARD_OPENED
+UNIONS_OPENED
+DAILY_QUEST_OPENED
