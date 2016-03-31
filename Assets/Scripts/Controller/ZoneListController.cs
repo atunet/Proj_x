@@ -28,6 +28,9 @@ public class ZoneListController : MonoBehaviour
 		NetController.Instance.ServerIP = "121.199.48.63";
 		NetController.Instance.ServerPort = 8888;
 
+		//NetController.Instance.ServerIP = "119.15.139.149";
+		//NetController.Instance.ServerPort = 4444;
+
 		ShowLoginBtn();
 	}
 
