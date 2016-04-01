@@ -23,8 +23,8 @@ public static class AppConst
 	public static string UPLOAD_ASSET_URL = UPLOAD_URL + "/" + PLATFORM;							// do not use Path.Combine()
 
 	public static string LUA_TOLUA_PATH = Application.dataPath + "/ToLua/Lua/protobuf";
-	public static string LUA_LOGIC_PATH = Application.dataPath + "/Scripts/LuaLogic";
-	public static string LUA_PROTO_PATH = Application.dataPath + "/Scripts/LuaLogic/protos";
+	public static string LUA_LOGIC_PATH = Application.dataPath + "/Scripts/LuaScripts";
+	public static string LUA_PROTO_PATH = Application.dataPath + "/Scripts/LuaScripts/Protos";
 	
 
 	public static void PrintPath()

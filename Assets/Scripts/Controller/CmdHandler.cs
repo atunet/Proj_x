@@ -32,12 +32,12 @@ public class CmdHandler : IDisposable
 		m_ls.AddSearchPath(AppConst.LUA_TOLUA_PATH);
 		m_ls.AddSearchPath(AppConst.LUA_LOGIC_PATH);  
 		m_ls.AddSearchPath(AppConst.LUA_PROTO_PATH);		       
-		m_ls.DoFile("entry.lua"); 
+		m_ls.DoFile("LuaMain.lua"); 
 
-		m_cmdHander = m_ls.GetFunction("CmdParse");
+		m_cmdHander = m_ls.GetFunction("LuaMain");
 		if(null == m_cmdHander)
 		{
-			Debugger.LogError("lua init failed,CmdParse function not found");
+			Debugger.LogError("lua init failed,LuaMain function not found");
 			return false;
 		}
 
