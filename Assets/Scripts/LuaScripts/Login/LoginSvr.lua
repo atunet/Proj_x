@@ -35,12 +35,12 @@ function LoginToServer()
 		SendCmd(BaseTypePb.VERIFY_VERSION, verifyCmd:SerializeToString())
 
 		local loginCmd = LoginPb.LoginReq()
-		loginCmd.accountid = 8888
+		loginCmd.accountid = 9528
 		loginCmd.verifier = "fasdfa"
 		SendCmd(BaseTypePb.LOGIN_LOGIN_REQ, loginCmd:SerializeToString())
 	else
 		local loginCmd = LoginPb.LoginGatewayReq()
-		loginCmd.accountid = 8888
+		loginCmd.accountid = 9528
 		loginCmd.token = Login.LoginSvr.globalToken
 		loginCmd.appVersion = "1.1.1"
 		loginCmd.deviceId = 8
