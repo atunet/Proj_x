@@ -76,9 +76,7 @@ namespace LuaInterface
 
         Dictionary<int, Type> typeMap = new Dictionary<int, Type>();
 
-#if !MULTI_STATE
         private static LuaState mainState = null;
-#endif        
         private static Dictionary<IntPtr, LuaState> stateMap = new Dictionary<IntPtr, LuaState>();
 
         private int beginCount = 0;
@@ -86,23 +84,26 @@ namespace LuaInterface
 
         public LuaState()
         {
-#if !MULTI_STATE
-            mainState = this;
-#endif                       
+            if (mainState == null)
+            {
+                mainState = this;
+            }
+
             LuaException.Init();     
             L = LuaDLL.luaL_newstate();                                                                        
             LuaDLL.tolua_openlibs(L);
-            LuaDLL.tolua_openint64(L);    
             LuaStatic.OpenLibs(L);                                                                                                  
             stateMap.Add(L, this);                       
             OpenBaseLibs();            
             LuaDLL.lua_settop(L, 0);
 
+#if UNITY_EDITOR
             if (!LuaFileUtils.Instance.beZip)
-            {
+            {                
                 AddSearchPath(LuaConst.luaDir);
                 AddSearchPath(LuaConst.toluaDir);
             }
+#endif
         }
 
         void OpenBaseLibs()
@@ -378,14 +379,14 @@ namespace LuaInterface
             return mainState;
 #else
 
-            if (map.Count <= 1)
+            if (stateMap.Count <= 1)
             {
                 return mainState;
             }
 
             LuaState state = null;
 
-            if (map.TryGetValue(ptr, out state))
+            if (stateMap.TryGetValue(ptr, out state))
             {
                 return state;
             }
@@ -401,8 +402,7 @@ namespace LuaInterface
 #if !MULTI_STATE
             return mainState.translator;
 #else
-
-            if (map.Count <= 1)
+            if (stateMap.Count <= 1)
             {
                 return mainState.translator;
             }
@@ -455,6 +455,12 @@ namespace LuaInterface
 
         public void AddSearchPath(string fullPath)
         {
+            if (!Directory.Exists(fullPath))
+            {
+                string msg = string.Format("Lua config path not exists: {0}", fullPath);
+                throw new LuaException(msg, null, 1);
+            }
+
             if (!Path.IsPathRooted(fullPath))
             {
                 throw new LuaException(fullPath + " is not a full path");
@@ -587,18 +593,19 @@ namespace LuaInterface
                     string funcName = fullPath.Substring(pos + 1);
                     LuaDLL.lua_pushstring(L, funcName);
                     LuaDLL.lua_rawget(L, -2);
+
+                    LuaTypes type = LuaDLL.lua_type(L, -1);
+
+                    if (type == LuaTypes.LUA_TFUNCTION)
+                    {
+                        LuaDLL.lua_insert(L, oldTop + 1);
+                        LuaDLL.lua_settop(L, oldTop + 1);
+                        return true;
+                    }
                 }
 
-                LuaTypes type = LuaDLL.lua_type(L, -1);
-
-                if (type != LuaTypes.LUA_TFUNCTION)
-                {
-                    LuaDLL.lua_settop(L, oldTop);
-                    return false;
-                }
-
-                LuaDLL.lua_insert(L, oldTop + 1);
-                LuaDLL.lua_settop(L, oldTop + 1);                
+                LuaDLL.lua_settop(L, oldTop);
+                return false;              
             }
             else
             {
@@ -1480,7 +1487,7 @@ namespace LuaInterface
         }
 
         /*--------------------------------对于LuaDLL函数的简单封装------------------------------------------*/
-        #region SIMPLE_LUA_FUNCTION
+#region SIMPLE_LUA_FUNCTION
         public int LuaGetTop()
         {
             return LuaDLL.lua_gettop(L);
@@ -1607,7 +1614,7 @@ namespace LuaInterface
             {
                 throw new LuaException("Require not need file extension: " + str);
             }
-#endif                        
+#endif
             return LuaDLL.tolua_require(L, fileName);
         }
 
@@ -1678,7 +1685,7 @@ namespace LuaInterface
         {
             return LuaDLL.tolua_fixedupdate(L, fixedTime);
         }
-        #endregion
+#endregion
         /*--------------------------------------------------------------------------------------------------*/
 
         void CloseBaseRef()
@@ -1733,10 +1740,11 @@ namespace LuaInterface
                 Debugger.Log("LuaState quit");
             }
 
-            
-#if !MULTI_STATE                  
-            mainState = null;
-#endif                              
+            if (mainState == this)
+            {
+                mainState = null;
+            }
+                        
             LuaFileUtils.Instance.Dispose();
             System.GC.SuppressFinalize(this);            
         }
