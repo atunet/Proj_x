@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System;
 
 public class Packager
 {
@@ -78,6 +79,7 @@ public class Packager
         {
         	Directory.CreateDirectory(tempLuaDir);
         }
+		Directory.Delete (tempLuaDir, true);
 
 		for (int i = 0; i < s_luaSrcDirs.Length; i++) 
 		{
@@ -86,13 +88,13 @@ public class Packager
 			int len = thisSrcDir.Length;
 			if (thisSrcDir[len - 1] == '/' || thisSrcDir[len - 1] == '\\') len--;
 
-			string[] fileFullNames = Directory.GetFiles(thisSrcDir, "*.lua", SearchOption.AllDirectories);
-			for (int j = 0; j < fileFullNames.Length; j++) 
+			string[] fileList = Directory.GetFiles(thisSrcDir, "*.lua", SearchOption.AllDirectories);
+			for (int j = 0; j < fileList.Length; j++) 
             {
-				string subFileName = fileFullNames[j].Remove(0, len);
+				string subFileName = fileList[j].Remove(0, len);
 				string dstFileName = tempLuaDir + subFileName + ".bytes";
 				Directory.CreateDirectory(Path.GetDirectoryName(dstFileName));
-				EncodeLuaFile(fileFullNames[j], dstFileName);
+				EncodeLuaFile(fileList[j], dstFileName);
             }
         }
 
@@ -272,38 +274,39 @@ public class Packager
         EditorUtility.DisplayProgressBar(title, desc, value);
     }
 
-    public static void EncodeLuaFile(string srcFile, string outFile) {
-        if (!srcFile.ToLower().EndsWith(".lua")) {
-            File.Copy(srcFile, outFile, true);
+    public static void EncodeLuaFile(string srcFile_, string outFile_) 
+	{
+		if (!srcFile_.ToLower().EndsWith(".lua")) 
+		{
+			File.Copy(srcFile_, outFile_, true);
             return;
         }
-        bool isWin = true;
-        string luaexe = string.Empty;
-        string args = string.Empty;
-        string exedir = string.Empty;
-        string currDir = Directory.GetCurrentDirectory();
-        if (Application.platform == RuntimePlatform.WindowsEditor) {
-            isWin = true;
-            luaexe = "luajit.exe";
-            args = "-b " + srcFile + " " + outFile;
-            exedir = AppDataPath.Replace("assets", "") + "LuaEncoder/luajit/";
-        } else if (Application.platform == RuntimePlatform.OSXEditor) {
-            isWin = false;
-            luaexe = "./luac";
-            args = "-o " + outFile + " " + srcFile;
-            exedir = AppDataPath.Replace("assets", "") + "LuaEncoder/luavm/";
-        }
-        Directory.SetCurrentDirectory(exedir);
-        ProcessStartInfo info = new ProcessStartInfo();
-        info.FileName = luaexe;
-        info.Arguments = args;
-        info.WindowStyle = ProcessWindowStyle.Hidden;
-        info.ErrorDialog = true;
-        info.UseShellExecute = isWin;
-        //Util.Log(info.FileName + " " + info.Arguments);
 
-        Process pro = Process.Start(info);
-        pro.WaitForExit();
+		string currDir = Directory.GetCurrentDirectory();
+		string exeDir = string.Empty;
+
+		ProcessStartInfo processInfo = new ProcessStartInfo();	
+		processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+		processInfo.ErrorDialog = true;
+
+        if (Application.platform == RuntimePlatform.WindowsEditor) 
+		{
+			processInfo.FileName = "luajit.exe";
+			processInfo.Arguments = "-b " + srcFile_ + " " + outFile_;
+			processInfo.UseShellExecute = true;
+			exeDir = AppDataPath.Replace("assets", "") + "LuaEncoder/luajit/";
+        }
+		else if (Application.platform == RuntimePlatform.OSXEditor) 
+		{
+			processInfo.FileName = "./luac";
+			processInfo.Arguments = "-o " + outFile_ + " " + srcFile_;
+			processInfo.UseShellExecute = false;
+			exeDir = AppDataPath.Replace("assets", "") + "LuaEncoder/luavm/";
+        }
+		Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+
+		Directory.SetCurrentDirectory(exeDir);
+		Process.Start(processInfo).WaitForExit();
         Directory.SetCurrentDirectory(currDir);
     }
 
