@@ -26,6 +26,7 @@ public static class AppConst
 	public static string LUA_LOGIC_PATH = Application.dataPath + "/Scripts/LuaScripts";
 	public static string LUA_PROTO_PATH = Application.dataPath + "/Scripts/LuaScripts/Protos";
 	
+	public static string AB_EXT_NAME = ".unity3d";
 
 	public static void PrintPath()
 	{
