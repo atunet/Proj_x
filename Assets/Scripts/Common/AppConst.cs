@@ -48,5 +48,7 @@ public static class AppConst
 
 		Debug.Log("UPLOAD_URL:" + UPLOAD_URL);
 		Debug.Log("UPLOAD_ASSET_URL:" + UPLOAD_ASSET_URL);
+
+		Debug.Log("TEMP_PATH:" + Application.temporaryCachePath);
 	}	 
 }

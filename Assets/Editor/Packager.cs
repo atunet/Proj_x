@@ -9,11 +9,11 @@ using System;
 
 public class Packager
 {
-    public static string platform = string.Empty;
-    static List<string> paths = new List<string>();
-    static List<string> files = new List<string>();
+    //static List<string> paths = new List<string>();
+    //static List<string> files = new List<string>();
     static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
 
+    // 目录统一不要以'/'结尾
 	static string[] s_luaSrcDirs = 
 	{ 
 		CustomSettings.toluaLuaDir, 
@@ -54,12 +54,14 @@ public class Packager
         Directory.CreateDirectory(streamPath);
         AssetDatabase.Refresh();
         */
+       // AppConst.PrintPath();
 
         s_abMaps.Clear();
 
 		PreprocessLuaFiles();
-		PreprocessArtFiles();
+		//PreprocessArtFiles();
 
+		UnityEngine.Debug.Log("BuildAssetResource:" + AppConst.STREAMING_ASSETS_PATH);
 		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
 		BuildPipeline.BuildAssetBundles(AppConst.STREAMING_ASSETS_PATH, s_abMaps.ToArray(), options, target_);
 
@@ -71,47 +73,35 @@ public class Packager
     /// </summary>
     static void PreprocessLuaFiles() 
     {
-   //     string streamDir = Application.dataPath + "/Lua/";
-     //   if (!Directory.Exists(streamDir)) Directory.CreateDirectory(streamDir);
-
-        string tempLuaDir = Path.Combine(Application.temporaryCachePath, "Lua");
-        if(!Directory.Exists(tempLuaDir))
-        {
-        	Directory.CreateDirectory(tempLuaDir);
-        }
-		Directory.Delete (tempLuaDir, true);
+        string tempLuaDir = Application.temporaryCachePath + "/Lua";
+		Directory.Delete(tempLuaDir, true);
+        Directory.CreateDirectory(tempLuaDir);
 
 		for (int i = 0; i < s_luaSrcDirs.Length; i++) 
 		{
-			string thisSrcDir = s_luaSrcDirs[i];
-
-			int len = thisSrcDir.Length;
-			if (thisSrcDir[len - 1] == '/' || thisSrcDir[len - 1] == '\\') len--;
-
-			string[] fileList = Directory.GetFiles(thisSrcDir, "*.lua", SearchOption.AllDirectories);
+			string[] fileList = Directory.GetFiles(s_luaSrcDirs[i], "*.lua", SearchOption.AllDirectories);
 			for (int j = 0; j < fileList.Length; j++) 
             {
-				string subFileName = fileList[j].Remove(0, len);
+				string subFileName = fileList[j].Substring(s_luaSrcDirs[i].Length);	// "/filename.lua" or "/*/filename.lua"
 				string dstFileName = tempLuaDir + subFileName + ".bytes";
 				Directory.CreateDirectory(Path.GetDirectoryName(dstFileName));
 				EncodeLuaFile(fileList[j], dstFileName);
             }
         }
 
-		string[] tempFullDirs = Directory.GetDirectories(tempLuaDir, "*", SearchOption.AllDirectories);
-		for (int i = 0; i < tempFullDirs.Length; i++) 
+		string[] subDirList = Directory.GetDirectories(tempLuaDir, "*", SearchOption.AllDirectories);
+		for (int i = 0; i < subDirList.Length; i++) 
         {
-			string tempSubDir = tempFullDirs[i].Replace(tempLuaDir, string.Empty);
-			tempSubDir = tempSubDir.Replace('\\', '_').Replace('/', '_');
-			tempSubDir = "lua/lua_" + tempSubDir.ToLower() + AppConst.AB_EXT_NAME;
+			string subPart = subDirList[i].Substring(tempLuaDir.Length+1);
+			subPart = subPart.Replace('\\', '_').Replace('/', '_');
+			string abName = "lua/lua_" + subPart + AppConst.AB_EXT_NAME;
 
-			string path = "Assets" + tempFullDirs[i].Replace(Application.dataPath, "");
-			AddBuildMap(tempSubDir, "*.bytes", path);
+			AddBuildMap(abName, subDirList[i], "*.bytes");
         }
-        //AddBuildMap("lua/lua" + AppConst.AB_EXT_NAME, "*.bytes", "Assets/" + AppConst.LuaTempDir);
+		AddBuildMap("lua/lua" + AppConst.AB_EXT_NAME, tempLuaDir, "*.bytes");
 
         //-------------------------------处理非Lua文件----------------------------------
-        string luaPath = AppDataPath + "/StreamingAssets/lua/";
+      /*  string luaPath = AppDataPath + "/StreamingAssets/lua/";
 		for (int i = 0; i < s_luaSrcDirs.Length; i++) 
 		{
             paths.Clear(); files.Clear();
@@ -128,6 +118,7 @@ public class Packager
                 File.Copy(f, destfile, true);
             }
         }
+        */
         AssetDatabase.Refresh();
     }
 
@@ -148,12 +139,15 @@ public class Packager
 
 	static void AddBuildMap(string abName_, string path_, string pattern_) 
 	{
+		UnityEngine.Debug.Log("AddMap:" + abName_ + "," + path_ + "," + pattern_);
+
         string[] files = Directory.GetFiles(path_, pattern_);
         if (files.Length == 0) return;
 
         for (int i = 0; i < files.Length; i++) 
         {
             files[i] = files[i].Replace('\\', '/');
+			UnityEngine.Debug.Log("AddMap:" + abName_ + "," + files[i]);
         }
 
         AssetBundleBuild build = new AssetBundleBuild();
@@ -161,6 +155,43 @@ public class Packager
         build.assetNames = files;
         s_abMaps.Add(build);
     }
+
+	public static void EncodeLuaFile(string srcFile_, string outFile_) 
+	{
+		if (!srcFile_.ToLower().EndsWith(".lua")) 
+		{
+			File.Copy(srcFile_, outFile_, true);
+            return;
+        }
+
+		string currDir = Directory.GetCurrentDirectory();
+		string exeDir = string.Empty;
+
+		ProcessStartInfo processInfo = new ProcessStartInfo();	
+		processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+		processInfo.ErrorDialog = true;
+
+        if (Application.platform == RuntimePlatform.WindowsEditor) 
+		{
+			processInfo.FileName = "luajit.exe";
+			processInfo.Arguments = "-b " + srcFile_ + " " + outFile_;
+			processInfo.UseShellExecute = true;
+			exeDir = Application.dataPath.Replace("Assets", "") + "LuaEncoder/luajit/";
+        }
+		else if (Application.platform == RuntimePlatform.OSXEditor) 
+		{
+			processInfo.FileName = "./luac";
+			processInfo.Arguments = "-o " + outFile_ + " " + srcFile_;
+			processInfo.UseShellExecute = false;
+			exeDir = Application.dataPath.Replace("Assets", "") + "LuaEncoder/luavm/";
+        }
+		UnityEngine.Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+
+		Directory.SetCurrentDirectory(exeDir);
+		Process.Start(processInfo).WaitForExit();
+        Directory.SetCurrentDirectory(currDir);
+    }
+
 
     /// <summary>
     /// 处理Lua文件
@@ -243,7 +274,7 @@ public class Packager
         if (file.EndsWith(".lua")) file += ".txt";
         return AssetDatabase.LoadMainAssetAtPath("Assets/LuaFramework/Examples/Builds/" + file);
     }
-	*/
+
     /// <summary>
     /// 数据目录
     /// </summary>
@@ -274,49 +305,14 @@ public class Packager
         EditorUtility.DisplayProgressBar(title, desc, value);
     }
 
-    public static void EncodeLuaFile(string srcFile_, string outFile_) 
-	{
-		if (!srcFile_.ToLower().EndsWith(".lua")) 
-		{
-			File.Copy(srcFile_, outFile_, true);
-            return;
-        }
-
-		string currDir = Directory.GetCurrentDirectory();
-		string exeDir = string.Empty;
-
-		ProcessStartInfo processInfo = new ProcessStartInfo();	
-		processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-		processInfo.ErrorDialog = true;
-
-        if (Application.platform == RuntimePlatform.WindowsEditor) 
-		{
-			processInfo.FileName = "luajit.exe";
-			processInfo.Arguments = "-b " + srcFile_ + " " + outFile_;
-			processInfo.UseShellExecute = true;
-			exeDir = AppDataPath.Replace("assets", "") + "LuaEncoder/luajit/";
-        }
-		else if (Application.platform == RuntimePlatform.OSXEditor) 
-		{
-			processInfo.FileName = "./luac";
-			processInfo.Arguments = "-o " + outFile_ + " " + srcFile_;
-			processInfo.UseShellExecute = false;
-			exeDir = AppDataPath.Replace("assets", "") + "LuaEncoder/luavm/";
-        }
-		Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
-
-		Directory.SetCurrentDirectory(exeDir);
-		Process.Start(processInfo).WaitForExit();
-        Directory.SetCurrentDirectory(currDir);
-    }
 
 	[MenuItem("Tool/Build Protobuf-lua-gen File")]
     public static void BuildProtobufFile() {
-      /*  if (!AppConst.ExampleMode) {
+        if (!AppConst.ExampleMode) {
             Debugger.LogError("若使用编码Protobuf-lua-gen功能，需要自己配置外部环境！！");
             return;
         }
-        */
+
         string dir = AppDataPath + "/Lua/3rd/pblua";
         paths.Clear(); files.Clear(); Recursive(dir);
 
@@ -342,4 +338,5 @@ public class Packager
         }
         AssetDatabase.Refresh();
     }
+	*/
 }
