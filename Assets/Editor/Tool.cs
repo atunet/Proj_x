@@ -1,11 +1,203 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Text.RegularExpressions;
-using System.Collections;
 using System.IO;
+using System.Diagnostics;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Debug = UnityEngine.Debug;
+
 
 public class Tool : MonoBehaviour 
-{	   
+{	
+	// 目录统一不要以'/'结尾
+	static string[] s_luaSrcDirs = 
+	{ 
+		CustomSettings.toluaLuaDir, 
+		AppConst.LUA_LOGIC_PATH, 
+	};
+	static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
+
+	/*
+	[MenuItem ("Tool/AssetBundle/Build Win")]
+	static void BuildAllAssetBundles_pc ()
+	{
+		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
+		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
+	}
+
+	[MenuItem ("Tool/AssetBundle/Build Mac")]
+	static void BuildAllAssetBundles_mac ()
+	{
+		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
+		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.StandaloneOSXIntel64);
+	}
+
+	[MenuItem ("Tool/AssetBundle/Build Ios")]
+	static void BuildAllAssetBundles_ios ()
+	{        
+		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
+		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.iOS);
+	}
+
+	[MenuItem ("Tool/AssetBundle/Build Android")]
+	static void BuildAllAssetBundles_android ()
+	{
+		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
+		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.Android);
+	}
+*/
+	[MenuItem("Tool/Build iPhone Resource", false, 100)]
+	public static void BuildiPhoneResource() 
+	{
+		BuildAssetResource(BuildTarget.iOS);
+	}
+
+	[MenuItem("Tool/Build Android Resource", false, 101)]
+	public static void BuildAndroidResource() 
+	{
+		BuildAssetResource(BuildTarget.Android);
+	}
+
+	[MenuItem("Tool/Build Windows Resource", false, 102)]
+	public static void BuildWindowsResource() 
+	{
+		BuildAssetResource(BuildTarget.StandaloneWindows);
+	}
+
+	[MenuItem("Tool/Build Mac Resource", false, 103)]
+	public static void BuildMacResource() 
+	{
+		BuildAssetResource(BuildTarget.StandaloneOSXIntel);
+	}
+	/// <summary>
+	/// 生成绑定素材
+	/// </summary>
+	public static void BuildAssetResource(BuildTarget target_) 
+	{
+		s_abMaps.Clear();
+		PreprocessLuaFiles();
+		//PreprocessArtFiles();
+
+		Debug.Log("BuildAssetResource:" + AppConst.STREAMING_SUB_PATH_PART);
+		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
+		BuildPipeline.BuildAssetBundles(AppConst.STREAMING_SUB_PATH_PART, s_abMaps.ToArray(), options, target_);
+		AssetDatabase.Refresh();
+	}
+
+	/// <summary>
+	/// 预处理Lua代码文件
+	/// 循环加密lua文件并输出到临时目录并追加.bytes扩展名
+	/// 遍历临时目录中的子目录,添加AssetBundleBuild项,bundle命名规则: lua/lua_subdir.unityid
+	/// </summary>
+	static void PreprocessLuaFiles() 
+	{
+		string tempLuaDir = Application.streamingAssetsPath + "/TempLua";
+		if(Directory.Exists (tempLuaDir)) 
+		{
+			Directory.Delete (tempLuaDir, true);
+		}
+		Directory.CreateDirectory(tempLuaDir);
+		AssetDatabase.Refresh();
+
+		for (int i = 0; i < s_luaSrcDirs.Length; i++) 
+		{
+			string[] fileList = Directory.GetFiles(s_luaSrcDirs[i], "*.lua", SearchOption.AllDirectories);
+			for (int k = 0; k < fileList.Length; k++) 
+			{
+				string subFileName = fileList[k].Substring(s_luaSrcDirs[i].Length);	// "/filename.lua" or "/*/filename.lua"
+				string dstFileName = tempLuaDir + subFileName + ".bytes";
+				Directory.CreateDirectory(Path.GetDirectoryName(dstFileName));
+				EncodeLuaFile(fileList[k], dstFileName);
+			}
+		}
+
+		string[] subDirList = Directory.GetDirectories(tempLuaDir, "*", SearchOption.AllDirectories);
+		for (int i = 0; i < subDirList.Length; i++) 
+		{
+			string subPart = subDirList[i].Substring(tempLuaDir.Length+1);
+			subPart = subPart.Replace('\\', '_').Replace('/', '_');
+			string abName = "lua/lua_" + subPart + AppConst.AB_EXT_NAME;
+
+			AddBuildMap(abName, subDirList[i].Substring(AppConst.PROJECT_PATH_LEN), "*.bytes");
+		}
+
+		string rootABName = "lua/lua" + AppConst.AB_EXT_NAME;
+		AddBuildMap(rootABName, tempLuaDir.Substring(AppConst.PROJECT_PATH_LEN), "*.bytes");
+		AssetDatabase.Refresh();
+	}
+
+	/// <summary>
+	/// 处理框架实例包
+	/// </summary>
+	static void PreprocessArtFiles() 
+	{
+		string resPath = "";//AppDataPath + "/" + AppConst.AssetDir + "/";
+		if (!Directory.Exists(resPath)) Directory.CreateDirectory(resPath);
+
+		AddBuildMap("prompt" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Prompt");
+		AddBuildMap("message" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Message");
+
+		AddBuildMap("prompt_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Prompt");
+		AddBuildMap("shared_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Shared");
+	}
+
+	static void AddBuildMap(string abName_, string relativePath_, string pattern_) 
+	{
+		Debug.Log("AddMap:" + abName_ + "," + relativePath_ + "," + pattern_);
+
+		string[] files = Directory.GetFiles(relativePath_, pattern_);
+		if (files.Length == 0) return;
+
+		for (int i = 0; i < files.Length; i++) 
+		{
+			files[i] = files[i].Replace('\\', '/');
+			Debug.Log("AddMap:" + abName_ + "," + files[i]);
+		}
+
+		AssetBundleBuild build = new AssetBundleBuild();
+		build.assetBundleName = abName_;
+		build.assetNames = files;
+		s_abMaps.Add(build);
+	}
+
+	public static void EncodeLuaFile(string srcFile_, string outFile_) 
+	{
+		if (!srcFile_.ToLower().EndsWith(".lua")) 
+		{
+			File.Copy(srcFile_, outFile_, true);
+			return;
+		}
+
+		string currDir = Directory.GetCurrentDirectory();
+		string exeDir = string.Empty;
+
+		ProcessStartInfo processInfo = new ProcessStartInfo();	
+		processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+		processInfo.ErrorDialog = true;
+
+		if (Application.platform == RuntimePlatform.WindowsEditor) 
+		{
+			processInfo.FileName = "luajit.exe";
+			processInfo.Arguments = "-b " + srcFile_ + " " + outFile_;
+			processInfo.UseShellExecute = true;
+			exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luajit/";
+		}
+		else if (Application.platform == RuntimePlatform.OSXEditor) 
+		{
+			processInfo.FileName = "./luac";
+			processInfo.Arguments = "-o " + outFile_ + " " + srcFile_;
+			processInfo.UseShellExecute = false;
+			exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/";
+		}
+
+		Directory.SetCurrentDirectory(exeDir);
+		Process.Start(processInfo).WaitForExit();
+		Directory.SetCurrentDirectory(currDir);
+	}
+
+
+
 	static string s_inputDir = Application.dataPath + "/Config/";
 	static string s_outputDir = Application.dataPath + "/Scripts/LuaLogic/config/";
 	
@@ -226,34 +418,4 @@ public class Tool : MonoBehaviour
 		writer.Close();
 		writer = null;
 	}
-
-
-
-    [MenuItem ("Tool/AssetBundle/Build Win")]
-    static void BuildAllAssetBundles_pc ()
-    {
-        Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-        BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
-    }
-
-    [MenuItem ("Tool/AssetBundle/Build Mac")]
-    static void BuildAllAssetBundles_mac ()
-    {
-        Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-        BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.StandaloneOSXIntel64);
-    }
-
-    [MenuItem ("Tool/AssetBundle/Build Ios")]
-    static void BuildAllAssetBundles_ios ()
-    {        
-        Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-        BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.iOS);
-    }
-
-    [MenuItem ("Tool/AssetBundle/Build Android")]
-    static void BuildAllAssetBundles_android ()
-    {
-        Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-        BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.Android);
-    }
 }
