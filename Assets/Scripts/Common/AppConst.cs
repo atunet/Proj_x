@@ -7,9 +7,10 @@ public static class AppConst
 	public static string COMMON_SUB_PATH = "RawResources";
 	public static string MANIFEST_FILE_NAME = PLATFORM;
 
-    public static string STREAMING_SUB_PATH = Path.Combine(Application.streamingAssetsPath, COMMON_SUB_PATH);
+	public static string STREAMING_SUB_PATH = Path.Combine(Application.streamingAssetsPath, COMMON_SUB_PATH);
     public static string STREAMING_ASSETS_PATH = Path.Combine(STREAMING_SUB_PATH, PLATFORM);
     public static string STREAMING_MANIFEST_FULL_NAME = Path.Combine(STREAMING_ASSETS_PATH, MANIFEST_FILE_NAME);
+	public static string STREAMING_SUB_PATH_PART = "Assets/StreamingAssets/" + COMMON_SUB_PATH + "/" + PLATFORM;
 
     public static string PERSISTENT_SUB_PATH = Path.Combine(Application.persistentDataPath, COMMON_SUB_PATH);
     public static string PERSISTENT_DATA_PATH = Path.Combine(PERSISTENT_SUB_PATH, PLATFORM);
@@ -22,11 +23,16 @@ public static class AppConst
     public static string UPLOAD_URL = "ftp://121.199.48.63/res/firework";
 	public static string UPLOAD_ASSET_URL = UPLOAD_URL + "/" + PLATFORM;							// do not use Path.Combine()
 
+	public static string LUA_TEMP_PATH = "Assets/StreamingAssets/Temp/Lua";
 	public static string LUA_TOLUA_PATH = Application.dataPath + "/ToLua/Lua/protobuf";
 	public static string LUA_LOGIC_PATH = Application.dataPath + "/Scripts/LuaScripts";
 	public static string LUA_PROTO_PATH = Application.dataPath + "/Scripts/LuaScripts/Protos";
 	
 	public static string AB_EXT_NAME = ".unity3d";
+
+	public static string ASSETS_DIR_NAME = "Assets";
+	public static string PROJECT_PATH = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf(ASSETS_DIR_NAME)-1);
+	public static int PROJECT_PATH_LEN = PROJECT_PATH.Length + 1;
 
 	public static void PrintPath()
 	{
