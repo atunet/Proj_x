@@ -24,10 +24,10 @@ public class AppStartController : MonoBehaviour
             Directory.CreateDirectory(AppConst.PERSISTENT_SUB_PATH);
         }
 
-		if(!Directory.Exists(AppConst.PERSISTENT_DATA_PATH))
+		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
-			Debug.Log("init create the persistent dir:" + AppConst.PERSISTENT_DATA_PATH);
-			Directory.CreateDirectory(AppConst.PERSISTENT_DATA_PATH);
+			Debug.Log("init create the persistent dir:" + AppConst.PERSISTENT_PATH);
+			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
         }
 
 		if(File.Exists(AppConst.PERSISTENT_MANIFEST_FULL_NAME))
@@ -50,7 +50,7 @@ public class AppStartController : MonoBehaviour
     {
         if (null == s_loginAB)
         {
-            s_loginAB = AssetBundle.LoadFromFile(Path.Combine(AppConst.PERSISTENT_DATA_PATH, "ab_login"));
+			s_loginAB = AssetBundle.LoadFromFile(Path.Combine(AppConst.PERSISTENT_PATH, "ab_login"));
             if (null == s_loginAB) 
             {
 				Debug.LogError("CheckResUpdate failed,ab_login file not found");
@@ -138,7 +138,7 @@ public class AppStartController : MonoBehaviour
 		manifestWWW.Dispose();
 		manifestWWW = null;
 
-        StartCoroutine(CopyFile(Path.Combine(AppConst.STREAMING_ASSETS_PATH, m_streamingFileList[m_streamingFileIndex])));
+        StartCoroutine(CopyFile(Path.Combine(AppConst.STREAMING_PATH, m_streamingFileList[m_streamingFileIndex])));
 	}
 
 
@@ -156,7 +156,7 @@ public class AppStartController : MonoBehaviour
         Debug.Log("www load to persistent path:" + fileFullName_ + " done,length:" + w.bytes.Length);
 
         string fileName = Path.GetFileName(fileFullName_);
-        string dstFullName = Path.Combine(AppConst.PERSISTENT_DATA_PATH, fileName);
+		string dstFullName = Path.Combine(AppConst.PERSISTENT_PATH, fileName);
         Debug.Log("filename:" + fileName + "," + dstFullName);
 
         FileStream fs = new FileStream(dstFullName, FileMode.Create, FileAccess.ReadWrite);      
@@ -169,7 +169,7 @@ public class AppStartController : MonoBehaviour
 
 		if(m_streamingFileList.Length > ++m_streamingFileIndex)
         {
-			StartCoroutine(CopyFile(Path.Combine(AppConst.STREAMING_ASSETS_PATH, m_streamingFileList[m_streamingFileIndex])));
+			StartCoroutine(CopyFile(Path.Combine(AppConst.STREAMING_PATH, m_streamingFileList[m_streamingFileIndex])));
         }
         else
         {

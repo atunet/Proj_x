@@ -27,7 +27,7 @@ public class ResourceUploader : MonoBehaviour
         
     bool ReadLocalManifest()
     {
-        string localManifestPath = Path.Combine(AppConst.STREAMING_ASSETS_PATH,  AppConst.MANIFEST_FILE_NAME);
+        string localManifestPath = Path.Combine(AppConst.STREAMING_PATH,  AppConst.MANIFEST_FILE_NAME);
 
         AssetBundle localManifestAB = AssetBundle.LoadFromFile(localManifestPath);
         if (null == localManifestAB)
@@ -113,7 +113,7 @@ public class ResourceUploader : MonoBehaviour
         string fileName = m_uploadList[0];
         m_uploadList.RemoveAt(0);
 
-        FileStream fs = File.OpenRead(Path.Combine(AppConst.STREAMING_ASSETS_PATH, fileName));
+        FileStream fs = File.OpenRead(Path.Combine(AppConst.STREAMING_PATH, fileName));
         byte[] fileBytes = new byte[fs.Length];
         fs.Read(fileBytes, 0, fileBytes.Length);
         fs.Close();

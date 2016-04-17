@@ -131,7 +131,7 @@ public class ResourceUpdateController : MonoBehaviour
     
     private void ReplaceLocalFile(string abName_, byte[] data_)
     {
-        FileStream fs = new FileStream(Path.Combine(AppConst.PERSISTENT_DATA_PATH, abName_), FileMode.Create);
+		FileStream fs = new FileStream(Path.Combine(AppConst.PERSISTENT_PATH, abName_), FileMode.Create);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(data_, 0, data_.Length);
         bw.Flush();

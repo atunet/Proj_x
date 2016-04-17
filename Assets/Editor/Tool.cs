@@ -10,11 +10,12 @@ using Debug = UnityEngine.Debug;
 
 public class Tool : MonoBehaviour 
 {	
-	// 目录统一不要以'/'结尾
+	// Lua打包的目录列表
+	// 目录名务必不要以'\'或者'/'结尾
 	static string[] s_luaSrcDirs = 
 	{ 
-		CustomSettings.toluaLuaDir, 
-		AppConst.LUA_LOGIC_PATH, 
+		CustomSettings.toluaLuaDir,	// tolua自带的lua目录 
+		AppConst.LUA_LOGIC_PATH, 	// 游戏lua脚本目录
 	};
 	static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
 
@@ -47,41 +48,58 @@ public class Tool : MonoBehaviour
 		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.Android);
 	}
 */
-	[MenuItem("Tool/Build iPhone Resource", false, 100)]
+	[MenuItem("Tool/Asset Bundle/Build iPhone", false, 100)]
 	public static void BuildiPhoneResource() 
 	{
-		BuildAssetResource(BuildTarget.iOS);
+		BuildAssetBundle(BuildTarget.iOS);
 	}
 
-	[MenuItem("Tool/Build Android Resource", false, 101)]
+	[MenuItem("Tool/Asset Bundle/Build Android", false, 101)]
 	public static void BuildAndroidResource() 
 	{
-		BuildAssetResource(BuildTarget.Android);
+		BuildAssetBundle(BuildTarget.Android);
 	}
 
-	[MenuItem("Tool/Build Windows Resource", false, 102)]
+	[MenuItem("Tool/Asset Bundle/Build Windows", false, 102)]
 	public static void BuildWindowsResource() 
 	{
-		BuildAssetResource(BuildTarget.StandaloneWindows);
+		BuildAssetBundle(BuildTarget.StandaloneWindows);
 	}
 
-	[MenuItem("Tool/Build Mac Resource", false, 103)]
+	[MenuItem("Tool/Asset Bundle/Build Mac", false, 103)]
 	public static void BuildMacResource() 
 	{
-		BuildAssetResource(BuildTarget.StandaloneOSXIntel);
+		BuildAssetBundle(BuildTarget.StandaloneOSXIntel);
 	}
+
 	/// <summary>
-	/// 生成绑定素材
+	/// 根据平台打包lua文件和美术资源文件
 	/// </summary>
-	public static void BuildAssetResource(BuildTarget target_) 
+	private static void BuildAssetBundle(BuildTarget target_) 
 	{
 		s_abMaps.Clear();
+
 		PreprocessLuaFiles();
 		//PreprocessArtFiles();
 
-		Debug.Log("BuildAssetResource:" + AppConst.STREAMING_SUB_PATH_PART);
+		string absOutPath = AppConst.STREAMING_PATH + "/" + target_.ToString();
+		if (Directory.Exists(absOutPath)) Directory.Delete(absOutPath, true);
+	    Directory.CreateDirectory(absOutPath);
+		AssetDatabase.Refresh();
+
+		string relativeOutPath = absOutPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
+		Debug.Log("Build all assetbundle to path: " + relativeOutPath + ",count:" + s_abMaps.Count);
+
+		for (int i = 0; i < s_abMaps.Count; ++i)
+		{
+			int len = s_abMaps[i].assetNames.Length;
+			for (int k = 0; k < len; ++k)
+			{
+				Debug.Log("abmap:" + s_abMaps[i].assetBundleName + "," + s_abMaps[i].assetNames[k]);
+			}
+		}
 		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
-		BuildPipeline.BuildAssetBundles(AppConst.STREAMING_SUB_PATH_PART, s_abMaps.ToArray(), options, target_);
+		BuildPipeline.BuildAssetBundles(relativeOutPath, s_abMaps.ToArray(), options, target_);
 		AssetDatabase.Refresh();
 	}
 
@@ -100,35 +118,37 @@ public class Tool : MonoBehaviour
 		Directory.CreateDirectory(tempLuaDir);
 		AssetDatabase.Refresh();
 
-		for (int i = 0; i < s_luaSrcDirs.Length; i++) 
+		// encode /srcdir/xxx.lua to /dstdir/xxx.lua.bytes
+		for (int i = 0; i < s_luaSrcDirs.Length; ++i) 
 		{
 			string[] fileList = Directory.GetFiles(s_luaSrcDirs[i], "*.lua", SearchOption.AllDirectories);
-			for (int k = 0; k < fileList.Length; k++) 
+			for (int k = 0; k < fileList.Length; ++k) 
 			{
-				string subFileName = fileList[k].Substring(s_luaSrcDirs[i].Length);	// "/filename.lua" or "/*/filename.lua"
-				string dstFileName = tempLuaDir + subFileName + ".bytes";
+				// "/xxx.lua" or "/*/xxx.lua"
+				string dstFileName = tempLuaDir + fileList[k].Substring(s_luaSrcDirs[i].Length) + ".bytes";
 				Directory.CreateDirectory(Path.GetDirectoryName(dstFileName));
 				EncodeLuaFile(fileList[k], dstFileName);
 			}
 		}
 
+		// encode /srcdir/xxx.lua to /dstdir/xxx.lua.bytes
 		string[] subDirList = Directory.GetDirectories(tempLuaDir, "*", SearchOption.AllDirectories);
 		for (int i = 0; i < subDirList.Length; i++) 
 		{
 			string subPart = subDirList[i].Substring(tempLuaDir.Length+1);
 			subPart = subPart.Replace('\\', '_').Replace('/', '_');
-			string abName = "lua/lua_" + subPart + AppConst.AB_EXT_NAME;
+			string abName = "lua/lua_" + subPart.ToLower() + AppConst.AB_EXT_NAME;
 
-			AddBuildMap(abName, subDirList[i].Substring(AppConst.PROJECT_PATH_LEN), "*.bytes");
+			AddBuildMap(abName, subDirList[i].Substring(AppConst.PROJECT_PATH_LEN+1), "*.bytes");
 		}
-
 		string rootABName = "lua/lua" + AppConst.AB_EXT_NAME;
-		AddBuildMap(rootABName, tempLuaDir.Substring(AppConst.PROJECT_PATH_LEN), "*.bytes");
+		AddBuildMap(rootABName, tempLuaDir.Substring(AppConst.PROJECT_PATH_LEN+1), "*.bytes");
+
 		AssetDatabase.Refresh();
 	}
 
 	/// <summary>
-	/// 处理框架实例包
+	/// 预处理美术资源文件
 	/// </summary>
 	static void PreprocessArtFiles() 
 	{
@@ -144,15 +164,13 @@ public class Tool : MonoBehaviour
 
 	static void AddBuildMap(string abName_, string relativePath_, string pattern_) 
 	{
-		Debug.Log("AddMap:" + abName_ + "," + relativePath_ + "," + pattern_);
-
 		string[] files = Directory.GetFiles(relativePath_, pattern_);
-		if (files.Length == 0) return;
+		if (0 == files.Length) return;
 
-		for (int i = 0; i < files.Length; i++) 
+		for (int i = 0; i < files.Length; ++i) 
 		{
 			files[i] = files[i].Replace('\\', '/');
-			Debug.Log("AddMap:" + abName_ + "," + files[i]);
+			//Debug.Log("AddMap:" + abName_ + "," + files[i]);
 		}
 
 		AssetBundleBuild build = new AssetBundleBuild();
@@ -191,12 +209,18 @@ public class Tool : MonoBehaviour
 			exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/";
 		}
 
+		Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
 		Directory.SetCurrentDirectory(exeDir);
 		Process.Start(processInfo).WaitForExit();
 		Directory.SetCurrentDirectory(currDir);
 	}
 
-
+    static void UpdateProgress(int progress, int progressMax, string desc) 
+	{
+        string title = "Processing...[" + progress + " - " + progressMax + "]";
+        float value = (float)progress / (float)progressMax;
+        EditorUtility.DisplayProgressBar(title, desc, value);
+    }
 
 	static string s_inputDir = Application.dataPath + "/Config/";
 	static string s_outputDir = Application.dataPath + "/Scripts/LuaLogic/config/";
