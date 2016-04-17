@@ -81,7 +81,7 @@ public class Tool : MonoBehaviour
 	{
 		s_abMaps.Clear();
 		PreprocessLuaFiles();
-		//PreprocessArtFiles();
+		PreprocessArtFiles();
 
 		string absOutPath = AppConst.STREAMING_PATH + "/" + target_.ToString();
 		if (!Directory.Exists (absOutPath)) 
@@ -90,7 +90,6 @@ public class Tool : MonoBehaviour
 			AssetDatabase.Refresh ();
 		}
 		string relativeOutPath = absOutPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
-		//Debug.Log("Build all assetbundle to path: " + relativeOutPath + ",count:" + s_abMaps.Count);
 
 		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
 		BuildPipeline.BuildAssetBundles(relativeOutPath, s_abMaps.ToArray(), options, target_);
@@ -144,15 +143,20 @@ public class Tool : MonoBehaviour
 	/// </summary>
 	static void PreprocessArtFiles() 
 	{
-		string resPath = "";//AppDataPath + "/" + AppConst.AssetDir + "/";
-		if (!Directory.Exists(resPath)) Directory.CreateDirectory(resPath);
+		//string resPath = "";//AppDataPath + "/" + AppConst.AssetDir + "/";
+		//if (!Directory.Exists(resPath)) Directory.CreateDirectory(resPath);
+        string resPath = Application.dataPath + "/Delete/Prefabs/Login";
+        string relativePath = resPath.Substring(AppConst.PROJECT_PATH_LEN+1);
 
-		AddBuildMap("prompt" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Prompt");
+        AddBuildMap("role_login" + AppConst.AB_EXT_NAME, relativePath, "*.prefab");
+		/*
+        AddBuildMap("prompt" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Prompt");
 		AddBuildMap("message" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Message");
 
 		AddBuildMap("prompt_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Prompt");
 		AddBuildMap("shared_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Shared");
-	}
+	    */
+    }
 
 	static void AddBuildMap(string abName_, string relativePath_, string pattern_) 
 	{
@@ -436,8 +440,8 @@ public class Tool : MonoBehaviour
 	}
 
 
-    private static string s_uploadLocalDir;
-    private static string s_uploadRemoteDir;
+    //private static string s_uploadLocalDir;
+    //private static string s_uploadRemoteDir;
 
     [MenuItem("Tool/Upload Resource/Upload Win", false, 200)]
     public static void UploadWinResource()
@@ -482,36 +486,37 @@ public class Tool : MonoBehaviour
             }
         }
 
-        string[] fileList = Directory.GetFiles(s_uploadLocalDir);
+        string localDir = AppConst.STREAMING_PATH + "/" + target_.ToString();
+        Debug.Log("upload file from dir:" + localDir);
+
+        string[] fileList = Directory.GetFiles(localDir);
         for (int i = 0; i < fileList.Length; ++i)
         {
-            UpdateProgress(i+1, fileList.Length, "Uploading files to web server");
+            //UpdateProgress(i+1, fileList.Length, "Uploading files to web server");
 
             string fileName = fileList[0].Replace("\\", "/");
-            string subName = fileName.Substring(s_uploadLocalDir.Length);
-            if (subName.StartsWith("/")) subName = subName.Substring(1);
-           
+            string subName = fileName.Substring(localDir.Length);
+            if (subName.StartsWith("/")) subName = subName.Substring(1);           
             string remoteFileURL = AppConst.UPLOAD_ASSET_URL + "/" + subName;
+            Debug.Log("upload file:" + fileName + " to " + remoteFileURL);
 
-            ProcessStartInfo processInfo = new ProcessStartInfo();  
-            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            processInfo.ErrorDialog = true;
+            FileStream fs = File.OpenRead(fileName);
+            byte[] fileBytes = new byte[fs.Length];
+            fs.Read(fileBytes, 0, fileBytes.Length);
+            fs.Close();
 
-            if (Application.platform == RuntimePlatform.WindowsEditor) 
-            {
-                processInfo.FileName = "ftp";
-                processInfo.Arguments = "-s:" + fileName + " " + remoteFileURL;
-                processInfo.UseShellExecute = true;
-            }
-            else if (Application.platform == RuntimePlatform.OSXEditor) 
-            {
-                processInfo.FileName = "ftp";
-                processInfo.Arguments = "-s:" + fileName + " " + remoteFileURL;
-                processInfo.UseShellExecute = false;
-            }
-            Process.Start(processInfo).WaitForExit();
+            FtpWebRequest req = (FtpWebRequest)FtpWebRequest.Create(remoteFileURL);
+            req.Method = WebRequestMethods.Ftp.UploadFile;
+            req.Credentials = new NetworkCredential("tfx", "sunrise");
+            req.ContentLength = fileBytes.Length;
+            req.KeepAlive = true;
+            req.UseBinary = true;
+            req.Timeout = 50*1000;
 
-            Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+            Stream ftpStream = req.GetRequestStream();
+            ftpStream.Write(fileBytes, 0, fileBytes.Length);
+            ftpStream.Dispose();
+            ftpStream = null;
         }
     }
 }
