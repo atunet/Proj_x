@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Net;
+
 using Debug = UnityEngine.Debug;
 
 
@@ -78,26 +80,18 @@ public class Tool : MonoBehaviour
 	private static void BuildAssetBundle(BuildTarget target_) 
 	{
 		s_abMaps.Clear();
-
 		PreprocessLuaFiles();
 		//PreprocessArtFiles();
 
 		string absOutPath = AppConst.STREAMING_PATH + "/" + target_.ToString();
-		if (Directory.Exists(absOutPath)) Directory.Delete(absOutPath, true);
-	    Directory.CreateDirectory(absOutPath);
-		AssetDatabase.Refresh();
-
-		string relativeOutPath = absOutPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
-		Debug.Log("Build all assetbundle to path: " + relativeOutPath + ",count:" + s_abMaps.Count);
-
-		for (int i = 0; i < s_abMaps.Count; ++i)
+		if (!Directory.Exists (absOutPath)) 
 		{
-			int len = s_abMaps[i].assetNames.Length;
-			for (int k = 0; k < len; ++k)
-			{
-				Debug.Log("abmap:" + s_abMaps[i].assetBundleName + "," + s_abMaps[i].assetNames[k]);
-			}
+			Directory.CreateDirectory (absOutPath);
+			AssetDatabase.Refresh ();
 		}
+		string relativeOutPath = absOutPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
+		//Debug.Log("Build all assetbundle to path: " + relativeOutPath + ",count:" + s_abMaps.Count);
+
 		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
 		BuildPipeline.BuildAssetBundles(relativeOutPath, s_abMaps.ToArray(), options, target_);
 		AssetDatabase.Refresh();
@@ -110,28 +104,26 @@ public class Tool : MonoBehaviour
 	/// </summary>
 	static void PreprocessLuaFiles() 
 	{
-		string tempLuaDir = Application.streamingAssetsPath + "/TempLua";
-		if(Directory.Exists (tempLuaDir)) 
-		{
-			Directory.Delete (tempLuaDir, true);
-		}
+		string tempLuaDir = Application.dataPath + "/TempLua";
+		if(Directory.Exists (tempLuaDir)) Directory.Delete (tempLuaDir, true);
 		Directory.CreateDirectory(tempLuaDir);
 		AssetDatabase.Refresh();
 
-		// encode /srcdir/xxx.lua to /dstdir/xxx.lua.bytes
+		// encode  /srcdir/xxx.lua to /dstdir/xxx.lua.bytes
 		for (int i = 0; i < s_luaSrcDirs.Length; ++i) 
 		{
 			string[] fileList = Directory.GetFiles(s_luaSrcDirs[i], "*.lua", SearchOption.AllDirectories);
 			for (int k = 0; k < fileList.Length; ++k) 
 			{
 				// "/xxx.lua" or "/*/xxx.lua"
-				string dstFileName = tempLuaDir + fileList[k].Substring(s_luaSrcDirs[i].Length) + ".bytes";
-				Directory.CreateDirectory(Path.GetDirectoryName(dstFileName));
-				EncodeLuaFile(fileList[k], dstFileName);
+				string subName = fileList[k].Substring(s_luaSrcDirs[i].Length);
+				string dstName = tempLuaDir + subName + ".bytes";
+				Directory.CreateDirectory(Path.GetDirectoryName(dstName));
+				EncodeLuaFile(fileList[k], dstName);
+                UpdateProgress(k++, fileList.Length, "Encoding lua files");
 			}
 		}
 
-		// encode /srcdir/xxx.lua to /dstdir/xxx.lua.bytes
 		string[] subDirList = Directory.GetDirectories(tempLuaDir, "*", SearchOption.AllDirectories);
 		for (int i = 0; i < subDirList.Length; i++) 
 		{
@@ -215,17 +207,17 @@ public class Tool : MonoBehaviour
 		Directory.SetCurrentDirectory(currDir);
 	}
 
-    static void UpdateProgress(int progress, int progressMax, string desc) 
+    static void UpdateProgress(int currentNum_, int maxNum_, string title_) 
 	{
-        string title = "Processing...[" + progress + " - " + progressMax + "]";
-        float value = (float)progress / (float)progressMax;
-        EditorUtility.DisplayProgressBar(title, desc, value);
+        string desc = "Processing...[" + currentNum_ + " - " + maxNum_ + "]";
+        float value = (float)currentNum_ / (float)maxNum_;
+        EditorUtility.DisplayProgressBar(title_, desc, value);
     }
 
 	static string s_inputDir = Application.dataPath + "/Config/";
 	static string s_outputDir = Application.dataPath + "/Scripts/LuaLogic/config/";
 	
-	[MenuItem("Tool/Csv To Lua")]
+	[MenuItem("Tool/Csv To Lua", false, 1)]
 	public static void csv2Lua()
 	{
 		DirectoryInfo dirInfo = new DirectoryInfo(s_inputDir);
@@ -442,4 +434,84 @@ public class Tool : MonoBehaviour
 		writer.Close();
 		writer = null;
 	}
+
+
+    private static string s_uploadLocalDir;
+    private static string s_uploadRemoteDir;
+
+    [MenuItem("Tool/Upload Resource/Upload Win", false, 200)]
+    public static void UploadWinResource()
+    {
+        UploadResource(BuildTarget.StandaloneWindows);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload Mac", false, 201)]
+    public static void UploadMacResource()
+    {
+        UploadResource(BuildTarget.StandaloneOSXIntel);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload Android", false, 202)]
+    public static void UploadAndroidResource()
+    {
+        UploadResource(BuildTarget.Android);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload IOS", false, 203)]
+    public static void UploadIosResource()
+    {
+        UploadResource(BuildTarget.iOS);
+    }
+
+    private static void UploadResource (BuildTarget target_)
+    {
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
+            {
+                Debug.LogError(" upload ios/osx files from windows system is forbid");
+                return;
+            }
+        }
+        if (Application.platform == RuntimePlatform.OSXEditor)
+        {
+            if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
+            {
+                Debug.LogError(" upload win/android files from oxs system is forbid");
+                return;
+            }
+        }
+
+        string[] fileList = Directory.GetFiles(s_uploadLocalDir);
+        for (int i = 0; i < fileList.Length; ++i)
+        {
+            UpdateProgress(i+1, fileList.Length, "Uploading files to web server");
+
+            string fileName = fileList[0].Replace("\\", "/");
+            string subName = fileName.Substring(s_uploadLocalDir.Length);
+            if (subName.StartsWith("/")) subName = subName.Substring(1);
+           
+            string remoteFileURL = AppConst.UPLOAD_ASSET_URL + "/" + subName;
+
+            ProcessStartInfo processInfo = new ProcessStartInfo();  
+            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            processInfo.ErrorDialog = true;
+
+            if (Application.platform == RuntimePlatform.WindowsEditor) 
+            {
+                processInfo.FileName = "ftp";
+                processInfo.Arguments = "-s:" + fileName + " " + remoteFileURL;
+                processInfo.UseShellExecute = true;
+            }
+            else if (Application.platform == RuntimePlatform.OSXEditor) 
+            {
+                processInfo.FileName = "ftp";
+                processInfo.Arguments = "-s:" + fileName + " " + remoteFileURL;
+                processInfo.UseShellExecute = false;
+            }
+            Process.Start(processInfo).WaitForExit();
+
+            Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+        }
+    }
 }
