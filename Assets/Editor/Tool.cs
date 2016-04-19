@@ -83,7 +83,7 @@ public class Tool : MonoBehaviour
 		PreprocessLuaFiles();
 		PreprocessArtFiles();
 
-		string absOutPath = AppConst.STREAMING_PATH + "/" + target_.ToString();
+        string absOutPath = AppConst.STREAMING_PATH + "/" + GetTargetStr(target_);
 		if (!Directory.Exists (absOutPath)) 
 		{
 			Directory.CreateDirectory (absOutPath);
@@ -467,6 +467,20 @@ public class Tool : MonoBehaviour
         UploadResource(BuildTarget.iOS);
     }
 
+    private static string GetTargetStr(BuildTarget target_)
+    {
+        if (target_ == BuildTarget.StandaloneWindows)
+            return "Windows";
+        else if (target_ == BuildTarget.StandaloneOSXIntel)
+            return "Mac";
+        else if (target_ == BuildTarget.iOS)
+            return "iOS";
+        else if (target_ == BuildTarget.Android)
+            return "Android";
+        else
+            return "";
+    }
+
     private static void UploadResource (BuildTarget target_)
     {
         if (Application.platform == RuntimePlatform.WindowsEditor)
@@ -486,72 +500,57 @@ public class Tool : MonoBehaviour
             }
         }
 
-        string localDir = AppConst.STREAMING_PATH + "/" + target_.ToString();
-        Debug.Log("upload file from dir:" + localDir);
+        string localDir = AppConst.STREAMING_PATH + "/" + GetTargetStr(target_);
+        UpdateProgress(1, 10, "Uploading files to web server");
+   
+        ProcessStartInfo processInfo = new ProcessStartInfo();  
+        processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        processInfo.ErrorDialog = true;
 
-        string[] fileList = Directory.GetFiles(localDir, "*", SearchOption.AllDirectories);
-       	for (int i = 0; i < fileList.Length; ++i)
+        if (Application.platform == RuntimePlatform.WindowsEditor) 
         {
-            //UpdateProgress(i+1, fileList.Length, "Uploading files to web server");
-
-            string fileName = fileList[i].Replace("\\", "/");
-            string subName = fileName.Substring(localDir.Length);
-            if (subName.StartsWith("/")) subName = subName.Substring(1);           
-			string remoteURL = AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/abc/" + subName;
+            processInfo.FileName = "pscp.exe";
+            processInfo.Arguments = "-pw sunrise -r " + localDir + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
+            processInfo.UseShellExecute = true;
 
             string currDir = Directory.GetCurrentDirectory();
-            string exeDir = string.Empty;
+            string exeDir = AppConst.PROJECT_PATH + "/pscp/";
 
-            ProcessStartInfo processInfo = new ProcessStartInfo();  
-            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            processInfo.ErrorDialog = true;
-
-            if (Application.platform == RuntimePlatform.WindowsEditor) 
-            {
-                processInfo.FileName = "pscp.exe";
-				//processInfo.Arguments = "-pw sunrise -r " + localDir + " " + " tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
-				processInfo.Arguments = "-pw sunrise -r " + fileName + " " + " tfx@" + remoteURL;
-
-                processInfo.UseShellExecute = true;
-                exeDir = AppConst.PROJECT_PATH + "/pscp/";
-				Directory.SetCurrentDirectory(exeDir);
-				Process.Start(processInfo).WaitForExit();
-				Directory.SetCurrentDirectory(currDir);
-            }
-            else if (Application.platform == RuntimePlatform.OSXEditor) 
-            {
-                processInfo.FileName = "scp";
-                processInfo.Arguments = "-r " + localDir + " root@" + AppConst.RES_SERVER_IP + ":/home/tfx/";
-                processInfo.UseShellExecute = false;
-                //exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/";
-            }
-
-            Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
-            //Directory.SetCurrentDirectory(exeDir);
-         //   Process.Start(processInfo).WaitForExit();
-            //Directory.SetCurrentDirectory(currDir);
-            /*
-            string remoteFileURL = AppConst.UPLOAD_ASSET_URL + "/" + fileName.Substring(fileName.LastIndexOf("/"));
-            Debug.Log("upload file:" + fileName + " to " + remoteFileURL);
-
-            FileStream fs = File.OpenRead(fileName);
-            byte[] fileBytes = new byte[fs.Length];
-            fs.Read(fileBytes, 0, fileBytes.Length);
-            fs.Close();
-
-            FtpWebRequest req = (FtpWebRequest)FtpWebRequest.Create(remoteFileURL);
-            req.Method = WebRequestMethods.Ftp.UploadFile;
-            req.Credentials = new NetworkCredential("tfx", "sunrise");
-            req.ContentLength = fileBytes.Length;
-            req.KeepAlive = true;
-            req.UseBinary = true;
-            req.Timeout = 50*1000;
-
-            Stream ftpStream = req.GetRequestStream();
-            ftpStream.Write(fileBytes, 0, fileBytes.Length);
-            ftpStream.Dispose();
-            ftpStream = null;
-            */
+		    Directory.SetCurrentDirectory(exeDir);
+			Process.Start(processInfo).WaitForExit();
+			Directory.SetCurrentDirectory(currDir);
         }
+        else if (Application.platform == RuntimePlatform.OSXEditor) 
+        {
+            processInfo.FileName = "scp";
+            processInfo.Arguments = "-r " + localDir + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
+            processInfo.UseShellExecute = false;
+            Process.Start(processInfo).WaitForExit();
+        }
+
+        Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+        EditorUtility.ClearProgressBar();
+        /*
+        string remoteFileURL = AppConst.UPLOAD_ASSET_URL + "/" + fileName.Substring(fileName.LastIndexOf("/"));
+        Debug.Log("upload file:" + fileName + " to " + remoteFileURL);
+
+        FileStream fs = File.OpenRead(fileName);
+        byte[] fileBytes = new byte[fs.Length];
+        fs.Read(fileBytes, 0, fileBytes.Length);
+        fs.Close();
+
+        FtpWebRequest req = (FtpWebRequest)FtpWebRequest.Create(remoteFileURL);
+        req.Method = WebRequestMethods.Ftp.UploadFile;
+        req.Credentials = new NetworkCredential("tfx", "sunrise");
+        req.ContentLength = fileBytes.Length;
+        req.KeepAlive = true;
+        req.UseBinary = true;
+        req.Timeout = 50*1000;
+
+        Stream ftpStream = req.GetRequestStream();
+        ftpStream.Write(fileBytes, 0, fileBytes.Length);
+        ftpStream.Dispose();
+        ftpStream = null;
+        */
     }
 }
