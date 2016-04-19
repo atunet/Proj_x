@@ -490,13 +490,14 @@ public class Tool : MonoBehaviour
         Debug.Log("upload file from dir:" + localDir);
 
         string[] fileList = Directory.GetFiles(localDir, "*", SearchOption.AllDirectories);
-       // for (int i = 0; i < fileList.Length; ++i)
+       	for (int i = 0; i < fileList.Length; ++i)
         {
             //UpdateProgress(i+1, fileList.Length, "Uploading files to web server");
 
-            string fileName = fileList[0].Replace("\\", "/");
+            string fileName = fileList[i].Replace("\\", "/");
             string subName = fileName.Substring(localDir.Length);
             if (subName.StartsWith("/")) subName = subName.Substring(1);           
+			string remoteURL = AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/abc/" + subName;
 
             string currDir = Directory.GetCurrentDirectory();
             string exeDir = string.Empty;
@@ -507,22 +508,27 @@ public class Tool : MonoBehaviour
 
             if (Application.platform == RuntimePlatform.WindowsEditor) 
             {
-                processInfo.FileName = "";
-               // processInfo.Arguments = "-b " + srcFile_ + " " + outFile_;
+                processInfo.FileName = "pscp.exe";
+				//processInfo.Arguments = "-pw sunrise -r " + localDir + " " + " tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
+				processInfo.Arguments = "-pw sunrise -r " + fileName + " " + " tfx@" + remoteURL;
+
                 processInfo.UseShellExecute = true;
-                exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luajit/";
+                exeDir = AppConst.PROJECT_PATH + "/pscp/";
+				Directory.SetCurrentDirectory(exeDir);
+				Process.Start(processInfo).WaitForExit();
+				Directory.SetCurrentDirectory(currDir);
             }
             else if (Application.platform == RuntimePlatform.OSXEditor) 
             {
                 processInfo.FileName = "scp";
-                processInfo.Arguments = "-r " + localDir + " root@" + AppConst.RES_SERVER_IP + ":" + AppConst.RES_SERVER_PATH;
+                processInfo.Arguments = "-r " + localDir + " root@" + AppConst.RES_SERVER_IP + ":/home/tfx/";
                 processInfo.UseShellExecute = false;
                 //exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/";
             }
 
             Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
             //Directory.SetCurrentDirectory(exeDir);
-            Process.Start(processInfo).WaitForExit();
+         //   Process.Start(processInfo).WaitForExit();
             //Directory.SetCurrentDirectory(currDir);
             /*
             string remoteFileURL = AppConst.UPLOAD_ASSET_URL + "/" + fileName.Substring(fileName.LastIndexOf("/"));
