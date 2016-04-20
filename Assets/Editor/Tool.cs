@@ -15,12 +15,11 @@ public class Tool : MonoBehaviour
     /********** pack lua && art files to assetbundle files **********/
     /****************************************************************/
 
-	// Lua打包的目录列表
-	// 目录名务必不要以'\'或者'/'结尾
+	// 需要打包的Lua文件目录列表
 	private static string[] s_luaSrcDirs = 
 	{ 
-		CustomSettings.toluaLuaDir,		// tolua自带的lua目录 
-		AppConst.LUA_LOGIC_PATH, 		// 游戏lua脚本目录
+		CustomSettings.toluaLuaDir,		// tolua自带的lua库目录 
+		AppConst.LUA_LOGIC_PATH, 		// 游戏lua逻辑脚本目录
 	};
 	private static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
 
@@ -53,20 +52,50 @@ public class Tool : MonoBehaviour
 	/// </summary>
 	private static void BuildAssetBundle(BuildTarget target_) 
 	{
+		if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
+            {
+                Debug.Log("please build assetbundle in osx system!!!");
+                return;
+            }
+        }
+        if (Application.platform == RuntimePlatform.OSXEditor)
+        {
+            if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
+            {
+				Debug.Log("please build assetbundle in windows system!!!");
+                return;
+            }
+        }
+
 		s_abMaps.Clear();
 		PreprocessLuaFiles();
 		PreprocessArtFiles();
 
-        string absOutPath = AppConst.STREAMING_PATH + "/" + GetTargetStr(target_);
-		if (!Directory.Exists (absOutPath)) 
+		if (!Directory.Exists (AppConst.STREAMING_PATH)) 
 		{
-			Directory.CreateDirectory (absOutPath);
+			Directory.CreateDirectory (AppConst.STREAMING_PATH);
 			AssetDatabase.Refresh ();
 		}
-		string relativeOutPath = absOutPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
+		string relativeOutPath = AppConst.STREAMING_PATH.Substring(AppConst.PROJECT_PATH_LEN + 1);
 
 		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
 		BuildPipeline.BuildAssetBundles(relativeOutPath, s_abMaps.ToArray(), options, target_);
+
+		string[] fileList = Directory.GetFiles(AppConst.STREAMING_PATH, "*", SearchOption.TopDirectoryOnly);
+		for(int i = 0; i < fileList.Length; ++i)
+		{
+			string filePath = fileList[i];
+			string relativePath = filePath.Substring(filePath.LastIndexOf("/"));
+			if(relativePath.Contains(AppConst.PLATFORM))
+			{
+				string newRelativePath = relativePath.Replace(AppConst.PLATFORM, AppConst.VERSION_FILE_NAME);
+				string newPath = filePath.Substring(0, filePath.Length-relativePath.Length) + "/" + newRelativePath;
+				File.Move(filePath, newPath);
+			}
+		}
+
 		AssetDatabase.Refresh();
 	}
 
@@ -85,11 +114,17 @@ public class Tool : MonoBehaviour
 		// encode  /srcdir/xxx.lua to /dstdir/xxx.lua.bytes
 		for (int i = 0; i < s_luaSrcDirs.Length; ++i) 
 		{
-			string[] fileList = Directory.GetFiles(s_luaSrcDirs[i], "*.lua", SearchOption.AllDirectories);
+			string thisDir = s_luaSrcDirs[i];
+			if(thisDir.EndsWith("\\") || thisDir.EndsWith("/"))
+			{
+				thisDir = thisDir.Substring(0, thisDir.Length-1);
+			}
+
+			string[] fileList = Directory.GetFiles(thisDir, "*.lua", SearchOption.AllDirectories);
 			for (int k = 0; k < fileList.Length; ++k) 
 			{
 				// "/xxx.lua" or "/*/xxx.lua"
-				string subName = fileList[k].Substring(s_luaSrcDirs[i].Length);
+				string subName = fileList[k].Substring(thisDir.Length);
 				string dstName = tempLuaDir + subName + ".bytes";
 				Directory.CreateDirectory(Path.GetDirectoryName(dstName));
 				EncodeLuaFile(fileList[k], dstName);
@@ -191,6 +226,101 @@ public class Tool : MonoBehaviour
         float value = (float)currentNum_ / (float)maxNum_;
         EditorUtility.DisplayProgressBar(title_, desc, value);
     }
+
+	/****************************************************************/
+    /************* upload assetbundle files to web server ***********/
+    /****************************************************************/
+
+    [MenuItem("Tool/Upload Resource/Upload Win", false, 200)]
+    public static void UploadWinResource()
+    {
+        UploadResource(BuildTarget.StandaloneWindows);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload Mac", false, 201)]
+    public static void UploadMacResource()
+    {
+        UploadResource(BuildTarget.StandaloneOSXIntel);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload Android", false, 202)]
+    public static void UploadAndroidResource()
+    {
+        UploadResource(BuildTarget.Android);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload IOS", false, 203)]
+    public static void UploadIosResource()
+    {
+        UploadResource(BuildTarget.iOS);
+    }
+
+    private static string GetTargetStr(BuildTarget target_)
+    {
+        if (target_ == BuildTarget.StandaloneWindows)
+            return "Windows";
+        else if (target_ == BuildTarget.StandaloneOSXIntel)
+            return "Mac";
+        else if (target_ == BuildTarget.iOS)
+            return "iOS";
+        else if (target_ == BuildTarget.Android)
+            return "Android";
+        else
+            return "";
+    }
+
+    private static void UploadResource (BuildTarget target_)
+    {
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
+            {
+                Debug.Log("please upload ios/osx files from osx system!!!");
+                return;
+            }
+        }
+        if (Application.platform == RuntimePlatform.OSXEditor)
+        {
+            if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
+            {
+				Debug.Log("please upload ios/osx files from windows system!!!");
+                return;
+            }
+        }
+
+        string localDir = AppConst.STREAMING_PATH;
+        UpdateProgress(1, 10, "Uploading files to web server");
+   
+        ProcessStartInfo processInfo = new ProcessStartInfo();  
+        processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        processInfo.ErrorDialog = true;
+
+        if (Application.platform == RuntimePlatform.WindowsEditor) 
+        {
+            processInfo.FileName = "pscp.exe";
+            processInfo.Arguments = "-pw sunrise -r " + localDir + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
+            processInfo.UseShellExecute = true;
+
+            string currDir = Directory.GetCurrentDirectory();
+            string exeDir = AppConst.PROJECT_PATH + "/pscp/";
+
+		    Directory.SetCurrentDirectory(exeDir);
+			Process.Start(processInfo).WaitForExit();
+			Directory.SetCurrentDirectory(currDir);
+        }
+        else if (Application.platform == RuntimePlatform.OSXEditor) 
+        {
+            processInfo.FileName = "scp";
+            processInfo.Arguments = "-r " + localDir + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
+            processInfo.UseShellExecute = false;
+            Process.Start(processInfo).WaitForExit();
+        }
+
+        Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+        EditorUtility.ClearProgressBar();
+    }
+
+
 
     /****************************************************************/
     /**************** CSV config file convert to lua ****************/
@@ -416,98 +546,4 @@ public class Tool : MonoBehaviour
 		writer.Close();
 		writer = null;
 	}
-
-
-	/****************************************************************/
-    /************* upload assetbundle files to web server ***********/
-    /****************************************************************/
-
-    [MenuItem("Tool/Upload Resource/Upload Win", false, 200)]
-    public static void UploadWinResource()
-    {
-        UploadResource(BuildTarget.StandaloneWindows);
-    }
-
-    [MenuItem("Tool/Upload Resource/Upload Mac", false, 201)]
-    public static void UploadMacResource()
-    {
-        UploadResource(BuildTarget.StandaloneOSXIntel);
-    }
-
-    [MenuItem("Tool/Upload Resource/Upload Android", false, 202)]
-    public static void UploadAndroidResource()
-    {
-        UploadResource(BuildTarget.Android);
-    }
-
-    [MenuItem("Tool/Upload Resource/Upload IOS", false, 203)]
-    public static void UploadIosResource()
-    {
-        UploadResource(BuildTarget.iOS);
-    }
-
-    private static string GetTargetStr(BuildTarget target_)
-    {
-        if (target_ == BuildTarget.StandaloneWindows)
-            return "Windows";
-        else if (target_ == BuildTarget.StandaloneOSXIntel)
-            return "Mac";
-        else if (target_ == BuildTarget.iOS)
-            return "iOS";
-        else if (target_ == BuildTarget.Android)
-            return "Android";
-        else
-            return "";
-    }
-
-    private static void UploadResource (BuildTarget target_)
-    {
-        if (Application.platform == RuntimePlatform.WindowsEditor)
-        {
-            if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
-            {
-                Debug.Log("please upload ios/osx files from osx system!!!");
-                return;
-            }
-        }
-        if (Application.platform == RuntimePlatform.OSXEditor)
-        {
-            if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
-            {
-				Debug.Log("please upload ios/osx files from windows system!!!");
-                return;
-            }
-        }
-
-        string localDir = AppConst.STREAMING_PATH + "/" + GetTargetStr(target_);
-        UpdateProgress(1, 10, "Uploading files to web server");
-   
-        ProcessStartInfo processInfo = new ProcessStartInfo();  
-        processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        processInfo.ErrorDialog = true;
-
-        if (Application.platform == RuntimePlatform.WindowsEditor) 
-        {
-            processInfo.FileName = "pscp.exe";
-            processInfo.Arguments = "-pw sunrise -r " + localDir + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
-            processInfo.UseShellExecute = true;
-
-            string currDir = Directory.GetCurrentDirectory();
-            string exeDir = AppConst.PROJECT_PATH + "/pscp/";
-
-		    Directory.SetCurrentDirectory(exeDir);
-			Process.Start(processInfo).WaitForExit();
-			Directory.SetCurrentDirectory(currDir);
-        }
-        else if (Application.platform == RuntimePlatform.OSXEditor) 
-        {
-            processInfo.FileName = "scp";
-            processInfo.Arguments = "-r " + localDir + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
-            processInfo.UseShellExecute = false;
-            Process.Start(processInfo).WaitForExit();
-        }
-
-        Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
-        EditorUtility.ClearProgressBar();
-    }
 }

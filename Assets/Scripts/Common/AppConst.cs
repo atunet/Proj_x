@@ -9,7 +9,7 @@ public static class AppConst
 	public static int PROJECT_PATH_LEN = PROJECT_PATH.Length;	// without last '/'
 
     public static string PLATFORM = GetPlatformStr(Application.platform);
-	public static string VERSION_FILE_NAME = "versions.bytes";
+	public static string VERSION_FILE_NAME = "versionfile";
 
 	public static string STREAMING_PATH = Application.streamingAssetsPath + "/" + PLATFORM;
 	public static string STREAMING_RELATIVE_PATH = Application.streamingAssetsPath.Substring(PROJECT_PATH_LEN+1);
