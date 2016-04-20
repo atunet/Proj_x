@@ -20,8 +20,8 @@ public static class AppConst
     public static string PERSISTENT_VERSION_FILE_PATH = PERSISTENT_PATH + "/" + VERSION_FILE_NAME;
 
 	public static string REMOTE_URL = "http://121.199.48.63/res/firework";
-    public static string REMOTE_ASSET_URL = REMOTE_URL + "/" + PLATFORM;							// do not use Path.Combine()
-    public static string REMOTE_MANIFEST_FULL_URL = REMOTE_ASSET_URL + "/" + VERSION_FILE_NAME;	// do not use Path.Combine()
+    public static string REMOTE_ASSET_URL = REMOTE_URL + "/" + PLATFORM;							                // do not use Path.Combine()
+    public static string REMOTE_VERSION_FILE_URL = REMOTE_ASSET_URL + "/" + VERSION_FILE_NAME;	// do not use Path.Combine()
 
     public static string RES_SERVER_IP = "121.199.48.63";
     public static string RES_SERVER_PATH = "/var/www/html/res/firwork";
@@ -63,11 +63,9 @@ public static class AppConst
 
 		Debug.Log("REMOTE_URL:" + REMOTE_URL);
 		Debug.Log("REMOTE_ASSET_URL:" + REMOTE_ASSET_URL);
-		Debug.Log("REMOTE_MANIFEST_FULL_URL:" + REMOTE_MANIFEST_FULL_URL);
+        Debug.Log("REMOTE_VERSION_FILE_URL:" + REMOTE_VERSION_FILE_URL);
 
 		Debug.Log("UPLOAD_URL:" + UPLOAD_URL);
 		Debug.Log("UPLOAD_ASSET_URL:" + UPLOAD_ASSET_URL);
-
-		Debug.Log("TEMP_PATH:" + Application.temporaryCachePath);
-	}	 
+    }	 
 }

@@ -32,12 +32,12 @@ public class ResUpdateController : MonoBehaviour
 
     private IEnumerator DownloadManifestFile()
     {
-        WWW manifestWWW = new WWW(AppConst.REMOTE_MANIFEST_FULL_URL);
+        WWW manifestWWW = new WWW(AppConst.REMOTE_VERSION_FILE_URL);
         yield return manifestWWW;
 
         if (!string.IsNullOrEmpty(manifestWWW.error))
         {
-            Debug.LogError("download manifest file failed:" + AppConst.REMOTE_MANIFEST_FULL_URL + "," + manifestWWW.error);
+            Debug.LogError("download manifest file failed:" + AppConst.REMOTE_VERSION_FILE_URL + "," + manifestWWW.error);
             yield return 0;
         }
 

@@ -44,7 +44,7 @@ public class AppStartController : MonoBehaviour
     {
         if (null == s_loginAB)
         {
-			s_loginAB = AssetBundle.LoadFromFile(Path.Combine(AppConst.PERSISTENT_PATH, "ab_login"));
+			s_loginAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_PATH + "/ab_login");
             if (null == s_loginAB) 
             {
 				Debug.LogError("CheckResUpdate failed,ab_login file not found");
@@ -103,8 +103,7 @@ public class AppStartController : MonoBehaviour
 
 		if(!string.IsNullOrEmpty(manifestWWW.error))
 		{
-            Debug.LogError("InitPersistentFiles:load streaming manifest file failed:" + manifestWWW.error);
-            Debug.LogError("InitPersistentFiles:" + AppConst.STREAMING_VERSION_FILE_PATH);
+            Debug.LogError("init persistent:load streaming version file failed:" + manifestWWW.error);
 			yield return 0;
 		}
 
@@ -132,7 +131,8 @@ public class AppStartController : MonoBehaviour
 		manifestWWW.Dispose();
 		manifestWWW = null;
 
-        StartCoroutine(CopyFile(Path.Combine(AppConst.STREAMING_PATH, m_streamingFileList[m_streamingFileIndex])));
+        string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
+        StartCoroutine(CopyFile(streamingFilePath));
 	}
 
 
@@ -163,7 +163,8 @@ public class AppStartController : MonoBehaviour
 
 		if(m_streamingFileList.Length > ++m_streamingFileIndex)
         {
-			StartCoroutine(CopyFile(Path.Combine(AppConst.STREAMING_PATH, m_streamingFileList[m_streamingFileIndex])));
+            string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
+            StartCoroutine(CopyFile(streamingFilePath));
         }
         else
         {
@@ -174,7 +175,7 @@ public class AppStartController : MonoBehaviour
 			}
 			else
             {
-                Debug.LogError("init copy streaming assets done but the version manifest file not found");
+                Debug.LogError("init copy streaming assets done but the version file not found");
         	}
         }
     }	

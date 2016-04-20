@@ -92,7 +92,7 @@ public class Tool : MonoBehaviour
 			{
 				string newRelativePath = relativePath.Replace(AppConst.PLATFORM, AppConst.VERSION_FILE_NAME);
 				string newPath = filePath.Substring(0, filePath.Length-relativePath.Length) + "/" + newRelativePath;
-				File.Move(filePath, newPath);
+                File.Copy(filePath, newPath, true);
 			}
 		}
 
