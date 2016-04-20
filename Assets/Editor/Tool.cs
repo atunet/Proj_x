@@ -6,50 +6,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Net;
-
 using Debug = UnityEngine.Debug;
 
 
 public class Tool : MonoBehaviour 
 {	
+	/****************************************************************/
+    /********** pack lua && art files to assetbundle files **********/
+    /****************************************************************/
+
 	// Lua打包的目录列表
 	// 目录名务必不要以'\'或者'/'结尾
-	static string[] s_luaSrcDirs = 
+	private static string[] s_luaSrcDirs = 
 	{ 
-		CustomSettings.toluaLuaDir,	// tolua自带的lua目录 
-		AppConst.LUA_LOGIC_PATH, 	// 游戏lua脚本目录
+		CustomSettings.toluaLuaDir,		// tolua自带的lua目录 
+		AppConst.LUA_LOGIC_PATH, 		// 游戏lua脚本目录
 	};
-	static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
+	private static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
 
-	/*
-	[MenuItem ("Tool/AssetBundle/Build Win")]
-	static void BuildAllAssetBundles_pc ()
-	{
-		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
-	}
-
-	[MenuItem ("Tool/AssetBundle/Build Mac")]
-	static void BuildAllAssetBundles_mac ()
-	{
-		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.StandaloneOSXIntel64);
-	}
-
-	[MenuItem ("Tool/AssetBundle/Build Ios")]
-	static void BuildAllAssetBundles_ios ()
-	{        
-		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.iOS);
-	}
-
-	[MenuItem ("Tool/AssetBundle/Build Android")]
-	static void BuildAllAssetBundles_android ()
-	{
-		Debug.Log("build assetbundles to:" + AppConst.STREAMING_ASSETS_PATH + " done");
-		BuildPipeline.BuildAssetBundles (AppConst.STREAMING_ASSETS_PATH, BuildAssetBundleOptions.None, BuildTarget.Android);
-	}
-*/
 	[MenuItem("Tool/Asset Bundle/Build iPhone", false, 100)]
 	public static void BuildiPhoneResource() 
 	{
@@ -217,6 +191,10 @@ public class Tool : MonoBehaviour
         float value = (float)currentNum_ / (float)maxNum_;
         EditorUtility.DisplayProgressBar(title_, desc, value);
     }
+
+    /****************************************************************/
+    /**************** CSV config file convert to lua ****************/
+    /****************************************************************/
 
 	static string s_inputDir = Application.dataPath + "/Config/";
 	static string s_outputDir = Application.dataPath + "/Scripts/LuaLogic/config/";
@@ -440,8 +418,9 @@ public class Tool : MonoBehaviour
 	}
 
 
-    //private static string s_uploadLocalDir;
-    //private static string s_uploadRemoteDir;
+	/****************************************************************/
+    /************* upload assetbundle files to web server ***********/
+    /****************************************************************/
 
     [MenuItem("Tool/Upload Resource/Upload Win", false, 200)]
     public static void UploadWinResource()
@@ -487,7 +466,7 @@ public class Tool : MonoBehaviour
         {
             if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
             {
-                Debug.LogError(" upload ios/osx files from windows system is forbid");
+                Debug.Log("please upload ios/osx files from osx system!!!");
                 return;
             }
         }
@@ -495,7 +474,7 @@ public class Tool : MonoBehaviour
         {
             if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
             {
-                Debug.LogError(" upload win/android files from oxs system is forbid");
+				Debug.Log("please upload ios/osx files from windows system!!!");
                 return;
             }
         }
@@ -530,27 +509,5 @@ public class Tool : MonoBehaviour
 
         Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
         EditorUtility.ClearProgressBar();
-        /*
-        string remoteFileURL = AppConst.UPLOAD_ASSET_URL + "/" + fileName.Substring(fileName.LastIndexOf("/"));
-        Debug.Log("upload file:" + fileName + " to " + remoteFileURL);
-
-        FileStream fs = File.OpenRead(fileName);
-        byte[] fileBytes = new byte[fs.Length];
-        fs.Read(fileBytes, 0, fileBytes.Length);
-        fs.Close();
-
-        FtpWebRequest req = (FtpWebRequest)FtpWebRequest.Create(remoteFileURL);
-        req.Method = WebRequestMethods.Ftp.UploadFile;
-        req.Credentials = new NetworkCredential("tfx", "sunrise");
-        req.ContentLength = fileBytes.Length;
-        req.KeepAlive = true;
-        req.UseBinary = true;
-        req.Timeout = 50*1000;
-
-        Stream ftpStream = req.GetRequestStream();
-        ftpStream.Write(fileBytes, 0, fileBytes.Length);
-        ftpStream.Dispose();
-        ftpStream = null;
-        */
     }
 }

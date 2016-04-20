@@ -27,7 +27,7 @@ public class ResourceUploader : MonoBehaviour
         
     bool ReadLocalManifest()
     {
-        string localManifestPath = Path.Combine(AppConst.STREAMING_PATH,  AppConst.MANIFEST_FILE_NAME);
+        string localManifestPath = Path.Combine(AppConst.STREAMING_PATH,  AppConst.VERSION_FILE_NAME);
 
         AssetBundle localManifestAB = AssetBundle.LoadFromFile(localManifestPath);
         if (null == localManifestAB)
@@ -62,7 +62,7 @@ public class ResourceUploader : MonoBehaviour
 	
     IEnumerator DownloadRemoteManifest()
     {
-        string remoteManifestPath = Path.Combine(AppConst.REMOTE_ASSET_URL, AppConst.MANIFEST_FILE_NAME);
+        string remoteManifestPath = Path.Combine(AppConst.REMOTE_ASSET_URL, AppConst.VERSION_FILE_NAME);
         WWW manifestWWW = new WWW(remoteManifestPath);
 		yield return manifestWWW;
 
@@ -104,7 +104,7 @@ public class ResourceUploader : MonoBehaviour
         }
 
         // add the manifest file 
-        m_uploadList.Add(AppConst.MANIFEST_FILE_NAME);
+        m_uploadList.Add(AppConst.VERSION_FILE_NAME);
         m_totalSize += 1f;
     }
 

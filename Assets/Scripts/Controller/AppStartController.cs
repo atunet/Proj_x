@@ -18,19 +18,13 @@ public class AppStartController : MonoBehaviour
 	{
 		AppConst.PrintPath();
 
-        if(!Directory.Exists(AppConst.PERSISTENT_SUB_PATH))
-        {
-            Debug.Log("init create the persistent sub dir:" + AppConst.PERSISTENT_SUB_PATH);
-            Directory.CreateDirectory(AppConst.PERSISTENT_SUB_PATH);
-        }
-
 		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
 			Debug.Log("init create the persistent dir:" + AppConst.PERSISTENT_PATH);
 			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
         }
 
-		if(File.Exists(AppConst.PERSISTENT_MANIFEST_FULL_NAME))
+		if(File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
         {
             CheckResUpdate();
         } 
@@ -104,13 +98,13 @@ public class AppStartController : MonoBehaviour
 
 	private IEnumerator InitPersistentFiles()
 	{
-		WWW manifestWWW = new WWW("file://" + AppConst.STREAMING_MANIFEST_FULL_NAME);
+		WWW manifestWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
 		yield return manifestWWW;
 
 		if(!string.IsNullOrEmpty(manifestWWW.error))
 		{
             Debug.LogError("InitPersistentFiles:load streaming manifest file failed:" + manifestWWW.error);
-            Debug.LogError("InitPersistentFiles:" + AppConst.STREAMING_MANIFEST_FULL_NAME);
+            Debug.LogError("InitPersistentFiles:" + AppConst.STREAMING_VERSION_FILE_PATH);
 			yield return 0;
 		}
 
@@ -129,7 +123,7 @@ public class AppStartController : MonoBehaviour
 		{
 		 	m_streamingFileList[i] = fileList[i];
 		}
-        m_streamingFileList[fileList.Length] = AppConst.MANIFEST_FILE_NAME;
+		m_streamingFileList[fileList.Length] = AppConst.VERSION_FILE_NAME;
 		m_streamingFileIndex = 0;
 
         streamingManifest = null;
@@ -173,7 +167,7 @@ public class AppStartController : MonoBehaviour
         }
         else
         {
-            if(File.Exists(AppConst.PERSISTENT_MANIFEST_FULL_NAME))
+            if(File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
             {
             	Debug.Log("all file init copy success!");
                 CheckResUpdate();

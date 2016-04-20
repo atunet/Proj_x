@@ -9,7 +9,7 @@ using System;
 using SevenZip.Compression.LZMA;
 
 
-public class ResourceUpdateController : MonoBehaviour 
+public class ResUpdateController : MonoBehaviour 
 {
     private Dictionary<string, Hash128> m_remoteDict = null;
     private Dictionary<string, Hash128> m_localDict = null;
@@ -49,10 +49,10 @@ public class ResourceUpdateController : MonoBehaviour
         manifestWWW.Dispose();
         manifestWWW = null;
 
-        AssetBundle  persistentAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_MANIFEST_FULL_NAME);
+        AssetBundle  persistentAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_VERSION_FILE_PATH);
         if(null == persistentAB)
         {
-            Debug.LogError("ResUpdate:load persistent manifest file failed:" + AppConst.PERSISTENT_MANIFEST_FULL_NAME);
+			Debug.LogError("ResUpdate:load persistent manifest file failed:" + AppConst.PERSISTENT_VERSION_FILE_PATH);
             yield return 0;
         }
 
@@ -64,7 +64,7 @@ public class ResourceUpdateController : MonoBehaviour
         CompareManifestFile();
         if(m_downloadList.Count > 0) 
         {
-            m_downloadList.Add(AppConst.MANIFEST_FILE_NAME);
+            m_downloadList.Add(AppConst.VERSION_FILE_NAME);
             m_totalSize++;
         }
         StartCoroutine(DownloadAssetBundles());
