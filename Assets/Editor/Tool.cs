@@ -87,12 +87,14 @@ public class Tool : MonoBehaviour
 		for(int i = 0; i < fileList.Length; ++i)
 		{
 			string filePath = fileList[i];
+            filePath = filePath.Replace("\\", "/");
 			string relativePath = filePath.Substring(filePath.LastIndexOf("/"));
 			if(relativePath.Contains(AppConst.PLATFORM))
 			{
 				string newRelativePath = relativePath.Replace(AppConst.PLATFORM, AppConst.VERSION_FILE_NAME);
-				string newPath = filePath.Substring(0, filePath.Length-relativePath.Length) + "/" + newRelativePath;
-				if(File.Exists(newPath)) File.Delete(newPath);
+				string newPath = filePath.Substring(0, filePath.Length-relativePath.Length) + newRelativePath;
+                //Debug.Log("path:" + filePath + ",newpath:" + newPath);
+                if(File.Exists(newPath)) File.Delete(newPath);
                 File.Move(filePath, newPath);
 			}
 		}
@@ -280,7 +282,7 @@ public class Tool : MonoBehaviour
                 return;
             }
         }
-        if (Application.platform == RuntimePlatform.OSXEditor)
+        else if (Application.platform == RuntimePlatform.OSXEditor)
         {
             if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
             {
@@ -291,7 +293,7 @@ public class Tool : MonoBehaviour
 
         string localDir = AppConst.STREAMING_PATH;
         UpdateProgress(1, 10, "Uploading files to web server");
-   
+       
         ProcessStartInfo processInfo = new ProcessStartInfo();  
         processInfo.WindowStyle = ProcessWindowStyle.Hidden;
         processInfo.ErrorDialog = true;

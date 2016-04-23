@@ -136,24 +136,28 @@ public class AppStartController : MonoBehaviour
 	}
 
 
-    private IEnumerator CopyFile(string fileFullName_)
+    private IEnumerator CopyFile(string filePath_)
     {
-		Debug.Log("www load to persistent path:" + fileFullName_ + " start...");
-        WWW w = new WWW("file://" + fileFullName_);
+        WWW w = new WWW("file://" + filePath_);
         yield return w;
 
         if (!string.IsNullOrEmpty(w.error))
         {
-            Debug.LogError("init copy file to persistentDataPath failed:" + fileFullName_);
+            Debug.LogError("init copy file to persistentDataPath failed:" + filePath_ + "," + w.error);
             yield return 0;
         }
-        Debug.Log("www load to persistent path:" + fileFullName_ + " done,length:" + w.bytes.Length);
 
-        string fileName = Path.GetFileName(fileFullName_);
-		string dstFullName = Path.Combine(AppConst.PERSISTENT_PATH, fileName);
-        Debug.Log("filename:" + fileName + "," + dstFullName);
+        string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length);
+        string dstPath = AppConst.PERSISTENT_PATH + relativePath;
+        string dirPath = Path.GetDirectoryName(dstPath);
+        if (!Directory.Exists(dirPath))
+        {
+            Directory.CreateDirectory(dirPath);
+        }
+        Debug.Log("init copy streaming file to persistent:" + filePath_ + " done, length:" + w.bytes.Length);
+        Debug.Log("init copy streaming file to persistent:" + dstPath);
 
-        FileStream fs = new FileStream(dstFullName, FileMode.Create, FileAccess.ReadWrite);      
+        FileStream fs = new FileStream(dstPath, FileMode.Create, FileAccess.ReadWrite);      
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(w.bytes, 0, w.bytes.Length);
         bw.Flush();
@@ -170,7 +174,7 @@ public class AppStartController : MonoBehaviour
         {
             if(File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
             {
-            	Debug.Log("all file init copy success!");
+            	Debug.Log("all file init copy to persistent success!");
                 CheckResUpdate();
 			}
 			else
