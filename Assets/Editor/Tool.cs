@@ -131,7 +131,7 @@ public class Tool : MonoBehaviour
 				string dstName = tempLuaDir + subName + ".bytes";
 				Directory.CreateDirectory(Path.GetDirectoryName(dstName));
 				EncodeLuaFile(fileList[k], dstName);
-                UpdateProgress(k++, fileList.Length, "Encoding lua files");
+                //UpdateProgress(k++, fileList.Length, "Encoding lua files");
 			}
 		}
 
@@ -155,16 +155,64 @@ public class Tool : MonoBehaviour
 	/// </summary>
 	static void PreprocessArtFiles() 
 	{
-		//string resPath = "";//AppDataPath + "/" + AppConst.AssetDir + "/";
-		//if (!Directory.Exists(resPath)) Directory.CreateDirectory(resPath);
-        string resPath = Application.dataPath + "/Delete/Prefabs/Login";
-        string relativePath = resPath.Substring(AppConst.PROJECT_PATH_LEN+1);
+        EditorUtility.DisplayProgressBar("Set assetbundle name", "Setting assetbundle name ...", 0f);
 
+        string resPath = Application.dataPath + "/Delete";
+        /*string[] tempList = Directory.GetFiles(resPath, "*", SearchOption.AllDirectories);
+        for(int i = 0; i < tempList.Length; ++i)
+        {
+            if (tempList[i].EndsWith("meta"))
+                continue;
+
+            AssetImporter asset = AssetImporter.GetAtPath(tempList[i].Substring(AppConst.PROJECT_PATH_LEN + 1));
+            asset.assetBundleName = "";
+            asset.assetBundleVariant = "";
+            asset.SaveAndReimport();
+        }
+        AssetDatabase.Refresh();
+        return;
+        */
+        string[] dirList = Directory.GetDirectories(resPath, "*", SearchOption.AllDirectories);
+        for (int i = 0; i < dirList.Length; ++i)
+        {
+            string relativeDir = dirList[i].Substring(resPath.Length+1);
+            string abName = relativeDir.Replace("\\", "_").Replace("/", "_") + AppConst.AB_EXT_NAME;
+
+            string[] fileList = Directory.GetFiles(dirList[i], "*", SearchOption.TopDirectoryOnly);
+            if (0 == fileList.Length) continue;
+
+            int realLength = 0; // 过滤xxx.meta之后的文件数量
+            for(int j = 0; j < fileList.Length; ++j)
+            {
+                if (fileList[j].EndsWith(".meta")) continue;
+                realLength++;
+            }
+
+            AssetBundleBuild build = new AssetBundleBuild();
+            build.assetNames = new string[realLength];
+            build.assetBundleName = abName;
+
+            int index = 0;
+            for (int k = 0; k < fileList.Length; ++k)
+            {             
+                if (fileList[k].EndsWith(".meta")) continue;
+
+                string barInfo = "Setting assetbundle:" + abName + "(" + k + "/" + fileList.Length + ")";
+                EditorUtility.DisplayProgressBar("Set assetbundle name", barInfo, (float)k / (float)fileList.Length);
+
+                string relativeFilePath = fileList[k].Replace("\\", "/").Substring(AppConst.PROJECT_PATH_LEN+1);
+                build.assetNames[index++] = relativeFilePath;
+            }
+            s_abMaps.Add(build);
+        }
+
+        AssetDatabase.Refresh();
+        EditorUtility.ClearProgressBar();
+
+        /*
         AddBuildMap("role_login" + AppConst.AB_EXT_NAME, relativePath, "*.prefab");
-		/*
         AddBuildMap("prompt" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Prompt");
 		AddBuildMap("message" + AppConst.AB_EXT_NAME, "*.prefab", "Assets/LuaFramework/Examples/Builds/Message");
-
 		AddBuildMap("prompt_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Prompt");
 		AddBuildMap("shared_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Shared");
 	    */
