@@ -50,16 +50,16 @@ public static class AppConst
     }
 	public static void PrintPath()
 	{
-		Debug.Log ("PROJ_PATH:" + PROJECT_PATH + ",len:" + PROJECT_PATH_LEN);
+		Debug.Log ("PROJ_PATH:" + PROJECT_PATH);
 
 		Debug.Log("PLATFROM:" + PLATFORM);
         Debug.Log("VERSION_FILE_NAME:" + VERSION_FILE_NAME);
 
-		Debug.Log("STREAMING_ASSETS_PATH:" + STREAMING_PATH);
-		Debug.Log("STREAMING_VERSION_FILE_PATH:" + STREAMING_VERSION_FILE_PATH);
+		Debug.Log("STREAMING_PATH:" + STREAMING_PATH);
+		Debug.Log("STREAMING_VERSION_FILE:" + STREAMING_VERSION_FILE_PATH);
 
-		Debug.Log("PERSISTENT_DATA_PATH:" + PERSISTENT_PATH);
-        Debug.Log("PERSISTENT_VERSION_FILE_PATH:" + PERSISTENT_VERSION_FILE_PATH);
+		Debug.Log("PERSISTENT_PATH:" + PERSISTENT_PATH);
+        Debug.Log("PERSISTENT_VERSION_FILE:" + PERSISTENT_VERSION_FILE_PATH);
 
 		Debug.Log("REMOTE_URL:" + REMOTE_URL);
 		Debug.Log("REMOTE_ASSET_URL:" + REMOTE_ASSET_URL);
@@ -68,4 +68,9 @@ public static class AppConst
 		Debug.Log("UPLOAD_URL:" + UPLOAD_URL);
 		Debug.Log("UPLOAD_ASSET_URL:" + UPLOAD_ASSET_URL);
     }	 
+
+    // 所有assetbundle的名字统一定义列表
+    public static string AB_VERSION = "versionfile";
+    public static string AB_LOGIN = "prefabs_login";
+    public static string AB_CREATE_ROLE = "create_role";
 }

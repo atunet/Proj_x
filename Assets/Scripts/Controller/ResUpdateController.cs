@@ -113,7 +113,7 @@ public class ResUpdateController : MonoBehaviour
         string abName = m_downloadList[0];
         m_downloadList.RemoveAt(0);
 
-        string abFileURL = Path.Combine(AppConst.REMOTE_ASSET_URL, abName);
+        string abFileURL = AppConst.REMOTE_ASSET_URL + "/" + abName;
         WWW abWWW = new WWW(abFileURL);
         yield return abWWW;
 

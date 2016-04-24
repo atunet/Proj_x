@@ -14,16 +14,16 @@ public class ZoneListController : MonoBehaviour
 
 	private IEnumerator LoadZoneList()
 	{
-		WWW zoneListReq = new WWW(s_zoneListURL);
-		yield return zoneListReq;
+		WWW w = new WWW(s_zoneListURL);
+        yield return w;
 
-        if(!string.IsNullOrEmpty(zoneListReq.error))
+        if(!string.IsNullOrEmpty(w.error))
         {
-            Debug.LogError("www load zone list failed:" + zoneListReq.error);
+            Debug.LogError("www load zone list failed:" + w.error);
            // yield return 0;
 		}
-        zoneListReq.Dispose();
-        zoneListReq = null;
+        w.Dispose();
+        w = null;
 
 		NetController.Instance.ServerIP = "121.199.48.63";
 		NetController.Instance.ServerPort = 8888;
@@ -36,7 +36,7 @@ public class ZoneListController : MonoBehaviour
 
 	private void ShowLoginBtn()
 	{
-		GameObject loginBtnPrefab = AppStartController.LoginAB.LoadAsset ("LoginBtnPrefab") as GameObject;
+        GameObject loginBtnPrefab = ABManager.Instance.get(AppConst.AB_LOGIN).LoadAsset ("LoginBtnPrefab") as GameObject;
 		if (null == loginBtnPrefab)
 		{
             Debug.LogError("ShowLoginBtn failed,loginBtnPrefab load failed");

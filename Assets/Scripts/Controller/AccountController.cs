@@ -19,8 +19,13 @@ public class AccountController : MonoBehaviour
 		// TODO ... account reg or account login to other platform ...
 
 		// after account login, load the zone list UI ...
+        AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
+        if (null == loginAB)
+        {
+            yield return 0;
+        }
 
-		GameObject zongListPrefab = AppStartController.LoginAB.LoadAsset ("ZoneListPrefab") as GameObject;
+        GameObject zongListPrefab = loginAB.LoadAsset ("ZoneListPrefab") as GameObject;
 		if (null == zongListPrefab)
 		{
 			// do something to tell player error

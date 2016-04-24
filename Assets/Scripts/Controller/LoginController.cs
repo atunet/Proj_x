@@ -12,7 +12,7 @@ public class LoginController : MonoBehaviour
 	{   
 		// show the loading UI ...
 
-		GameObject loadingPrefab = AppStartController.LoginAB.LoadAsset ("LoadingPrefab") as GameObject;
+        GameObject loadingPrefab = ABManager.Instance.get(AppConst.AB_LOGIN).LoadAsset ("LoadingPrefab") as GameObject;
 		if (null == loadingPrefab)
 		{
             Debug.LogError("load loadingprefab failed");

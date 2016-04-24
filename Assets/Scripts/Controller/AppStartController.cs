@@ -7,9 +7,6 @@ public class AppStartController : MonoBehaviour
     private int m_streamingFileIndex = 0;
     private string[] m_streamingFileList = null;
 
-	private static AssetBundle s_loginAB = null;
-	public static AssetBundle LoginAB { get { return s_loginAB; } }
-
 	private static bool s_resUpdateChecked = false;
 	public static void setResChecked(bool checked_) { s_resUpdateChecked = checked_; }
 
@@ -20,7 +17,7 @@ public class AppStartController : MonoBehaviour
 
 		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
-			Debug.Log("init create the persistent dir:" + AppConst.PERSISTENT_PATH);
+			Debug.Log("init create persistent dir:" + AppConst.PERSISTENT_PATH);
 			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
         }
 
@@ -42,23 +39,20 @@ public class AppStartController : MonoBehaviour
 
     void CheckResUpdate()
     {
-        if (null == s_loginAB)
-        {
-			s_loginAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_PATH + "/ab_login");
-            if (null == s_loginAB) 
-            {
-				Debug.LogError("CheckResUpdate failed,ab_login file not found");
-                return;
-            }
+        AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
+        if (null == loginAB)
+        {	
+			Debug.LogError("CheckResUpdate failed,login ab file not found");
+            return;
         }		
 
-        string[] abFileName = s_loginAB.GetAllAssetNames();
+        string[] abFileName = loginAB.GetAllAssetNames();
         for(int i = 0; i < abFileName.Length; ++i)
         {
         	Debug.Log(abFileName[i]);
         }
 
-		GameObject bgPrefab = s_loginAB.LoadAsset ("BackgroundPrefab") as GameObject;
+        GameObject bgPrefab = loginAB.LoadAsset ("BackgroundPrefab") as GameObject;
 		if (null == bgPrefab) 
 		{
 			Debug.LogError("CheckResUpdate failed,backgroundprefab not found");
@@ -71,7 +65,7 @@ public class AppStartController : MonoBehaviour
 
 		if (s_resUpdateChecked) 
 		{
-			GameObject accountPrefab = s_loginAB.LoadAsset ("AccountPrefab") as GameObject;
+            GameObject accountPrefab = loginAB.LoadAsset ("AccountPrefab") as GameObject;
 			if (null == accountPrefab)
 			{
 				// do something to tell player error
@@ -83,7 +77,7 @@ public class AppStartController : MonoBehaviour
 		} 
 		else 
 		{
-			GameObject resUpdatePrefab = s_loginAB.LoadAsset ("ResUpdatePrefab") as GameObject;
+            GameObject resUpdatePrefab = loginAB.LoadAsset ("ResUpdatePrefab") as GameObject;
 			if (null == resUpdatePrefab)
 			{
 				// do something to tell player error
@@ -98,17 +92,17 @@ public class AppStartController : MonoBehaviour
 
 	private IEnumerator InitPersistentFiles()
 	{
-		WWW manifestWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
-		yield return manifestWWW;
+		WWW versionWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
+        yield return versionWWW;
 
-		if(!string.IsNullOrEmpty(manifestWWW.error))
+        if(!string.IsNullOrEmpty(versionWWW.error))
 		{
-            Debug.LogError("init persistent:load streaming version file failed:" + manifestWWW.error);
+            Debug.LogError("www load streaming version file failed:" + versionWWW.error + ",file://" + AppConst.STREAMING_VERSION_FILE_PATH);
 			yield return 0;
 		}
 
-		AssetBundle manifestAB = manifestWWW.assetBundle;
-		AssetBundleManifest streamingManifest = manifestAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
+        AssetBundle versionAB = versionWWW.assetBundle;
+        AssetBundleManifest streamingManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
 
 		string[] fileList = streamingManifest.GetAllAssetBundles();
 		if(0 == fileList.Length)
@@ -126,10 +120,10 @@ public class AppStartController : MonoBehaviour
 		m_streamingFileIndex = 0;
 
         streamingManifest = null;
-		manifestAB.Unload(false);
+        versionAB.Unload(false);
 
-		manifestWWW.Dispose();
-		manifestWWW = null;
+        versionWWW.Dispose();
+        versionWWW = null;
 
         string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
         StartCoroutine(CopyFile(streamingFilePath));

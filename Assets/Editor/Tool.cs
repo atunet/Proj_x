@@ -158,20 +158,6 @@ public class Tool : MonoBehaviour
         EditorUtility.DisplayProgressBar("Set assetbundle name", "Setting assetbundle name ...", 0f);
 
         string resPath = Application.dataPath + "/Delete";
-        /*string[] tempList = Directory.GetFiles(resPath, "*", SearchOption.AllDirectories);
-        for(int i = 0; i < tempList.Length; ++i)
-        {
-            if (tempList[i].EndsWith("meta"))
-                continue;
-
-            AssetImporter asset = AssetImporter.GetAtPath(tempList[i].Substring(AppConst.PROJECT_PATH_LEN + 1));
-            asset.assetBundleName = "";
-            asset.assetBundleVariant = "";
-            asset.SaveAndReimport();
-        }
-        AssetDatabase.Refresh();
-        return;
-        */
         string[] dirList = Directory.GetDirectories(resPath, "*", SearchOption.AllDirectories);
         for (int i = 0; i < dirList.Length; ++i)
         {
@@ -203,6 +189,7 @@ public class Tool : MonoBehaviour
                 string relativeFilePath = fileList[k].Replace("\\", "/").Substring(AppConst.PROJECT_PATH_LEN+1);
                 build.assetNames[index++] = relativeFilePath;
             }
+
             s_abMaps.Add(build);
         }
 
