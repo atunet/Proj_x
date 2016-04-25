@@ -20,7 +20,6 @@ public class ZoneListController : MonoBehaviour
         if(!string.IsNullOrEmpty(w.error))
         {
             Debug.LogError("www load zone list failed:" + w.error);
-           // yield return 0;
 		}
         w.Dispose();
         w = null;

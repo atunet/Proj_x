@@ -95,38 +95,36 @@ public class AppStartController : MonoBehaviour
 		WWW versionWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
         yield return versionWWW;
 
-        if(!string.IsNullOrEmpty(versionWWW.error))
-		{
+        if (string.IsNullOrEmpty(versionWWW.error))
+        {         
+            AssetBundle versionAB = versionWWW.assetBundle;
+            AssetBundleManifest streamingManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
+
+            string[] fileList = streamingManifest.GetAllAssetBundles();
+            if (fileList.Length > 0)
+            {              
+                m_streamingFileList = new string[fileList.Length + 1];
+                for (int i = 0; i < fileList.Length; ++i)
+                {
+                    m_streamingFileList[i] = fileList[i];
+                }
+                m_streamingFileList[fileList.Length] = AppConst.VERSION_FILE_NAME;
+                m_streamingFileIndex = 0;
+
+                streamingManifest = null;
+                versionAB.Unload(false);
+
+                versionWWW.Dispose();
+                versionWWW = null;
+
+                string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
+                StartCoroutine(CopyFile(streamingFilePath));
+            }
+            else
+                Debug.LogError("streaming manifest file contains nothing");
+        }
+        else
             Debug.LogError("www load streaming version file failed:" + versionWWW.error + ",file://" + AppConst.STREAMING_VERSION_FILE_PATH);
-			yield return 0;
-		}
-
-        AssetBundle versionAB = versionWWW.assetBundle;
-        AssetBundleManifest streamingManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
-
-		string[] fileList = streamingManifest.GetAllAssetBundles();
-		if(0 == fileList.Length)
-		{
-			Debug.LogError("streaming manifest file contains nothing");
-			yield return 0;
-		}
-
-		m_streamingFileList = new string[fileList.Length+1];
-		for(int i = 0; i < fileList.Length; ++i)
-		{
-		 	m_streamingFileList[i] = fileList[i];
-		}
-		m_streamingFileList[fileList.Length] = AppConst.VERSION_FILE_NAME;
-		m_streamingFileIndex = 0;
-
-        streamingManifest = null;
-        versionAB.Unload(false);
-
-        versionWWW.Dispose();
-        versionWWW = null;
-
-        string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
-        StartCoroutine(CopyFile(streamingFilePath));
 	}
 
 
@@ -135,45 +133,44 @@ public class AppStartController : MonoBehaviour
         WWW w = new WWW("file://" + filePath_);
         yield return w;
 
-        if (!string.IsNullOrEmpty(w.error))
-        {
-            Debug.LogError("init copy file to persistentDataPath failed:file://" + filePath_ + "," + w.error);
-            yield return 0;
-        }
+        if (string.IsNullOrEmpty(w.error))
+        {          
+            string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length);
+            string dstPath = AppConst.PERSISTENT_PATH + relativePath;
+            string dirPath = Path.GetDirectoryName(dstPath);
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+            Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN + 1) + " to " + dstPath + " done, length:" + w.bytes.Length);
 
-        string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length);
-        string dstPath = AppConst.PERSISTENT_PATH + relativePath;
-        string dirPath = Path.GetDirectoryName(dstPath);
-        if (!Directory.Exists(dirPath))
-        {
-            Directory.CreateDirectory(dirPath);
-        }
-        Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN+1) + " to " + dstPath + " done, length:" + w.bytes.Length);
+            FileStream fs = new FileStream(dstPath, FileMode.Create, FileAccess.ReadWrite);      
+            BinaryWriter bw = new BinaryWriter(fs);
+            bw.Write(w.bytes, 0, w.bytes.Length);
+            bw.Flush();
+            bw.Close(); bw = null;
+            fs.Close(); fs = null;
+            w.Dispose(); w = null; 
 
-        FileStream fs = new FileStream(dstPath, FileMode.Create, FileAccess.ReadWrite);      
-        BinaryWriter bw = new BinaryWriter(fs);
-        bw.Write(w.bytes, 0, w.bytes.Length);
-        bw.Flush();
-        bw.Close(); bw = null;
-        fs.Close(); fs = null;
-        w.Dispose(); w = null; 
-
-		if(m_streamingFileList.Length > ++m_streamingFileIndex)
-        {
-            string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
-            StartCoroutine(CopyFile(streamingFilePath));
+            if (m_streamingFileList.Length > ++m_streamingFileIndex)
+            {
+                string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
+                StartCoroutine(CopyFile(streamingFilePath));
+            }
+            else
+            {
+                if (File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
+                {
+                    Debug.Log("Init copy all files to persistent path success,total count:" + m_streamingFileIndex + " -------------------------------------------");
+                    CheckResUpdate();
+                }
+                else
+                {
+                    Debug.LogError("init copy streaming assets done but the version file not found");
+                }
+            }
         }
         else
-        {
-            if(File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
-            {
-            	Debug.Log("Init copy all files to persistent path success,total count:" + m_streamingFileIndex + " -------------------------------------------");
-                CheckResUpdate();
-			}
-			else
-            {
-                Debug.LogError("init copy streaming assets done but the version file not found");
-        	}
-        }
-    }	
+            Debug.LogError("init copy file to persistentDataPath failed:file://" + filePath_ + "," + w.error);
+    }
 }
