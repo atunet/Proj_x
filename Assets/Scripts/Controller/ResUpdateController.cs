@@ -35,43 +35,41 @@ public class ResUpdateController : MonoBehaviour
         WWW manifestWWW = new WWW(AppConst.REMOTE_VERSION_FILE_URL);
         yield return manifestWWW;
 
-        if (!string.IsNullOrEmpty(manifestWWW.error))
+        if (string.IsNullOrEmpty(manifestWWW.error))
         {
+            AssetBundle remoteAB = manifestWWW.assetBundle;
+            AssetBundleManifest remoteManifest = remoteAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
+            ParseManifestFile(remoteManifest, m_remoteDict);
+            Debug.Log("Download and parse remote version file done: " + AppConst.REMOTE_VERSION_FILE_URL + ",total count:" + remoteManifest.GetAllAssetBundles().Length);
+
+            remoteManifest = null;
+            remoteAB.Unload(false);
+            manifestWWW.Dispose();
+            manifestWWW = null;
+
+            AssetBundle persistentAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_VERSION_FILE_PATH);
+            if (null != persistentAB)
+            {               
+                AssetBundleManifest persistentManifest = persistentAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
+                ParseManifestFile(persistentManifest, m_localDict);
+                Debug.Log("Load and parse local version file done: " + AppConst.PERSISTENT_VERSION_FILE_PATH + ",total count:" + persistentManifest.GetAllAssetBundles().Length);
+
+                persistentManifest = null;
+                persistentAB.Unload(false);           
+
+                CompareManifestFile();
+                if (m_downloadList.Count > 0)
+                {
+                    m_downloadList.Add(AppConst.VERSION_FILE_NAME);
+                    m_totalSize++;
+                }
+                StartCoroutine(DownloadAssetBundles());
+            }
+            else
+                Debug.LogError("ResUpdate:load persistent manifest file failed:" + AppConst.PERSISTENT_VERSION_FILE_PATH);
+        }
+        else
             Debug.LogError("download manifest file failed:" + AppConst.REMOTE_VERSION_FILE_URL + "," + manifestWWW.error);
-            yield return 0;
-        }
-
-        AssetBundle remoteAB = manifestWWW.assetBundle;
-        AssetBundleManifest remoteManifest = remoteAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
-        ParseManifestFile(remoteManifest, m_remoteDict);
-		Debug.Log("Download and parse remote version file done: " + AppConst.REMOTE_VERSION_FILE_URL + ",total count:" + remoteManifest.GetAllAssetBundles().Length);
-
-        remoteManifest = null;
-        remoteAB.Unload(false);
-        manifestWWW.Dispose();
-        manifestWWW = null;
-
-        AssetBundle  persistentAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_VERSION_FILE_PATH);
-        if(null == persistentAB)
-        {
-			Debug.LogError("ResUpdate:load persistent manifest file failed:" + AppConst.PERSISTENT_VERSION_FILE_PATH);
-            yield return 0;
-        }
-
-        AssetBundleManifest persistentManifest = persistentAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
-        ParseManifestFile(persistentManifest, m_localDict);
-		Debug.Log("Load and parse local version file done: " + AppConst.PERSISTENT_VERSION_FILE_PATH + ",total count:" + persistentManifest.GetAllAssetBundles().Length);
-
-        persistentManifest = null;
-        persistentAB.Unload(false);           
-
-        CompareManifestFile();
-        if(m_downloadList.Count > 0) 
-        {
-            m_downloadList.Add(AppConst.VERSION_FILE_NAME);
-            m_totalSize++;
-        }
-        StartCoroutine(DownloadAssetBundles());
     }
 
     private void ParseManifestFile(AssetBundleManifest abm_, Dictionary<string, Hash128> dict_)
@@ -107,35 +105,31 @@ public class ResUpdateController : MonoBehaviour
 
     private IEnumerator DownloadAssetBundles()
     {    
-        if(m_downloadList.Count == 0)
+        if (m_downloadList.Count == 0)
         {
-			AppStartController.setResChecked(true);
-			Application.LoadLevel(Application.loadedLevelName);
-            yield return 0;
-        }
-        
-        string abName = m_downloadList[0];
-        m_downloadList.RemoveAt(0);
-
-        string abFileURL = AppConst.REMOTE_ASSET_URL + "/" + abName;
-        WWW abWWW = new WWW(abFileURL);
-        yield return abWWW;
-
-        if (string.IsNullOrEmpty(abWWW.error))
-        {
-        	Debug.Log("Download remote ab file success: " + abFileURL);
+            AppStartController.setResChecked(true);
+            Application.LoadLevel(Application.loadedLevelName);
         }
         else
-        {
-            Debug.LogError("download ab file failed:" + abFileURL + "," + abWWW.error);
-            yield return 0;
+        {        
+            string abName = m_downloadList[0];
+            m_downloadList.RemoveAt(0);
+
+            string abFileURL = AppConst.REMOTE_ASSET_URL + "/" + abName;
+            WWW abWWW = new WWW(abFileURL);
+            yield return abWWW;
+
+            if (string.IsNullOrEmpty(abWWW.error))
+            {
+                Debug.Log("Download remote ab file success: " + abFileURL);
+                ReplaceLocalFile(abName, abWWW.bytes);
+                m_currentSize += 1f;
+
+                StartCoroutine(DownloadAssetBundles());
+            }
+            else
+                Debug.LogError("download ab file failed:" + abFileURL + "," + abWWW.error);
         }
-
-
-        ReplaceLocalFile(abName, abWWW.bytes);
-        m_currentSize += 1f;
-
-        StartCoroutine(DownloadAssetBundles());
     }
     
     private void ReplaceLocalFile(string abName_, byte[] data_)
