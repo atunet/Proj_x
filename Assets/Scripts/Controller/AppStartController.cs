@@ -17,7 +17,7 @@ public class AppStartController : MonoBehaviour
 
 		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
-			Debug.Log("init create persistent dir:" + AppConst.PERSISTENT_PATH);
+			Debug.Log("Init create persistent dir:" + AppConst.PERSISTENT_PATH);
 			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
         }
 
@@ -45,12 +45,12 @@ public class AppStartController : MonoBehaviour
 			Debug.LogError("CheckResUpdate failed,login ab file not found");
             return;
         }		
-
+        /*
         string[] abFileName = loginAB.GetAllAssetNames();
         for(int i = 0; i < abFileName.Length; ++i)
         {
         	Debug.Log(abFileName[i]);
-        }
+        }*/
 
         GameObject bgPrefab = loginAB.LoadAsset ("BackgroundPrefab") as GameObject;
 		if (null == bgPrefab) 
@@ -137,7 +137,7 @@ public class AppStartController : MonoBehaviour
 
         if (!string.IsNullOrEmpty(w.error))
         {
-            Debug.LogError("init copy file to persistentDataPath failed:" + filePath_ + "," + w.error);
+            Debug.LogError("init copy file to persistentDataPath failed:file://" + filePath_ + "," + w.error);
             yield return 0;
         }
 
@@ -148,8 +148,7 @@ public class AppStartController : MonoBehaviour
         {
             Directory.CreateDirectory(dirPath);
         }
-        Debug.Log("init copy streaming file to persistent:" + filePath_ + " done, length:" + w.bytes.Length);
-        Debug.Log("init copy streaming file to persistent:" + dstPath);
+        Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN+1) + " to " + dstPath + " done, length:" + w.bytes.Length);
 
         FileStream fs = new FileStream(dstPath, FileMode.Create, FileAccess.ReadWrite);      
         BinaryWriter bw = new BinaryWriter(fs);
@@ -168,7 +167,7 @@ public class AppStartController : MonoBehaviour
         {
             if(File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
             {
-            	Debug.Log("all file init copy to persistent success!");
+            	Debug.Log("Init copy all files to persistent path success,total count:" + m_streamingFileIndex + " -------------------------------------------");
                 CheckResUpdate();
 			}
 			else

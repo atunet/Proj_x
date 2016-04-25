@@ -21,7 +21,7 @@ public class ResUpdateController : MonoBehaviour
     
 	void Start () 
     {
-        Debug.Log("res update controller started");
+        Debug.Log("Resource update controller started --------------------------");
 
         m_remoteDict = new Dictionary<string, Hash128>();
         m_localDict = new Dictionary<string, Hash128>();
@@ -44,6 +44,8 @@ public class ResUpdateController : MonoBehaviour
         AssetBundle remoteAB = manifestWWW.assetBundle;
         AssetBundleManifest remoteManifest = remoteAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
         ParseManifestFile(remoteManifest, m_remoteDict);
+		Debug.Log("Download and parse remote version file done: " + AppConst.REMOTE_VERSION_FILE_URL + ",total count:" + remoteManifest.GetAllAssetBundles().Length);
+
         remoteManifest = null;
         remoteAB.Unload(false);
         manifestWWW.Dispose();
@@ -58,6 +60,8 @@ public class ResUpdateController : MonoBehaviour
 
         AssetBundleManifest persistentManifest = persistentAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
         ParseManifestFile(persistentManifest, m_localDict);
+		Debug.Log("Load and parse local version file done: " + AppConst.PERSISTENT_VERSION_FILE_PATH + ",total count:" + persistentManifest.GetAllAssetBundles().Length);
+
         persistentManifest = null;
         persistentAB.Unload(false);           
 
@@ -77,7 +81,7 @@ public class ResUpdateController : MonoBehaviour
         string[] abList = abm_.GetAllAssetBundles();
         foreach(string abName in abList)
         {
-            Debug.Log("ParseManifestFile add[" + abName + "," + abm_.GetAssetBundleHash(abName) +"]");
+            Debug.Log("Parse version file add ab: " + abName + " , hashcode:" + abm_.GetAssetBundleHash(abName));
             dict_.Add(abName, abm_.GetAssetBundleHash(abName));            
         }
     }
@@ -96,7 +100,7 @@ public class ResUpdateController : MonoBehaviour
                 m_downloadList.Add(abName);
                 m_totalSize += 1f;
                 
-                Debug.Log("CompareManifestFile, download list add: " + abName);
+                Debug.Log("Compare ab file's hascode,download list add: " + abName);
             }
         }
     }
@@ -117,11 +121,16 @@ public class ResUpdateController : MonoBehaviour
         WWW abWWW = new WWW(abFileURL);
         yield return abWWW;
 
-        if (!string.IsNullOrEmpty(abWWW.error))
+        if (string.IsNullOrEmpty(abWWW.error))
+        {
+        	Debug.Log("Download remote ab file success: " + abFileURL);
+        }
+        else
         {
             Debug.LogError("download ab file failed:" + abFileURL + "," + abWWW.error);
             yield return 0;
         }
+
 
         ReplaceLocalFile(abName, abWWW.bytes);
         m_currentSize += 1f;
@@ -131,7 +140,8 @@ public class ResUpdateController : MonoBehaviour
     
     private void ReplaceLocalFile(string abName_, byte[] data_)
     {
-		FileStream fs = new FileStream(Path.Combine(AppConst.PERSISTENT_PATH, abName_), FileMode.Create);
+    	Debug.Log("Replace local ab file:" + AppConst.PERSISTENT_PATH + "/" + abName_);
+		FileStream fs = new FileStream(AppConst.PERSISTENT_PATH + "/" + abName_, FileMode.Create);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(data_, 0, data_.Length);
         bw.Flush();

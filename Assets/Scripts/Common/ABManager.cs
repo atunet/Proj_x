@@ -31,10 +31,10 @@ public sealed class ABManager
         ab = AssetBundle.LoadFromFile(AppConst.PERSISTENT_PATH + "/" + abName_ + AppConst.AB_EXT_NAME);
         if (null == ab) 
         {
-            Debug.LogError("load ab failed,file not existed:" + abName_ + AppConst.AB_EXT_NAME);
+            Debug.LogError("ABManager: load ab failed,file not existed:" + abName_ + AppConst.AB_EXT_NAME);
         }
         else
-            Debug.Log("load ab file success:" + abName_ + AppConst.AB_EXT_NAME);
+            Debug.Log("ABManager: load ab file success:" + abName_ + AppConst.AB_EXT_NAME);
 
         m_abMaps.Add(abName_, ab);
         return ab;
