@@ -26,10 +26,13 @@ public class AppStartController : MonoBehaviour
         } 
         else
         {
-        	GameObject defaultBG = Resources.Load("defaultBgPrefab") as GameObject;
+        	GameObject defaultBG = Resources.Load("defaultBGPrefab") as GameObject;
         	if(null != defaultBG)
-        	{
-        		GameObject.Instantiate(defaultBG).transform.SetParent(this.transform.parent);
+			{	if(null != GameObject.Find("UIRoot/UICanvas"))
+				{
+					Debug.Log("find uiroot/uicanvas");
+				}
+				GameObject.Instantiate(defaultBG).transform.SetParent(GameObject.Find("UIRoot/UICanvas").transform);
         	}
 
         	StartCoroutine(InitPersistentFiles());
