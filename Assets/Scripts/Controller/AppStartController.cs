@@ -17,7 +17,6 @@ public class AppStartController : MonoBehaviour
 
 		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
-			Debug.Log("Init create persistent dir:" + AppConst.PERSISTENT_PATH);
 			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
         }
 
@@ -30,7 +29,7 @@ public class AppStartController : MonoBehaviour
         	GameObject defaultBG = Resources.Load("defaultBgPrefab") as GameObject;
         	if(null != defaultBG)
         	{
-        		GameObject.Instantiate(defaultBG).transform.SetParent(this.transform);
+        		GameObject.Instantiate(defaultBG).transform.SetParent(this.transform.parent);
         	}
 
         	StartCoroutine(InitPersistentFiles());
@@ -79,7 +78,7 @@ public class AppStartController : MonoBehaviour
 				return;
 			}			
 			GameObject resUpdateGo = GameObject.Instantiate (resUpdatePrefab);
-			resUpdateGo.transform.SetParent (this.gameObject.transform);
+			resUpdateGo.transform.SetParent (this.transform.parent);
 		}
 	}
 
@@ -93,10 +92,10 @@ public class AppStartController : MonoBehaviour
         {         
             AssetBundle versionAB = versionWWW.assetBundle;
             AssetBundleManifest streamingManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
-
-            string[] fileList = streamingManifest.GetAllAssetBundles();
-            if (fileList.Length > 0)
-            {              
+            if(null != streamingManifest)
+            {
+            	string[] fileList = streamingManifest.GetAllAssetBundles();
+                        
                 m_streamingFileList = new string[fileList.Length + 1];
                 for (int i = 0; i < fileList.Length; ++i)
                 {
@@ -106,27 +105,26 @@ public class AppStartController : MonoBehaviour
                 m_streamingFileIndex = 0;
 
                 streamingManifest = null;
-                versionAB.Unload(false);
+                versionAB.Unload(true);
 
                 versionWWW.Dispose();
                 versionWWW = null;
 
-                string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
-                StartCoroutine(CopyFile(streamingFilePath));
+				StartCoroutine(CopyFileToPersistent(AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex]));
             }
             else
-                Debug.LogError("streaming manifest file contains nothing");
+                Debug.LogError("streaming version file do not contains AssetBundleManifest object");
         }
         else
             Debug.LogError("www load streaming version file failed:" + versionWWW.error + ",file://" + AppConst.STREAMING_VERSION_FILE_PATH);
 	}
 
 
-    private IEnumerator CopyFile(string filePath_)
+    private IEnumerator CopyFileToPersistent(string filePath_)
     {
         WWW w = new WWW("file://" + filePath_);
         yield return w;
-
+       
         if (string.IsNullOrEmpty(w.error))
         {          
             string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length);
@@ -136,33 +134,33 @@ public class AppStartController : MonoBehaviour
             {
                 Directory.CreateDirectory(dirPath);
             }
-            Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN + 1) + " to " + dstPath + " done, length:" + w.bytes.Length);
 
             FileStream fs = new FileStream(dstPath, FileMode.Create, FileAccess.ReadWrite);      
             BinaryWriter bw = new BinaryWriter(fs);
             bw.Write(w.bytes, 0, w.bytes.Length);
             bw.Flush();
+			Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN + 1) + " to " + dstPath + " done,length:" + w.bytes.Length);
+
             bw.Close(); bw = null;
             fs.Close(); fs = null;
             w.Dispose(); w = null; 
 
             if (m_streamingFileList.Length > ++m_streamingFileIndex)
             {
-                string streamingFilePath = AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex];
-                StartCoroutine(CopyFile(streamingFilePath));
+				StartCoroutine(CopyFileToPersistent(AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex]));
             }
             else
             {
                 if (File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
                 {
-                    Debug.Log("Init copy all files to persistent path success,total count:" + m_streamingFileIndex + " -------------------------------------------");
+                    Debug.Log("Init copy files to persistent path success,total count: " + m_streamingFileIndex + " -------------------------------------------");
                     CheckResUpdate();
                 }
                 else
-                    Debug.LogError("init copy streaming assets done but the version file not found");
+                    Debug.LogError("Init copy streaming files done but the version file still not found");
             }
         }
         else
-            Debug.LogError("init copy file to persistentDataPath failed:file://" + filePath_ + "," + w.error);
+            Debug.LogError("Init copy files to persistent path failed,file: file://" + filePath_ + "," + w.error);
     }
 }
