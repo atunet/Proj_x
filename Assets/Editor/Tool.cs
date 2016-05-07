@@ -155,9 +155,9 @@ public class Tool : MonoBehaviour
 	/// </summary>
 	static void PreprocessArtFiles() 
 	{
-        EditorUtility.DisplayProgressBar("Set assetbundle name", "Setting assetbundle name ...", 0f);
-
         string resPath = Application.dataPath + "/Delete";
+        SetSpriteTag(resPath);
+
         string[] dirList = Directory.GetDirectories(resPath, "*", SearchOption.AllDirectories);
         for (int i = 0; i < dirList.Length; ++i)
         {
@@ -193,8 +193,8 @@ public class Tool : MonoBehaviour
             s_abMaps.Add(build);
         }
 
-        AssetDatabase.Refresh();
         EditorUtility.ClearProgressBar();
+        AssetDatabase.Refresh();
 
         /*
         AddBuildMap("role_login" + AppConst.AB_EXT_NAME, relativePath, "*.prefab");
@@ -203,6 +203,36 @@ public class Tool : MonoBehaviour
 		AddBuildMap("prompt_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Prompt");
 		AddBuildMap("shared_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Shared");
 	    */
+    }
+
+    static void SetSpriteTag(string path_)
+    {
+        string[] fileList = Directory.GetFiles(path_, "*.png", SearchOption.AllDirectories);
+        for (int i = 0; i < fileList.Length; ++i)
+        {
+            string filePath = fileList[i].Replace("\\", "/");
+            string relativePath = filePath.Substring(AppConst.PROJECT_PATH_LEN + 1);
+            string packTagName = Path.GetDirectoryName(filePath).Substring(path_.Length+1).Replace("/", "_");
+
+            string barInfo = "Setting sprite tag:" + relativePath + "(" + i + "/" + fileList.Length + ")";
+            EditorUtility.DisplayProgressBar("Set sprite tag", barInfo, (float)i / (float)fileList.Length);
+
+            TextureImporter importer = TextureImporter.GetAtPath(relativePath) as TextureImporter;
+            if (null == importer)
+            {
+                Debug.LogError("set sprite tag failed: " + filePath + ", relative:" + relativePath + ", tagname:" + packTagName);
+                EditorUtility.ClearProgressBar();
+                return;
+            }
+
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spritePackingTag = packTagName;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+        }
+
+        EditorUtility.ClearProgressBar();
+        AssetDatabase.Refresh();
     }
 
 	static void AddBuildMap(string abName_, string relativePath_, string pattern_) 

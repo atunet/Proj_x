@@ -28,12 +28,20 @@ public class AppStartController : MonoBehaviour
         {
         	GameObject defaultBG = Resources.Load("defaultBGPrefab") as GameObject;
         	if(null != defaultBG)
-			{	if(null != GameObject.Find("UIRoot/UICanvas"))
-				{
-					Debug.Log("find uiroot/uicanvas");
-				}
-				GameObject.Instantiate(defaultBG).transform.SetParent(GameObject.Find("UIRoot/UICanvas").transform);
+			{	
+                GameObject bgGo = GameObject.Instantiate(defaultBG) as GameObject;
+                bgGo.transform.SetParent(GameObject.Find("UIRoot/UICanvas").transform);
+                bgGo.transform.localPosition = new Vector3(0f, 0f, 0f);
+                bgGo.transform.localScale = new Vector3(1f, 1f, 1f);
         	}
+            GameObject defaultText = Resources.Load("defaultTextPrefab") as GameObject;
+            if(null != defaultText)
+            {   
+                GameObject textGo = GameObject.Instantiate(defaultText) as GameObject;
+                textGo.transform.SetParent(GameObject.Find("UIRoot/UICanvas").transform);
+                textGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+                textGo.transform.localScale = new Vector3(1f, 1f, 1f);
+            }
 
         	StartCoroutine(InitPersistentFiles());
         }
@@ -41,6 +49,12 @@ public class AppStartController : MonoBehaviour
 
     void CheckResUpdate()
     {
+        GameObject bgGo = GameObject.Find("UIRoot/UICanvas/defaultBGPrefab(clone)");
+        if (bgGo) GameObject.Destroy(bgGo);
+
+        GameObject textGo = GameObject.Find("UIRoot/UICanvas/defaultTextPrefab(clone)");
+        if (textGo) GameObject.Destroy(textGo);
+
         AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
         if (null == loginAB)
         {	
@@ -55,7 +69,7 @@ public class AppStartController : MonoBehaviour
 		}
 		else
 		{		
-			GameObject bgGo = GameObject.Instantiate (bgPrefab);
+			bgGo = GameObject.Instantiate (bgPrefab);
 			bgGo.transform.SetParent (this.transform.parent);
 		}
 
