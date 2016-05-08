@@ -62,7 +62,7 @@ public class AppStartController : MonoBehaviour
             return;
         }
 
-        GameObject bgPrefab = loginAB.LoadAsset ("BackgroundPrefab") as GameObject;
+        GameObject bgPrefab = loginAB.LoadAsset ("background") as GameObject;
 		if (null == bgPrefab) 
 		{
 			Debug.LogError("CheckResUpdate failed,backgroundprefab not found");
