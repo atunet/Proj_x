@@ -13,8 +13,15 @@ public class AppStartController : MonoBehaviour
 
 	void Start () 
 	{
-		AppConst.PrintPath();
+        CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
+        CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
+        if (null == CSInterface.s_uiRoot || null == CSInterface.s_sceneRoot)
+        {
+            Debug.LogError("uiRoot or sceneRoot not found!!!");
+            return;
+        }
 
+        AppConst.PrintPath();
 		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
 			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
@@ -30,7 +37,7 @@ public class AppStartController : MonoBehaviour
         	if(null != defaultBG)
 			{	
                 GameObject bgGo = GameObject.Instantiate(defaultBG) as GameObject;
-                bgGo.transform.SetParent(GameObject.Find("UIRoot/UICanvas").transform);
+                bgGo.transform.SetParent(CSInterface.s_sceneRoot);
                 bgGo.transform.localPosition = new Vector3(0f, 0f, 0f);
                 bgGo.transform.localScale = new Vector3(1f, 1f, 1f);
         	}
@@ -38,7 +45,7 @@ public class AppStartController : MonoBehaviour
             if(null != defaultText)
             {   
                 GameObject textGo = GameObject.Instantiate(defaultText) as GameObject;
-                textGo.transform.SetParent(GameObject.Find("UIRoot/UICanvas").transform);
+                textGo.transform.SetParent(CSInterface.s_sceneRoot);
                 textGo.transform.localPosition = new Vector3(0f, -425f, 0f);
                 textGo.transform.localScale = new Vector3(1f, 1f, 1f);
             }
@@ -49,11 +56,10 @@ public class AppStartController : MonoBehaviour
 
     void CheckResUpdate()
     {
-        GameObject bgGo = GameObject.Find("UIRoot/UICanvas/defaultBGPrefab(clone)");
-        if (bgGo) GameObject.Destroy(bgGo);
-
-        GameObject textGo = GameObject.Find("UIRoot/UICanvas/defaultTextPrefab(clone)");
-        if (textGo) GameObject.Destroy(textGo);
+        Transform bgTrans = CSInterface.s_sceneRoot.FindChild("defaultBGPrefab(clone)");
+        if (bgTrans) GameObject.Destroy(bgTrans.gameObject);
+        Transform textTrans = CSInterface.s_sceneRoot.FindChild("defaultTextPrefab(clone)");
+        if (textTrans) GameObject.Destroy(textTrans.gameObject);
 
         AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
         if (null == loginAB)
@@ -62,40 +68,38 @@ public class AppStartController : MonoBehaviour
             return;
         }
 
-        GameObject bgPrefab = loginAB.LoadAsset ("background") as GameObject;
+        GameObject bgPrefab = loginAB.LoadAsset ("Background") as GameObject;
 		if (null == bgPrefab) 
 		{
 			Debug.LogError("CheckResUpdate failed,backgroundprefab not found");
 		}
 		else
 		{		
-			bgGo = GameObject.Instantiate (bgPrefab);
-			bgGo.transform.SetParent (this.transform.parent);
+            bgTrans = GameObject.Instantiate(bgPrefab).transform;
+            bgTrans.SetParent (CSInterface.s_sceneRoot);
 		}
 
 		if (s_resUpdateChecked) 
 		{
-            GameObject accountPrefab = loginAB.LoadAsset ("AccountPrefab") as GameObject;
+            GameObject accountPrefab = loginAB.LoadAsset ("Account") as GameObject;
 			if (null == accountPrefab)
 			{
-				// do something to tell player error
 				Debug.LogError("CheckResUpdate failed,accountprefab not found");
 				return;
 			}
 			GameObject accountGo = GameObject.Instantiate (accountPrefab);
-			accountGo.transform.SetParent (this.transform.parent);
+            accountGo.transform.SetParent (CSInterface.s_sceneRoot);
 		} 
 		else 
 		{
-            GameObject resUpdatePrefab = loginAB.LoadAsset ("ResUpdatePrefab") as GameObject;
+            GameObject resUpdatePrefab = loginAB.LoadAsset ("ResUpdate") as GameObject;
 			if (null == resUpdatePrefab)
 			{
-				// do something to tell player error
 				Debug.LogError("CheckResUpdate failed,resourceupdateprefab not found");
 				return;
 			}			
 			GameObject resUpdateGo = GameObject.Instantiate (resUpdatePrefab);
-			resUpdateGo.transform.SetParent (this.transform.parent);
+            resUpdateGo.transform.SetParent (CSInterface.s_sceneRoot);
 		}
 	}
 

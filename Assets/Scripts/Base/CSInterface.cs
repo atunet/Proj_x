@@ -1,8 +1,12 @@
 ﻿using System;
+using UnityEngine;
 using LuaInterface;
 
 public sealed class CSInterface
 {
+    public static Transform s_uiRoot = null;
+    public static Transform s_sceneRoot = null;
+
 	public static int s_recvProtoId = 0;
 	public static LuaByteBuffer s_recvBytes = null;
 

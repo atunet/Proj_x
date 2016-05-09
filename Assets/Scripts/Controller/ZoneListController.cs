@@ -35,7 +35,7 @@ public class ZoneListController : MonoBehaviour
 
 	private void ShowLoginBtn()
 	{
-        GameObject loginBtnPrefab = ABManager.Instance.get(AppConst.AB_LOGIN).LoadAsset ("LoginBtnPrefab") as GameObject;
+        GameObject loginBtnPrefab = ABManager.Instance.get(AppConst.AB_LOGIN).LoadAsset ("LoginBtn") as GameObject;
 		if (null == loginBtnPrefab)
 		{
             Debug.LogError("ShowLoginBtn failed,loginBtnPrefab load failed");
@@ -43,7 +43,7 @@ public class ZoneListController : MonoBehaviour
 		}
 
 		GameObject loginBtnGo = GameObject.Instantiate (loginBtnPrefab);
-		loginBtnGo.transform.SetParent (this.transform.parent);
+        loginBtnGo.transform.SetParent (CSInterface.s_uiRoot);
 
 		//BGMController btm = BGMController.Instance;
 	}

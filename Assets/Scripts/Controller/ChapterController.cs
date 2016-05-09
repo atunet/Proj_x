@@ -16,7 +16,7 @@ public class ChapterController : MonoBehaviour
     {
         InitPlayUI();
 
-        InitPlayWindow();
+      //  InitPlayWindow();
 
         Destroy(gameObject);
     }
@@ -43,7 +43,7 @@ public class ChapterController : MonoBehaviour
         
         GlobalRef.s_gr.PlayUIRoot = playUI;
     }
-
+    /*
     public static void InitPlayWindow()
     {
         if (null == s_playPrefab)
@@ -65,5 +65,5 @@ public class ChapterController : MonoBehaviour
         }
 
         GlobalRef.s_gr.PlayRoot = PlayRoot;
-    }
+    }*/
 }

@@ -17,17 +17,17 @@ public class AccountController : MonoBehaviour
 	IEnumerator AccountLogin()
 	{
 		// TODO ... account reg or account login to other platform ...
-        yield return 0;
+        yield return new WaitForSeconds(2f);
 
 		// after account login, load the zone list UI ...
         AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
         if (null != loginAB)
         {
-            GameObject zongListPrefab = loginAB.LoadAsset("ZoneListPrefab") as GameObject;
+            GameObject zongListPrefab = loginAB.LoadAsset("ZoneList") as GameObject;
             if (null != zongListPrefab)
             {
                 GameObject zoneListGo = GameObject.Instantiate(zongListPrefab);
-                zoneListGo.transform.SetParent(this.transform.parent);
+                zoneListGo.transform.SetParent(CSInterface.s_uiRoot);
             }
         }
 	}

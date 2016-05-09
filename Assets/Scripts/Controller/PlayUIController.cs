@@ -22,7 +22,7 @@ public class PlayUIController : MonoBehaviour
             rectTrans.offsetMax = new Vector2(0f, 0f);
         }
     }
-
+    /*
     public IEnumerator showResult()
     {
         yield return new WaitForSeconds(2f);
@@ -61,4 +61,5 @@ public class PlayUIController : MonoBehaviour
         ChapterController.InitPlayUI();
         ChapterController.InitPlayWindow();
     }
+    */
 }

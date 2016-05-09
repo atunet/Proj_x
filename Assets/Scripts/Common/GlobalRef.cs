@@ -11,7 +11,7 @@ public class GlobalRef : MonoBehaviour
     public GameObject m_playCamera = null;
 
     public Transform m_uiCanvas = null;
-    public Transform m_playCanvas = null;
+    public Transform m_sceneCanvas = null;
 
     //private GameObject m_chapterUIRoot = null;
     private GameObject m_playUIRoot = null; 
