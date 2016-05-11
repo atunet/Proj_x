@@ -182,12 +182,14 @@ public class Tool : MonoBehaviour
             for (int k = 0; k < fileList.Length; ++k)
             {             
                 if (fileList[k].EndsWith(".meta")) continue;
-
-                string barInfo = "Setting assetbundle:" + abName + "(" + k + "/" + fileList.Length + ")";
-                EditorUtility.DisplayProgressBar("Set assetbundle name", barInfo, (float)k / (float)fileList.Length);
-
+                             
                 string relativeFilePath = fileList[k].Replace("\\", "/").Substring(AppConst.PROJECT_PATH_LEN+1);
                 build.assetNames[index++] = relativeFilePath;
+
+                string barInfo = "Build ab file:" + relativeFilePath + " to " + abName + " ... (" + k + "/" + fileList.Length + ")";
+                EditorUtility.DisplayProgressBar("Build assetbundle map", barInfo, (float)k / (float)fileList.Length);
+
+                Debug.Log(barInfo);
             }
 
             s_abMaps.Add(build);

@@ -67,21 +67,30 @@ public class AppStartController : MonoBehaviour
 			Debug.LogError("CheckResUpdate failed,login ab file not found");
             return;
         }
-
-        GameObject bgPrefab = loginAB.LoadAsset ("Background") as GameObject;
+            
+        GameObject bgPrefab = loginAB.LoadAsset ("background") as GameObject;
 		if (null == bgPrefab) 
 		{
 			Debug.LogError("CheckResUpdate failed,backgroundprefab not found");
+
+            string[] allAssets = loginAB.GetAllAssetNames();
+            for (int i = 0; i < allAssets.Length; ++i)
+            {
+                Debug.Log("asset name in ab:" + allAssets[i]);
+            }
+
 		}
 		else
 		{		
             bgTrans = GameObject.Instantiate(bgPrefab).transform;
             bgTrans.SetParent (CSInterface.s_sceneRoot);
+            bgTrans.localPosition = new Vector3(0f, 0f, 0f);
+            bgTrans.localScale = new Vector3(1f, 1f, 1f);
 		}
 
 		if (s_resUpdateChecked) 
 		{
-            GameObject accountPrefab = loginAB.LoadAsset ("Account") as GameObject;
+            GameObject accountPrefab = loginAB.LoadAsset ("account") as GameObject;
 			if (null == accountPrefab)
 			{
 				Debug.LogError("CheckResUpdate failed,accountprefab not found");
@@ -89,10 +98,12 @@ public class AppStartController : MonoBehaviour
 			}
 			GameObject accountGo = GameObject.Instantiate (accountPrefab);
             accountGo.transform.SetParent (CSInterface.s_sceneRoot);
+            accountGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+            accountGo.transform.localScale = new Vector3(1f, 1f, 1f);
 		} 
 		else 
 		{
-            GameObject resUpdatePrefab = loginAB.LoadAsset ("ResUpdate") as GameObject;
+            GameObject resUpdatePrefab = loginAB.LoadAsset ("res_update") as GameObject;
 			if (null == resUpdatePrefab)
 			{
 				Debug.LogError("CheckResUpdate failed,resourceupdateprefab not found");
@@ -100,6 +111,8 @@ public class AppStartController : MonoBehaviour
 			}			
 			GameObject resUpdateGo = GameObject.Instantiate (resUpdatePrefab);
             resUpdateGo.transform.SetParent (CSInterface.s_sceneRoot);
+            resUpdateGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+            resUpdateGo.transform.localScale = new Vector3(1f, 1f, 1f);
 		}
 	}
 

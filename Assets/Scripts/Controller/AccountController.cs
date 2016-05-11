@@ -23,11 +23,13 @@ public class AccountController : MonoBehaviour
         AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
         if (null != loginAB)
         {
-            GameObject zongListPrefab = loginAB.LoadAsset("ZoneList") as GameObject;
+            GameObject zongListPrefab = loginAB.LoadAsset("zone_list") as GameObject;
             if (null != zongListPrefab)
             {
                 GameObject zoneListGo = GameObject.Instantiate(zongListPrefab);
                 zoneListGo.transform.SetParent(CSInterface.s_uiRoot);
+                zoneListGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+                zoneListGo.transform.localScale = new Vector3(1f, 1f, 1f);
             }
         }
 	}
