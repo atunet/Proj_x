@@ -13,6 +13,8 @@ public class AppStartController : MonoBehaviour
 
 	void Start () 
 	{
+        AppConst.PrintPath();
+
         CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
         CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
         if (null == CSInterface.s_uiRoot || null == CSInterface.s_sceneRoot)
@@ -21,7 +23,6 @@ public class AppStartController : MonoBehaviour
             return;
         }
 
-        AppConst.PrintPath();
 		if(!Directory.Exists(AppConst.PERSISTENT_PATH))
         {
 			Directory.CreateDirectory(AppConst.PERSISTENT_PATH);
@@ -50,7 +51,7 @@ public class AppStartController : MonoBehaviour
                 textGo.transform.localScale = new Vector3(1f, 1f, 1f);
             }
 
-        	StartCoroutine(InitPersistentFiles());
+        	StartCoroutine(InitPersistentPath());
         }
 	}
 
@@ -72,13 +73,6 @@ public class AppStartController : MonoBehaviour
 		if (null == bgPrefab) 
 		{
 			Debug.LogError("CheckResUpdate failed,backgroundprefab not found");
-
-            string[] allAssets = loginAB.GetAllAssetNames();
-            for (int i = 0; i < allAssets.Length; ++i)
-            {
-                Debug.Log("asset name in ab:" + allAssets[i]);
-            }
-
 		}
 		else
 		{		
@@ -117,7 +111,7 @@ public class AppStartController : MonoBehaviour
 	}
 
 
-	private IEnumerator InitPersistentFiles()
+	private IEnumerator InitPersistentPath()
 	{
 		WWW versionWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
         yield return versionWWW;
@@ -125,10 +119,10 @@ public class AppStartController : MonoBehaviour
         if (string.IsNullOrEmpty(versionWWW.error))
         {         
             AssetBundle versionAB = versionWWW.assetBundle;
-            AssetBundleManifest streamingManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
-            if(null != streamingManifest)
+            AssetBundleManifest abManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
+            if(null != abManifest)
             {
-            	string[] fileList = streamingManifest.GetAllAssetBundles();
+                string[] fileList = abManifest.GetAllAssetBundles();
                         
                 m_streamingFileList = new string[fileList.Length + 1];
                 for (int i = 0; i < fileList.Length; ++i)
@@ -138,19 +132,19 @@ public class AppStartController : MonoBehaviour
                 m_streamingFileList[fileList.Length] = AppConst.VERSION_FILE_NAME;
                 m_streamingFileIndex = 0;
 
-                streamingManifest = null;
-                versionAB.Unload(true);
-
-                versionWWW.Dispose();
-                versionWWW = null;
-
 				StartCoroutine(CopyFileToPersistent(AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex]));
             }
             else
                 Debug.LogError("streaming version file do not contains AssetBundleManifest object");
+
+            abManifest = null;
+            versionAB.Unload(true);
         }
         else
             Debug.LogError("www load streaming version file failed:" + versionWWW.error + ",file://" + AppConst.STREAMING_VERSION_FILE_PATH);
+
+        versionWWW.Dispose();
+        versionWWW = null;
 	}
 
 

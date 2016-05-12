@@ -45,4 +45,12 @@ public sealed class CSInterface
 	{
 		NetController.Instance.Connect();
 	}
+    public static Transform UIRoot()
+    {
+        return s_uiRoot;
+    }
+    public static Transform SceneRoot()
+    {
+        return s_sceneRoot;
+    }
 }
