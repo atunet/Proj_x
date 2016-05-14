@@ -154,4 +154,9 @@ public class ResUpdateController : MonoBehaviour
             Debug.Log("slider value:" + m_slider.value);
         }
     }
+
+    public void OnDestroy()
+    {
+        Debug.Log("resource update controller destroy");
+    }
 }

@@ -23,29 +23,30 @@ public class Tool : MonoBehaviour
 	};
 	private static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();
 
-	[MenuItem("Tool/Asset Bundle/Build iPhone", false, 100)]
-	public static void BuildiPhoneResource() 
-	{
-		BuildAssetBundle(BuildTarget.iOS);
-	}
 
-	[MenuItem("Tool/Asset Bundle/Build Android", false, 101)]
+    [MenuItem("Tool/Asset Bundle/Build Windows", false, 101)]
+    public static void BuildWindowsResource() 
+    {
+        BuildAssetBundle(BuildTarget.StandaloneWindows);
+    }
+
+	[MenuItem("Tool/Asset Bundle/Build Android", false, 102)]
 	public static void BuildAndroidResource() 
 	{
 		BuildAssetBundle(BuildTarget.Android);
 	}
-
-	[MenuItem("Tool/Asset Bundle/Build Windows", false, 102)]
-	public static void BuildWindowsResource() 
-	{
-		BuildAssetBundle(BuildTarget.StandaloneWindows);
-	}
-
+        
 	[MenuItem("Tool/Asset Bundle/Build Mac", false, 103)]
 	public static void BuildMacResource() 
 	{
 		BuildAssetBundle(BuildTarget.StandaloneOSXIntel);
 	}
+
+    [MenuItem("Tool/Asset Bundle/Build iPhone", false, 104)]
+    public static void BuildiPhoneResource() 
+    {
+        BuildAssetBundle(BuildTarget.iOS);
+    }
 
 	/// <summary>
 	/// 根据平台打包lua文件和美术资源文件
@@ -301,25 +302,25 @@ public class Tool : MonoBehaviour
     /************* upload assetbundle files to web server ***********/
     /****************************************************************/
 
-    [MenuItem("Tool/Upload Resource/Upload Win", false, 200)]
+    [MenuItem("Tool/Upload Resource/Upload Windows", false, 200)]
     public static void UploadWinResource()
     {
         UploadResource(BuildTarget.StandaloneWindows);
     }
-
-    [MenuItem("Tool/Upload Resource/Upload Mac", false, 201)]
-    public static void UploadMacResource()
-    {
-        UploadResource(BuildTarget.StandaloneOSXIntel);
-    }
-
-    [MenuItem("Tool/Upload Resource/Upload Android", false, 202)]
+        
+    [MenuItem("Tool/Upload Resource/Upload Android", false, 201)]
     public static void UploadAndroidResource()
     {
         UploadResource(BuildTarget.Android);
     }
 
-    [MenuItem("Tool/Upload Resource/Upload IOS", false, 203)]
+    [MenuItem("Tool/Upload Resource/Upload Mac", false, 202)]
+    public static void UploadMacResource()
+    {
+        UploadResource(BuildTarget.StandaloneOSXIntel);
+    }
+
+    [MenuItem("Tool/Upload Resource/Upload iPhone", false, 203)]
     public static void UploadIosResource()
     {
         UploadResource(BuildTarget.iOS);

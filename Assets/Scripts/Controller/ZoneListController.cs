@@ -47,6 +47,12 @@ public class ZoneListController : MonoBehaviour
         loginBtnGo.transform.localPosition = new Vector3(0f, -425f, 0f);
         loginBtnGo.transform.localScale = new Vector3(1f, 1f, 1f);
 
+        Destroy(this.gameObject);
 		//BGMController btm = BGMController.Instance;
 	}
+
+    public void OnDestroy()
+    {
+        Debug.Log("zone list controller destroy");
+    }
 }

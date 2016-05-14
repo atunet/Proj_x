@@ -30,7 +30,14 @@ public class AccountController : MonoBehaviour
                 zoneListGo.transform.SetParent(CSInterface.s_uiRoot);
                 zoneListGo.transform.localPosition = new Vector3(0f, -425f, 0f);
                 zoneListGo.transform.localScale = new Vector3(1f, 1f, 1f);
+
+                Destroy(this.gameObject);   // destroy account controller instance
             }
         }
 	}
+
+    public void OnDestroy()
+    {
+        Debug.Log("account controller destroy");
+    }
 }

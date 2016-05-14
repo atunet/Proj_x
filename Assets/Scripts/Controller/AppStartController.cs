@@ -94,6 +94,8 @@ public class AppStartController : MonoBehaviour
             accountGo.transform.SetParent (CSInterface.s_sceneRoot);
             accountGo.transform.localPosition = new Vector3(0f, -425f, 0f);
             accountGo.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            Destroy(this.gameObject);   // destroy appstartcontroller instance
 		} 
 		else 
 		{
@@ -190,5 +192,10 @@ public class AppStartController : MonoBehaviour
         }
         else
             Debug.LogError("Init copy files to persistent path failed,file: file://" + filePath_ + "," + w.error);
+    }
+
+    public void OnDestroy()
+    {
+        Debug.Log("app start controller destroy");
     }
 }

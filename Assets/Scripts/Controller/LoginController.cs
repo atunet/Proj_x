@@ -32,4 +32,9 @@ public class LoginController : MonoBehaviour
 	public static void InitChapterUI()
 	{
 	}
+
+    public void OnDestroy()
+    {
+        Debug.Log("login controller destroy");
+    }
 }
