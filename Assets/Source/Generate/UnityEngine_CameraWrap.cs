@@ -753,22 +753,43 @@ public class UnityEngine_CameraWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_onPreCull(IntPtr L)
 	{
-		ToLua.Push(L, UnityEngine.Camera.onPreCull);
-		return 1;
+		try
+		{
+			ToLua.Push(L, UnityEngine.Camera.onPreCull);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_onPreRender(IntPtr L)
 	{
-		ToLua.Push(L, UnityEngine.Camera.onPreRender);
-		return 1;
+		try
+		{
+			ToLua.Push(L, UnityEngine.Camera.onPreRender);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_onPostRender(IntPtr L)
 	{
-		ToLua.Push(L, UnityEngine.Camera.onPostRender);
-		return 1;
+		try
+		{
+			ToLua.Push(L, UnityEngine.Camera.onPostRender);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -1363,29 +1384,57 @@ public class UnityEngine_CameraWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_main(IntPtr L)
 	{
-		ToLua.Push(L, UnityEngine.Camera.main);
-		return 1;
+		try
+		{
+			ToLua.Push(L, UnityEngine.Camera.main);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_current(IntPtr L)
 	{
-		ToLua.Push(L, UnityEngine.Camera.current);
-		return 1;
+		try
+		{
+			ToLua.Push(L, UnityEngine.Camera.current);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_allCameras(IntPtr L)
 	{
-		ToLua.Push(L, UnityEngine.Camera.allCameras);
-		return 1;
+		try
+		{
+			ToLua.Push(L, UnityEngine.Camera.allCameras);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_allCamerasCount(IntPtr L)
 	{
-		LuaDLL.lua_pushinteger(L, UnityEngine.Camera.allCamerasCount);
-		return 1;
+		try
+		{
+			LuaDLL.lua_pushinteger(L, UnityEngine.Camera.allCamerasCount);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
