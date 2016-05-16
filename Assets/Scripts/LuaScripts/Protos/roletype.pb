@@ -1,6 +1,6 @@
 
-–
-roletype.protoCmdbasetype.proto"ã
+µ
+roletype.protoCmdbasetype.proto"≈
 RoleBase
 roleid (
 rolename (
@@ -14,16 +14,12 @@
 viplv	 (
 bladeid
  (
-	lockstage (
-	totallike (
-title (
-unionid (
-	unionname ("@
+	lockstage ("@
 Avatar
 eye (
 nose (
 mouth (
-hair ("±
+hair ("ì
 RoleInfo
 roleid (
 rolename (
@@ -63,9 +59,7 @@ roleavatar (2.Cmd.Avatar
 soulDust (
 soulDustCount  (
 lastSoulDust" (
-	strongtag# (
-title$ (
-keyid% ("9
+	strongtag# ("9
 RoleAttrPair
 key (2.Cmd.RoleAttr
 value ("+
@@ -125,18 +119,7 @@ ActionUnit
 TestFeedBack2Unit
 itemid (
 count (
-flag ("]
-MsgRoleUnitInfo
-roleid (
-name (	
-
-bp (
-point (
-	lastlogin ("8
-	TitleUnit
-titleid (
-cond (
-flag (*ª
+flag (*ù
 RoleAttr
 eRoleAttr_GoldÅ†ç
 eRoleAttr_CashÇ†ç
@@ -152,5 +135,4 @@ ActionUnit
 eRoleAttr_TotalGetµ¢ç
 eRoleAttr_TotalConsume∂¢ç
 eRoleAttr_CopyStarsËßç
-eRoleAttr_BSCOINã†ç
-eRoleAttr_UNIONSPOINTè†ç
+eRoleAttr_BSCOINã†ç

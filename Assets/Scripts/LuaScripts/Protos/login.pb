@@ -1,9 +1,9 @@
 
-µ
+œ
 login.protoCmdbasetype.protoerrorcode.proto"Q
 VerifyVersion)
 id (2.Cmd.EProtoId:VERIFY_VERSION
-clientversion ("C
+clientversion ("C
 TempCredentialReq.
 id (2.Cmd.EProtoId:TEMP_CREDENTIAL_REQ"[
 TempCredentialRet.
@@ -35,10 +35,4 @@ appVersion (	
 roleid (
 	accountid ("?
 LoginTransitRet,
-id (2.Cmd.EProtoId:LOGIN_TRANSIT_RET"Z
-LoginCrossReq*
-id (2.Cmd.EProtoId:LOGIN_CROSS_REQ
-roleid (
-token (";
-LoginCrossRet*
-id (2.Cmd.EProtoId:LOGIN_CROSS_RET
+id (2.Cmd.EProtoId:LOGIN_TRANSIT_RET
