@@ -51,3 +51,12 @@ function ParseCreateRoleRet()
 	SendCmd(BaseTypePb.SELECT_ROLE_ONLINE, onlineCmd:SerializeToString())
 	print("select role online:" .. revCmd.rolebase.roleid .. revCmd.rolebase.rolename)
 end
+
+function ParseRoleDataLoadOk()
+	print("Role data load ok")
+	local btnTrans = UIRoot().findChild("login_btn(Clone)")
+	GameObject.Destroy(btnTrans.gameObject)
+
+	local bgTrans = SceneRoot().findChild("background(Clone)")
+	GameObject.Destroy(bgTrans.gameObject)
+end

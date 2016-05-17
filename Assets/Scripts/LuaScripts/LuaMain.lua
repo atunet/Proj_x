@@ -24,3 +24,11 @@ end
 function LoginToServer()
 	Login.LoginSvr.LoginToServer()
 end
+
+function UIRoot()
+	return CSInterface.s_uiRoot;
+end
+
+function SceneRoot()
+	return CSInterface.s_sceneRoot;
+end
