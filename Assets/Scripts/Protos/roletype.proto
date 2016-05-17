@@ -8,7 +8,7 @@ message RoleBase
     required bytes	rolename	=	2;
     required uint32	type		=	3;
 	required uint32 level		=	4;
-	required Avatar avat 		= 	5;
+	//required Avatar avat 		= 	5;
 	optional uint32 dressid 	=  	6; //未用
 	optional uint32 dresslv 	= 	7; //未用
 	optional uint32 bp			=   8;

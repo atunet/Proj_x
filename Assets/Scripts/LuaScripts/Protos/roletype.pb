@@ -1,12 +1,11 @@
 
-µ
-roletype.protoCmdbasetype.proto"Å
+š
+roletype.protoCmdbasetype.proto"ª
 RoleBase
 roleid (
 rolename (
 type (
-level (
-avat (2.Cmd.Avatar
+level (
 dressid (
 dresslv (
 
