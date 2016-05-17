@@ -1,5 +1,5 @@
 
-require ("basetype_pb")
+require ("Proto.basetype_pb")
 local BaseTypePb = _G['Protol/basetype_pb']
 
 require ("Login.LoginSvr")

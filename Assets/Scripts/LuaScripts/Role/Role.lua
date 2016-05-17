@@ -1,8 +1,8 @@
-require("basetype_pb")
-local BaseTypePb = _G['Protol/basetype_pb']
+require("Proto.basetype_pb")
+local BaseTypePb = _G['Protol.basetype_pb']
 
-require("role_pb")
-local RolePb = _G['Protol/role_pb']
+require("Proto.role_pb")
+local RolePb = _G['Protol.role_pb']
 
 module(..., package.seeall)
 
