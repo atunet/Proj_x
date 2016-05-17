@@ -31,7 +31,6 @@ public class CmdHandler : IDisposable
 
 		m_ls.AddSearchPath(AppConst.LUA_TOLUA_PATH);
 		m_ls.AddSearchPath(AppConst.LUA_LOGIC_PATH);  
-		//m_ls.AddSearchPath(AppConst.LUA_PROTO_PATH);		       
 		m_ls.DoFile("LuaMain.lua"); 
 
 		m_cmdHander = m_ls.GetFunction("LuaMain");

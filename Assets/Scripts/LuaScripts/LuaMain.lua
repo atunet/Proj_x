@@ -7,7 +7,7 @@ require("Login.LoginSvr")
 function LuaMain()
 	local cmdFunc = LuaRoute.controllers[CSInterface.s_recvProtoId]
 	if nil == cmdFunc then
-		print("unknown cmd, function  not found: 0x" .. string.format("%x",CSInterface.s_recvProtoId))
+		print("unknown cmd, function  not found: 0x" .. string.format("%04x",CSInterface.s_recvProtoId))
 		return
 	end
 	cmdFunc()

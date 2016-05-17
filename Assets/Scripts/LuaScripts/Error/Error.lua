@@ -1,8 +1,8 @@
-require("Proto.basetype_pb")
-local BaseTypePb = _G['Protol.basetype_pb']
+require("Protol.basetype_pb")
+local BaseTypePb = Protol.basetype_pb
 
-require("Proto.errorcode_pb")
-local ErrorCodePb = _G['Protol.errorcode_pb']
+require("Protol.errorcode_pb")
+local ErrorCodePb = Protol.errorcode_pb
 
 
 module(..., package.seeall)

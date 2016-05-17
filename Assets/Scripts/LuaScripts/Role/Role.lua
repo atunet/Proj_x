@@ -1,8 +1,8 @@
-require("Proto.basetype_pb")
-local BaseTypePb = _G['Protol.basetype_pb']
+require("Protol.basetype_pb")
+local BaseTypePb = Protol.basetype_pb
 
-require("Proto.role_pb")
-local RolePb = _G['Protol.role_pb']
+require("Protol.role_pb")
+local RolePb = Protol.role_pb
 
 module(..., package.seeall)
 
@@ -25,7 +25,7 @@ function ParseRoleList()
 		local onlineCmd = RolePb.SelectRoleOnline()
 		onlineCmd.roleid = revCmd.rolebase[1].roleid
 		SendCmd(BaseTypePb.SELECT_ROLE_ONLINE, onlineCmd:SerializeToString())
-		print("select role online:" .. revCmd.rolebase[1].roleid .. revCmd.rolebase[1].rolename)
+		print("select role online:" .. revCmd.rolebase[1].roleid .. "," .. revCmd.rolebase[1].rolename)
 	end
 end
 

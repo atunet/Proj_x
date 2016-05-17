@@ -1,6 +1,6 @@
 
-require ("Proto.basetype_pb")
-local BaseTypePb = _G['Protol/basetype_pb']
+require ("Protol.basetype_pb")
+local BaseTypePb = Protol.basetype_pb --_G['Protol.basetype_pb']
 
 require ("Login.LoginSvr")
 require ("Role.Role")

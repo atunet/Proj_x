@@ -1,8 +1,8 @@
-require("Proto.basetype_pb")
-local BaseTypePb = _G['Protol.basetype_pb']
+require("Protol.basetype_pb")
+local BaseTypePb = Protol.basetype_pb
 
-require("Proto.login_pb")
-local LoginPb = _G['Protol.login_pb']
+require("Protol.login_pb")
+local LoginPb = Protol.login_pb
 
 module(..., package.seeall)
 
@@ -31,7 +31,7 @@ end
 function LoginToServer()
 	if 0 == CSInterface.GetServerType() then	
 		local verifyCmd = LoginPb.VerifyVersion()
-		verifyCmd.clientversion = 1458796688481
+		verifyCmd.clientversion = 796688481
 		SendCmd(BaseTypePb.VERIFY_VERSION, verifyCmd:SerializeToString())
 
 		local loginCmd = LoginPb.LoginReq()
