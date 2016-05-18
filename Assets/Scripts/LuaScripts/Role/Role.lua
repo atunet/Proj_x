@@ -29,18 +29,6 @@ function ParseRoleList()
 	end
 end
 
-	--[[
-	local GameObject = UnityEngine.GameObject           
-            local ParticleSystem = UnityEngine.ParticleSystem    
-
-            local go = GameObject('go')
-            go:AddComponent(typeof(ParticleSystem))
-            local node = go.transform
-            node.position = Vector3.one      
-            print('gameObject is: '..tostring(go))     
-            GameObject.Destroy(go, 5)       
-	--]]
-
 function ParseCreateRoleRet()
 	local revCmd = RolePb.CreateRoleRet()
 	revCmd:ParseFromString(CSInterface.s_recvBytes)
@@ -54,9 +42,24 @@ end
 
 function ParseRoleDataLoadOk()
 	print("Role data load ok")
-	local btnTrans = UIRoot().findChild("login_btn(Clone)")
+
+    local GameObject = UnityEngine.GameObject           
+
+	local btnTrans = UIRoot():FindChild("login_btn(Clone)")
 	GameObject.Destroy(btnTrans.gameObject)
 
-	local bgTrans = SceneRoot().findChild("background(Clone)")
+	local bgTrans = SceneRoot():FindChild("background(Clone)")
 	GameObject.Destroy(bgTrans.gameObject)
+
+	
+	local GameObject = UnityEngine.GameObject           
+    local ParticleSystem = UnityEngine.ParticleSystem    
+
+    local go = GameObject('go')
+    go:AddComponent(typeof(ParticleSystem))
+    local node = go.transform
+    node.position = Vector3.one      
+    print('gameObject is: '..tostring(go))     
+            --GameObject.Destroy(go, 5)       
+	
 end
