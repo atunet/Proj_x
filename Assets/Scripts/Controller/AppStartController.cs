@@ -62,7 +62,7 @@ public class AppStartController : MonoBehaviour
         Transform textTrans = CSInterface.s_sceneRoot.FindChild("defaultTextPrefab(clone)");
         if (textTrans) GameObject.Destroy(textTrans.gameObject);
 
-        AssetBundle loginAB = ABManager.Instance.get(AppConst.AB_LOGIN);
+        AssetBundle loginAB = ABManager.get(AppConst.AB_LOGIN);
         if (null == loginAB)
         {	
 			Debug.LogError("CheckResUpdate failed,login ab file not found");

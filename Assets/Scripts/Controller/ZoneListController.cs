@@ -35,7 +35,7 @@ public class ZoneListController : MonoBehaviour
 
 	private void ShowLoginBtn()
 	{
-        GameObject loginBtnPrefab = ABManager.Instance.get(AppConst.AB_LOGIN).LoadAsset ("login_btn") as GameObject;
+        GameObject loginBtnPrefab = ABManager.get(AppConst.AB_LOGIN).LoadAsset ("login_btn") as GameObject;
 		if (null == loginBtnPrefab)
 		{
             Debug.LogError("ShowLoginBtn failed,loginBtnPrefab load failed");

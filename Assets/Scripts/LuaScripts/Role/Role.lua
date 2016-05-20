@@ -46,12 +46,32 @@ function ParseRoleDataLoadOk()
     local GameObject = UnityEngine.GameObject           
 
 	local btnTrans = UIRoot():FindChild("login_btn(Clone)")
-	GameObject.Destroy(btnTrans.gameObject)
+	if nil ~= btnTrans then 
+		GameObject.Destroy(btnTrans.gameObject)
+	end
 
 	local bgTrans = SceneRoot():FindChild("background(Clone)")
-	GameObject.Destroy(bgTrans.gameObject)
+	if nil ~= bgTrans then
+		GameObject.Destroy(bgTrans.gameObject)
+	end
 
-	
+	local loginAB = ABManager.get("prefab_login")
+	if nil == loginAB then
+		print("abmanager get prefab_login error")
+	else
+		print("abmanager get prefab_login success")
+	end
+	local bgPrefab = loginAB:LoadAsset ("background")
+	if nil ~= bgPrefab then
+		print("bg prefab asset load ok")
+	end
+	local mainBgTrans = GameObject.Instantiate(bgPrefab).transform
+    mainBgTrans:SetParent(SceneRoot())
+    mainBgTrans.localPosition = Vector3.zero
+    mainBgTrans.localScale =  Vector3.one
+    mainBgTrans.gameObject.name = "mainBG"
+--[[
+
 	local GameObject = UnityEngine.GameObject           
     local ParticleSystem = UnityEngine.ParticleSystem    
 
@@ -61,5 +81,5 @@ function ParseRoleDataLoadOk()
     node.position = Vector3.one      
     print('gameObject is: '..tostring(go))     
             --GameObject.Destroy(go, 5)       
-	
+	--]]
 end
