@@ -15,7 +15,11 @@ public static class AppConst
 	public static string STREAMING_RELATIVE_PATH = Application.streamingAssetsPath.Substring(PROJECT_PATH_LEN+1);
     public static string STREAMING_VERSION_FILE_PATH = STREAMING_PATH + "/" + VERSION_FILE_NAME;
 
-	public static string PERSISTENT_PATH = Application.persistentDataPath + "/" + PLATFORM;
+    #if UNITY_EDITOR || UNITY_EDITOR_64 || UNITY_EDITOR_OSX
+        public static string PERSISTENT_PATH = STREAMING_PATH;
+    #else
+	    public static string PERSISTENT_PATH = Application.persistentDataPath + "/" + PLATFORM;
+    #endif
     public static string PERSISTENT_RELATIVE_PATH = Application.persistentDataPath.Substring(PROJECT_PATH_LEN+1);
     public static string PERSISTENT_VERSION_FILE_PATH = PERSISTENT_PATH + "/" + VERSION_FILE_NAME;
 

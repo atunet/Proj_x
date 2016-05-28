@@ -68,8 +68,17 @@ function ParseRoleDataLoadOk()
 	local mainBgTrans = GameObject.Instantiate(bgPrefab).transform
     mainBgTrans:SetParent(SceneRoot())
     mainBgTrans.localPosition = Vector3.zero
-    mainBgTrans.localScale =  Vector3.one
+    mainBgTrans.localScale = Vector3.one
     mainBgTrans.gameObject.name = "mainBG"
+
+    local levelAB = ABManager.get("sprite_level")
+    local mainAB = ABManager.get("prefab_main_ui")
+
+
+
+
+
+
 --[[
 
 	local GameObject = UnityEngine.GameObject           

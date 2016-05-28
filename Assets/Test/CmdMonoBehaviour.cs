@@ -15,7 +15,10 @@ public class CmdMonoBehaviour : MonoBehaviour {
 	{
 		buffer[i] = (byte)(i % 10);
 	}*/
-	
+        GameObject imagePrefab = Resources.Load<GameObject>("ugui_image");
+        GameObject imageGo = GameObject.Instantiate(imagePrefab);
+        imageGo.transform.SetParent(GameObject.Find("Canvas").transform, false);
+        /*
 	Cmd.LoginRet ret = new Cmd.LoginRet();
 	ret.accountid = 999999;
 	ret.token = 100;
@@ -30,6 +33,7 @@ public class CmdMonoBehaviour : MonoBehaviour {
 	
 	//CmdHandler.Instance.cmdParse(100, ms.ToArray());
 	CmdHandler.Instance.CmdParse();	
+ */   
 	}
 	
 	// Update is called once per frame
