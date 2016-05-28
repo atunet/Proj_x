@@ -38,17 +38,17 @@ public class AppStartController : MonoBehaviour
         	if(null != defaultBG)
 			{	
                 GameObject bgGo = GameObject.Instantiate(defaultBG) as GameObject;
-                bgGo.transform.SetParent(CSInterface.s_sceneRoot);
-                bgGo.transform.localPosition = new Vector3(0f, 0f, 0f);
-                bgGo.transform.localScale = new Vector3(1f, 1f, 1f);
+                bgGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+                //bgGo.transform.localPosition = new Vector3(0f, 0f, 0f);
+                //bgGo.transform.localScale = new Vector3(1f, 1f, 1f);
         	}
             GameObject defaultText = Resources.Load("defaultTextPrefab") as GameObject;
             if(null != defaultText)
             {   
                 GameObject textGo = GameObject.Instantiate(defaultText) as GameObject;
-                textGo.transform.SetParent(CSInterface.s_sceneRoot);
-                textGo.transform.localPosition = new Vector3(0f, -425f, 0f);
-                textGo.transform.localScale = new Vector3(1f, 1f, 1f);
+                textGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+                //textGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+                //textGo.transform.localScale = new Vector3(1f, 1f, 1f);
             }
 
         	StartCoroutine(InitPersistentPath());
@@ -77,9 +77,9 @@ public class AppStartController : MonoBehaviour
 		else
 		{		
             bgTrans = GameObject.Instantiate(bgPrefab).transform;
-            bgTrans.SetParent (CSInterface.s_sceneRoot);
-            bgTrans.localPosition = new Vector3(0f, 0f, 0f);
-            bgTrans.localScale = new Vector3(1f, 1f, 1f);
+            bgTrans.SetParent(CSInterface.s_sceneRoot, false);
+            //bgTrans.localPosition = new Vector3(0f, 0f, 0f);
+            //bgTrans.localScale = new Vector3(1f, 1f, 1f);
 		}
 
 		if (s_resUpdateChecked) 
@@ -91,9 +91,9 @@ public class AppStartController : MonoBehaviour
 				return;
 			}
 			GameObject accountGo = GameObject.Instantiate (accountPrefab);
-            accountGo.transform.SetParent (CSInterface.s_sceneRoot);
-            accountGo.transform.localPosition = new Vector3(0f, -425f, 0f);
-            accountGo.transform.localScale = new Vector3(1f, 1f, 1f);
+            accountGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+            //accountGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+            //accountGo.transform.localScale = new Vector3(1f, 1f, 1f);
 
             Destroy(this.gameObject);   // destroy appstartcontroller instance
 		} 
@@ -106,9 +106,9 @@ public class AppStartController : MonoBehaviour
 				return;
 			}			
 			GameObject resUpdateGo = GameObject.Instantiate (resUpdatePrefab);
-            resUpdateGo.transform.SetParent (CSInterface.s_sceneRoot);
-            resUpdateGo.transform.localPosition = new Vector3(0f, -425f, 0f);
-            resUpdateGo.transform.localScale = new Vector3(1f, 1f, 1f);
+            resUpdateGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+            //resUpdateGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+            //resUpdateGo.transform.localScale = new Vector3(1f, 1f, 1f);
 		}
 	}
 

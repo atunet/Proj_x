@@ -66,18 +66,23 @@ function ParseRoleDataLoadOk()
 		print("bg prefab asset load ok")
 	end
 	local mainBgTrans = GameObject.Instantiate(bgPrefab).transform
-    mainBgTrans:SetParent(SceneRoot())
-    mainBgTrans.localPosition = Vector3.zero
-    mainBgTrans.localScale = Vector3.one
+    mainBgTrans:SetParent(SceneRoot(), false)
+    --mainBgTrans.localPosition = Vector3.zero
+    --mainBgTrans.localScale = Vector3.one
     mainBgTrans.gameObject.name = "mainBG"
 
     local levelAB = ABManager.get("sprite_level")
     local mainAB = ABManager.get("prefab_main_ui")
 
+    local goldPrefab = mainAB:LoadAsset("prop_gold")
+    local goldTrans = GameObject.Instantiate(goldPrefab).transform
+    goldTrans:SetParent(UIRoot(), false)
+    --goldTrans.gameObject.name = "prop_gold"
 
-
-
-
+    local cashPrefab = mainAB:LoadAsset("prop_cash")
+    local cashTrans = GameObject.Instantiate(cashPrefab).transform
+    cashTrans:SetParent(UIRoot(), false)
+    --cashTrans.gameObject.name = "prop_cash"
 
 --[[
 
