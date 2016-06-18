@@ -27,6 +27,12 @@ public sealed class ABManager
         {           
             Debug.Log("ABManager: load ab file success:" + abName_ + AppConst.AB_EXT_NAME);
             s_abMaps.Add(abName_, ab);
+
+            string[] assetNames = ab.GetAllAssetNames();
+            for (int i = 0; i < assetNames.Length; ++i)
+            {
+                Debug.Log("asset name:" + assetNames[i]);
+            }
         }
         else
             Debug.LogError("ABManager: load ab failed,file not existed:" + abName_ + AppConst.AB_EXT_NAME);

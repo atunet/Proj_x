@@ -55,23 +55,17 @@ function ParseRoleDataLoadOk()
 		GameObject.Destroy(bgTrans.gameObject)
 	end
 
-	local loginAB = ABManager.get("prefab_login")
-	if nil == loginAB then
-		print("abmanager get prefab_login error")
-	else
-		print("abmanager get prefab_login success")
-	end
-	local bgPrefab = loginAB:LoadAsset ("background")
+    local levelAB = ABManager.get("sprite_level")
+	local sceneAB = ABManager.get("prefab_scene")
+
+	local bgPrefab = sceneAB:LoadAsset ("mainbg")
 	if nil ~= bgPrefab then
 		print("bg prefab asset load ok")
 	end
 	local mainBgTrans = GameObject.Instantiate(bgPrefab).transform
     mainBgTrans:SetParent(SceneRoot(), false)
-    --mainBgTrans.localPosition = Vector3.zero
-    --mainBgTrans.localScale = Vector3.one
     mainBgTrans.gameObject.name = "mainBG"
 
-    local levelAB = ABManager.get("sprite_level")
     local mainAB = ABManager.get("prefab_main_ui")
 
     local goldPrefab = mainAB:LoadAsset("prop_gold")
@@ -84,16 +78,9 @@ function ParseRoleDataLoadOk()
     cashTrans:SetParent(UIRoot(), false)
     --cashTrans.gameObject.name = "prop_cash"
 
---[[
+    local strengthPrefab = mainAB:LoadAsset("prop_strength")
+    local strengthTrans = GameObject.Instantiate(strengthPrefab).transform
+    strengthTrans:SetParent(UIRoot(), false)
 
-	local GameObject = UnityEngine.GameObject           
-    local ParticleSystem = UnityEngine.ParticleSystem    
 
-    local go = GameObject('go')
-    go:AddComponent(typeof(ParticleSystem))
-    local node = go.transform
-    node.position = Vector3.one      
-    print('gameObject is: '..tostring(go))     
-            --GameObject.Destroy(go, 5)       
-	--]]
 end

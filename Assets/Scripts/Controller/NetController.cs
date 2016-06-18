@@ -65,6 +65,7 @@ public class NetController : MonoBehaviour
 		TCPClient tcpClient = new TCPClient (m_serverIP, m_serverPort);
 		if (!tcpClient.Connect ()) 
 		{
+            Debug.LogError("connect to server failed (" + m_serverIP + ":" + m_serverPort + ")");
             tcpClient = null;
             return;
         }
