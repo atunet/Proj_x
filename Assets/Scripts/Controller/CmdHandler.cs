@@ -44,6 +44,12 @@ public class CmdHandler : IDisposable
 		return true;
 	}
 
+    public LuaTable Require(string luaFileName_)
+    {
+        m_ls.Require(luaFileName_);
+        return null;
+    }
+
 	public void Dispose()
 	{
 		if(null != m_cmdHander)

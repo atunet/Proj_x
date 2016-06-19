@@ -1,68 +1,63 @@
-﻿//对于战斗 update 交给脚本管理更方便
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System;
 using LuaInterface;
 
 public sealed class LuaBehaviour : MonoBehaviour
 {
-    private string m_luaFileName = null;
+    private static string s_luaFileName = null;
 
     private LuaTable m_self = null;
-    private LuaFunction m_updateFunc = null;
+    private LuaFunction m_luaAwake = null;
+    private LuaFunction m_luaStart = null;
+    private LuaFunction m_luaUpdate = null;
+    private LuaFunction m_luaFixedUpdate = null;
+    private LuaFunction m_luaLateUpdate = null;
+    private LuaFunction m_luaDestroy = null;
 
-  
-    protected LuaState      luaState_;
-    protected LuaFunction   lupdate_;
-
-    public LuaTable script
+    public static string LuaFileName
     {
-        get{ return self_; }
+        get { return s_luaFileName; }
+        set { s_luaFileName = value; }
     }
 
     protected void Awake()
     {
-        luaState_ = LuaMainInstance.Instance.luaState;
-        if(ScriptName == null)
-        {
-            Debug.LogError("The ScriptName must be set.");
-            return;
-        }
-
-        //require lua文件，得到返回的类
-        LuaTable metatable = (LuaTable)LuaMainInstance.Instance.require(ScriptName);
+        LuaTable metatable = CmdHandler.Instance.Require(s_luaFileName);
         if(metatable == null)
         {
-            Debug.LogError("Invalid script file '" + ScriptName + "', metatable needed as a result.");
+            Debug.LogError("Invalid script file '" + s_luaFileName + "', metatable needed as a result.");
             return;
         }
 
-        //从类中找到New函数
-        LuaFunction lnew = (LuaFunction)metatable["New"];
-        if(lnew == null)
+        LuaFunction newFunc = (LuaFunction)metatable["New"];
+        if(newFunc == null)
         {
-            Debug.LogError("Invalid metatable of script '" + ScriptName + "', function 'New' needed.");
+            Debug.LogError("Invalid metatable of script '" + s_luaFileName + "', function 'New' needed.");
             return;
         }
 
         //执行New函数生成脚本对象
-        object[] results = lnew.Call(metatable, this);
-        if(results == null || results.Length == 0)
+        object[] res = newFunc.Call(metatable, this);
+        if(res == null || res.Length == 0)
         {
-            Debug.LogError("Invalid 'New' method of script '" + ScriptName + "', a return value needed.");
+            Debug.LogError("Invalid 'New' method of script '" + s_luaFileName + "', a return value needed.");
             return;
         }
 
-        //存贮脚本对象
-        self_ = (LuaTable)results[0];
+        m_self = (LuaTable)res[0];
 
         //给脚本对象设置上常用的属性
-        self_["transform"] = transform;
-        self_["gameObject"] = gameObject;
-        self_["behaviour"] = this;
+        m_self["transform"] = transform;
+        m_self["gameObject"] = gameObject;
+        m_self["behaviour"] = this;
 
-        lupdate_ = (LuaFunction)self_["Update"];
+        m_luaAwake = (LuaFunction)m_self["Awake"];
+        m_luaStart = (LuaFunction)m_self["Start"];
+        m_luaUpdate = (LuaFunction)m_self["Update"];
+        m_luaFixedUpdate = (LuaFunction)m_self["FixedUpdate"];
+        m_luaLateUpdate = (LuaFunction)m_self["LateUpdate"];
+        m_luaDestroy = (LuaFunction)m_self["Destroy"];
 
         //尝试调用脚本对象的Awake函数
         CallMethod("Awake");
@@ -78,9 +73,9 @@ public sealed class LuaBehaviour : MonoBehaviour
     // Update is called once per frame
     protected void Update ()
     {
-        if(lupdate_ != null)
+        if(m_luaUpdate != null)
         {
-            lupdate_.Call(self_);
+            m_luaUpdate.Call(m_self);
         }
     }
 
@@ -88,28 +83,28 @@ public sealed class LuaBehaviour : MonoBehaviour
     {
         CallMethod("OnDestroy");
 
-        if(lupdate_ != null)
+        if(m_luaUpdate != null)
         {
-            lupdate_.Dispose();
-            lupdate_ = null;
+            m_luaUpdate.Dispose();
+            m_luaUpdate = null;
         }
 
         //销毁脚本对象
-        if(self_ != null)
+        if(m_self != null)
         {
-            self_.Dispose();
-            self_ = null;
+            m_self.Dispose();
+            m_self = null;
         }
     }
 
     protected object[] CallMethod(string func, params object[] args)
     {
-        if (self_ == null)
+        if (m_self == null)
         {
             return null;
         }
 
-        LuaFunction lfunc = (LuaFunction)self_[func];
+        LuaFunction lfunc = (LuaFunction)m_self[func];
         if(lfunc == null)
         {
             return null;
@@ -117,10 +112,10 @@ public sealed class LuaBehaviour : MonoBehaviour
 
         //等价于lua语句: self:func(...)
         int oldTop = lfunc.BeginPCall();
-        lfunc.Push(self_);
+        lfunc.Push(m_self);
         lfunc.PushArgs(args);
         lfunc.PCall();
-        object[] objs = luaState_.CheckObjects(oldTop);
+        object[] objs = null;//luaState_.CheckObjects(oldTop);
         lfunc.EndPCall();
         return objs;
     }
