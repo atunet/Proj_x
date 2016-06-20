@@ -8,8 +8,6 @@ public sealed class LuaBehaviour : MonoBehaviour
     private static string s_luaFileName = null;
 
     private LuaTable m_self = null;
-    private LuaFunction m_luaAwake = null;
-    private LuaFunction m_luaStart = null;
     private LuaFunction m_luaUpdate = null;
     private LuaFunction m_luaFixedUpdate = null;
     private LuaFunction m_luaLateUpdate = null;
@@ -26,14 +24,14 @@ public sealed class LuaBehaviour : MonoBehaviour
         LuaTable metatable = CmdHandler.Instance.Require(s_luaFileName);
         if(metatable == null)
         {
-            Debug.LogError("Invalid script file '" + s_luaFileName + "', metatable needed as a result.");
+            Debug.LogError("[LuaBehaviour] require lua file failed: " + s_luaFileName);
             return;
         }
 
         LuaFunction newFunc = (LuaFunction)metatable["New"];
         if(newFunc == null)
         {
-            Debug.LogError("Invalid metatable of script '" + s_luaFileName + "', function 'New' needed.");
+            Debug.LogError("[LuaBehaviour] load 'New' lua function failed: " + s_luaFileName);
             return;
         }
 
@@ -41,7 +39,7 @@ public sealed class LuaBehaviour : MonoBehaviour
         object[] res = newFunc.Call(metatable, this);
         if(res == null || res.Length == 0)
         {
-            Debug.LogError("Invalid 'New' method of script '" + s_luaFileName + "', a return value needed.");
+            Debug.LogError("[LuaBehaviour] 'New' function should return a table instance: " + s_luaFileName);
             return;
         }
 
@@ -52,22 +50,18 @@ public sealed class LuaBehaviour : MonoBehaviour
         m_self["gameObject"] = gameObject;
         m_self["behaviour"] = this;
 
-        m_luaAwake = (LuaFunction)m_self["Awake"];
-        m_luaStart = (LuaFunction)m_self["Start"];
         m_luaUpdate = (LuaFunction)m_self["Update"];
         m_luaFixedUpdate = (LuaFunction)m_self["FixedUpdate"];
         m_luaLateUpdate = (LuaFunction)m_self["LateUpdate"];
         m_luaDestroy = (LuaFunction)m_self["Destroy"];
 
-        //尝试调用脚本对象的Awake函数
-        CallMethod("Awake");
+     	CallMethod("Awake");
     }
 
     // Use this for initialization
     protected void Start ()
     {
-        //尝试调用脚本对象的Start函数
-        CallMethod("Start");
+    	CallMethod("Start");
     }
 
     // Update is called once per frame
@@ -81,7 +75,7 @@ public sealed class LuaBehaviour : MonoBehaviour
 
     protected void OnDestroy()
     {
-        CallMethod("OnDestroy");
+    	CallMethod("OnDestroy");
 
         if(m_luaUpdate != null)
         {
@@ -89,7 +83,18 @@ public sealed class LuaBehaviour : MonoBehaviour
             m_luaUpdate = null;
         }
 
-        //销毁脚本对象
+		if(m_luaFixedUpdate != null)
+        {
+			m_luaFixedUpdate.Dispose();
+			m_luaFixedUpdate = null;
+        }
+
+		if(m_luaLateUpdate != null)
+        {
+			m_luaLateUpdate.Dispose();
+			m_luaLateUpdate = null;
+        }
+
         if(m_self != null)
         {
             m_self.Dispose();
