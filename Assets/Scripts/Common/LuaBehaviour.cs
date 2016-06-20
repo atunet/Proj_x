@@ -11,7 +11,6 @@ public sealed class LuaBehaviour : MonoBehaviour
     private LuaFunction m_luaUpdate = null;
     private LuaFunction m_luaFixedUpdate = null;
     private LuaFunction m_luaLateUpdate = null;
-    private LuaFunction m_luaDestroy = null;
 
     public static string LuaFileName
     {
@@ -19,7 +18,7 @@ public sealed class LuaBehaviour : MonoBehaviour
         set { s_luaFileName = value; }
     }
 
-    protected void Awake()
+    public void Awake()
     {
         LuaTable metatable = CmdHandler.Instance.Require(s_luaFileName);
         if(metatable == null)
@@ -53,19 +52,18 @@ public sealed class LuaBehaviour : MonoBehaviour
         m_luaUpdate = (LuaFunction)m_self["Update"];
         m_luaFixedUpdate = (LuaFunction)m_self["FixedUpdate"];
         m_luaLateUpdate = (LuaFunction)m_self["LateUpdate"];
-        m_luaDestroy = (LuaFunction)m_self["Destroy"];
 
      	CallMethod("Awake");
     }
 
     // Use this for initialization
-    protected void Start ()
+    public void Start ()
     {
     	CallMethod("Start");
     }
 
     // Update is called once per frame
-    protected void Update ()
+    public void Update ()
     {
         if(m_luaUpdate != null)
         {
@@ -73,7 +71,23 @@ public sealed class LuaBehaviour : MonoBehaviour
         }
     }
 
-    protected void OnDestroy()
+    public void LateUpdate()
+    {
+        if (m_luaLateUpdate != null)
+        {
+            m_luaLateUpdate.Call(m_self);
+        }
+    }
+
+    public void FixedUpdate()
+    {
+        if (m_luaFixedUpdate != null)
+        {
+            m_luaFixedUpdate.Call(m_self);
+        }
+    }
+
+    public void OnDestroy()
     {
     	CallMethod("OnDestroy");
 
@@ -102,26 +116,20 @@ public sealed class LuaBehaviour : MonoBehaviour
         }
     }
 
-    protected object[] CallMethod(string func, params object[] args)
+    protected object[] CallMethod(string func_, params object[] args_)
     {
-        if (m_self == null)
-        {
-            return null;
-        }
+        if (m_self == null) return null;
 
-        LuaFunction lfunc = (LuaFunction)m_self[func];
-        if(lfunc == null)
-        {
-            return null;
-        }
+        LuaFunction luaFunc = (LuaFunction)m_self[func_];
+        if(luaFunc == null) return null;
 
         //等价于lua语句: self:func(...)
-        int oldTop = lfunc.BeginPCall();
-        lfunc.Push(m_self);
-        lfunc.PushArgs(args);
-        lfunc.PCall();
+        int oldTop = luaFunc.BeginPCall();
+        luaFunc.Push(m_self);
+        luaFunc.PushArgs(args_);
+        luaFunc.PCall();
         object[] objs = null;//luaState_.CheckObjects(oldTop);
-        lfunc.EndPCall();
+        luaFunc.EndPCall();
         return objs;
     }
 }
