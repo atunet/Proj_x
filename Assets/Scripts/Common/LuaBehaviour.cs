@@ -20,7 +20,7 @@ public sealed class LuaBehaviour : MonoBehaviour
 
     public void Awake()
     {
-        LuaTable metatable = CmdHandler.Instance.Require(s_luaFileName);
+        LuaTable metatable = (LuaTable)CmdHandler.Instance.Require(s_luaFileName);
         if(metatable == null)
         {
             Debug.LogError("[LuaBehaviour] require lua file failed: " + s_luaFileName);
@@ -53,6 +53,19 @@ public sealed class LuaBehaviour : MonoBehaviour
         m_luaFixedUpdate = (LuaFunction)m_self["FixedUpdate"];
         m_luaLateUpdate = (LuaFunction)m_self["LateUpdate"];
 
+        if(m_luaUpdate == null)
+        {
+        	Debug.LogWarning("[LuaBehaviour] luaUpdate function not found");
+        }
+		if(m_luaFixedUpdate == null)
+        {
+			Debug.LogWarning("[LuaBehaviour] luaFixedUpdate function not found");
+        }
+		if(m_luaLateUpdate == null)
+        {
+			Debug.LogWarning("[LuaBehaviour] luaLateUpdate function not found");
+        }
+
      	CallMethod("Awake");
     }
 
@@ -65,7 +78,7 @@ public sealed class LuaBehaviour : MonoBehaviour
     // Update is called once per frame
     public void Update ()
     {
-        if(m_luaUpdate != null)
+        if (m_luaUpdate != null)
         {
             m_luaUpdate.Call(m_self);
         }
@@ -87,9 +100,11 @@ public sealed class LuaBehaviour : MonoBehaviour
         }
     }
 
-    public void OnDestroy()
+	public void OnDestroy()
     {
-    	CallMethod("OnDestroy");
+    	Debug.Log("[LuaBehaviour] OnDestroy called");
+
+		CallMethod("OnDestroy");
 
         if(m_luaUpdate != null)
         {
@@ -121,14 +136,17 @@ public sealed class LuaBehaviour : MonoBehaviour
         if (m_self == null) return null;
 
         LuaFunction luaFunc = (LuaFunction)m_self[func_];
-        if(luaFunc == null) return null;
+        if(luaFunc == null) 
+        {
+        	Debug.LogWarning("[LuaBehaviour] call method failed,lua function not found");
+        	return null;
+        }
 
-        //等价于lua语句: self:func(...)
         int oldTop = luaFunc.BeginPCall();
         luaFunc.Push(m_self);
         luaFunc.PushArgs(args_);
         luaFunc.PCall();
-        object[] objs = null;//luaState_.CheckObjects(oldTop);
+        object[] objs = CmdHandler.Instance.GetLuaState().CheckObjects(oldTop);
         luaFunc.EndPCall();
         return objs;
     }

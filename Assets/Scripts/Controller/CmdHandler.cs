@@ -20,6 +20,7 @@ public class CmdHandler : IDisposable
 	}	
 	private CmdHandler() {}
 
+	public LuaState GetLuaState() { return m_ls; }
 
 	public bool Init()
 	{
@@ -40,14 +41,36 @@ public class CmdHandler : IDisposable
 			return false;
 		}
 
-        Debugger.Log("CmdHander  lua init ok");
+        Debugger.Log("CmdHander lua init ok");
 		return true;
 	}
 
-    public LuaTable Require(string luaFileName_)
+    public object Require(string luaFileName_)
     {
-        m_ls.Require(luaFileName_);
-        return null;
+		int top = m_ls.LuaGetTop();
+		string error = null;
+		object result = null;
+
+		string relativePath = "Component\\" + luaFileName_;
+		if (m_ls.LuaRequire(relativePath) != 0)
+		{
+			error = m_ls.LuaToString(-1);
+		}
+		else
+		{
+			if(m_ls.LuaGetTop() > top)
+			{
+				result = m_ls.ToVariant(-1);
+			}
+		}
+
+		m_ls.LuaSetTop(top);
+		
+		if (error != null)
+		{
+			throw new LuaException(error);
+		}
+		return result;
     }
 
 	public void Dispose()

@@ -115,8 +115,10 @@ public static class CustomSettings
         _GT(typeof(RenderTexture)),
         _GT(typeof(Rigidbody)),
 
-            _GT(typeof(CSInterface)),
-            _GT(typeof(ABManager)),
+        _GT(typeof(CSInterface)),
+        _GT(typeof(ABManager)),
+		_GT(typeof(LuaBehaviour)),
+
     };
 
     public static List<Type> dynamicList = new List<Type>()

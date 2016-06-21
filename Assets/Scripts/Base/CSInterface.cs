@@ -53,4 +53,10 @@ public sealed class CSInterface
     {
         return s_sceneRoot;
     }
+
+    public static LuaBehaviour AddComponent(GameObject go_, string luaFileName_)
+    {
+    	LuaBehaviour.LuaFileName = luaFileName_;
+    	return go_.AddComponent<LuaBehaviour>();
+    }
 }

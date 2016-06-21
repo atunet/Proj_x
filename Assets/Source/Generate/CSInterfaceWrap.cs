@@ -15,6 +15,7 @@ public class CSInterfaceWrap
 		L.RegFunction("LoginToServer", LoginToServer);
 		L.RegFunction("UIRoot", UIRoot);
 		L.RegFunction("SceneRoot", SceneRoot);
+		L.RegFunction("AddComponent", AddComponent);
 		L.RegVar("s_uiRoot", get_s_uiRoot, set_s_uiRoot);
 		L.RegVar("s_sceneRoot", get_s_sceneRoot, set_s_sceneRoot);
 		L.RegVar("s_recvProtoId", get_s_recvProtoId, set_s_recvProtoId);
@@ -142,6 +143,24 @@ public class CSInterfaceWrap
 		{
 			ToLua.CheckArgsCount(L, 0);
 			UnityEngine.Transform o = CSInterface.SceneRoot();
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int AddComponent(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.GameObject));
+			string arg1 = ToLua.CheckString(L, 2);
+			LuaBehaviour o = CSInterface.AddComponent(arg0, arg1);
 			ToLua.Push(L, o);
 			return 1;
 		}

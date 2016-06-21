@@ -82,5 +82,5 @@ function ParseRoleDataLoadOk()
     local strengthTrans = GameObject.Instantiate(strengthPrefab).transform
     strengthTrans:SetParent(UIRoot(), false)
 
-
+    CSInterface.AddComponent(strengthTrans.gameObject, "BehaviourTest")
 end
