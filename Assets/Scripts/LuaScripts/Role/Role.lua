@@ -83,4 +83,6 @@ function ParseRoleDataLoadOk()
     strengthTrans:SetParent(UIRoot(), false)
 
     CSInterface.AddComponent(strengthTrans.gameObject, "BehaviourTest")
+    CSInterface.AddComponent(strengthTrans.gameObject, "BehaviourTest2")
+
 end

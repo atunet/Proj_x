@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using LuaInterface;
 
 public class CmdHandler : IDisposable
@@ -51,7 +52,7 @@ public class CmdHandler : IDisposable
 		string error = null;
 		object result = null;
 
-		string relativePath = "Component\\" + luaFileName_;
+        string relativePath = Path.Combine("Component", luaFileName_);
 		if (m_ls.LuaRequire(relativePath) != 0)
 		{
 			error = m_ls.LuaToString(-1);

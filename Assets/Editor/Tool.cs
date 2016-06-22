@@ -171,7 +171,7 @@ public class Tool : MonoBehaviour
             int realLength = 0; // 过滤xxx.meta之后的文件数量
             for(int j = 0; j < fileList.Length; ++j)
             {
-                if (fileList[j].EndsWith(".meta")) continue;
+                if (fileList[j].EndsWith(".meta") || fileList[j].Contains("ds_store")) continue;
                 realLength++;
             }
 
@@ -182,7 +182,7 @@ public class Tool : MonoBehaviour
             int index = 0;
             for (int k = 0; k < fileList.Length; ++k)
             {             
-                if (fileList[k].EndsWith(".meta")) continue;
+                if (fileList[k].EndsWith(".meta") || fileList[k].Contains("ds_store")) continue;
                              
                 string relativeFilePath = fileList[k].Replace("\\", "/").Substring(AppConst.PROJECT_PATH_LEN+1);
                 build.assetNames[index++] = relativeFilePath;
