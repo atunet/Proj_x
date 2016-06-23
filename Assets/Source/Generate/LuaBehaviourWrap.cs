@@ -13,6 +13,7 @@ public class LuaBehaviourWrap
 		L.RegFunction("LateUpdate", LateUpdate);
 		L.RegFunction("FixedUpdate", FixedUpdate);
 		L.RegFunction("OnDestroy", OnDestroy);
+		L.RegFunction("LuaTable", LuaTable);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", Lua_ToString);
 		L.RegVar("LuaFileName", get_LuaFileName, set_LuaFileName);
@@ -108,6 +109,23 @@ public class LuaBehaviourWrap
 			LuaBehaviour obj = (LuaBehaviour)ToLua.CheckObject(L, 1, typeof(LuaBehaviour));
 			obj.OnDestroy();
 			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int LuaTable(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			LuaBehaviour obj = (LuaBehaviour)ToLua.CheckObject(L, 1, typeof(LuaBehaviour));
+			LuaInterface.LuaTable o = obj.LuaTable();
+			ToLua.Push(L, o);
+			return 1;
 		}
 		catch(Exception e)
 		{

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 using LuaInterface;
 
 public sealed class CSInterface
@@ -54,9 +55,19 @@ public sealed class CSInterface
         return s_sceneRoot;
     }
 
-    public static LuaBehaviour AddComponent(GameObject go_, string luaFileName_)
+    public static LuaTable AddComponent(GameObject go_, string luaFileName_)
     {
     	LuaBehaviour.LuaFileName = luaFileName_;
-    	return go_.AddComponent<LuaBehaviour>();
+    	return go_.AddComponent<LuaBehaviour>().LuaTable();
+    }
+
+	public static void AddClick(Button btn_, LuaFunction func_) 
+	{
+    	if (btn_ == null || func_ == null) 
+    	{
+    		Debug.LogWarning("addclick failed,btn or func is null");
+    		return;
+        }
+        btn_.onClick.AddListener(delegate() { func_.Call(btn_.gameObject); });
     }
 }

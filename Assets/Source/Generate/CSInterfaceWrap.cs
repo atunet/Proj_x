@@ -16,6 +16,7 @@ public class CSInterfaceWrap
 		L.RegFunction("UIRoot", UIRoot);
 		L.RegFunction("SceneRoot", SceneRoot);
 		L.RegFunction("AddComponent", AddComponent);
+		L.RegFunction("AddClick", AddClick);
 		L.RegVar("s_uiRoot", get_s_uiRoot, set_s_uiRoot);
 		L.RegVar("s_sceneRoot", get_s_sceneRoot, set_s_sceneRoot);
 		L.RegVar("s_recvProtoId", get_s_recvProtoId, set_s_recvProtoId);
@@ -160,9 +161,26 @@ public class CSInterfaceWrap
 			ToLua.CheckArgsCount(L, 2);
 			UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.GameObject));
 			string arg1 = ToLua.CheckString(L, 2);
-			LuaBehaviour o = CSInterface.AddComponent(arg0, arg1);
+			LuaInterface.LuaTable o = CSInterface.AddComponent(arg0, arg1);
 			ToLua.Push(L, o);
 			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int AddClick(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.UI.Button arg0 = (UnityEngine.UI.Button)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.UI.Button));
+			LuaFunction arg1 = ToLua.CheckLuaFunction(L, 2);
+			CSInterface.AddClick(arg0, arg1);
+			return 0;
 		}
 		catch(Exception e)
 		{

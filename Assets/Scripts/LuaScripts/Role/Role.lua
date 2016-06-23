@@ -82,7 +82,11 @@ function ParseRoleDataLoadOk()
     local strengthTrans = GameObject.Instantiate(strengthPrefab).transform
     strengthTrans:SetParent(UIRoot(), false)
 
-    CSInterface.AddComponent(strengthTrans.gameObject, "BehaviourTest")
-    CSInterface.AddComponent(strengthTrans.gameObject, "BehaviourTest2")
+	local levelBtnPrefab = mainAB:LoadAsset("btn_level")
+    local levelBtnTrans = GameObject.Instantiate(levelBtnPrefab).transform
+    levelBtnTrans:SetParent(UIRoot(), false)
 
+    local test = CSInterface.AddComponent(levelBtnTrans.gameObject, "BehaviourTest")
+    local btn = levelBtnTrans:GetComponent("Button")
+    CSInterface.AddClick(btn, test.OnClick)
 end

@@ -10,25 +10,29 @@ function New(metatable_)
 end
 
 function Awake()
-	print ("BehaviourTest Awake called")
+	--print ("BehaviourTest Awake called")
 end
 
 function Start()
-	print("BehaviourTest Start called")
+	--print("BehaviourTest Start called")
 end
 
 function Update()
-	print("BehaviourTest Update called")
+	--print("BehaviourTest Update called")
 end
 
 function LateUpdate()
-	print("BehaviourTest LateUpdate called")
+	--print("BehaviourTest LateUpdate called")
 end
 
 function FixedUpdate()
-	print("BehaviourTest FixedUpdate called")
+	--print("BehaviourTest FixedUpdate called")
 end
 
 function OnDestroy()
-	print("BehaviourTest OnDestroy called")
+	--print("BehaviourTest OnDestroy called")
+end
+
+function OnClick(go_)
+	print ("OnClick called: " .. go_.name)
 end

@@ -150,6 +150,8 @@ public sealed class LuaBehaviour : MonoBehaviour
         luaFunc.EndPCall();
         return objs;
     }
+
+    public LuaTable LuaTable() { return m_self; }
 }
 
 /*
