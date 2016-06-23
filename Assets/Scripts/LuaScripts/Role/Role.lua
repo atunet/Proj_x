@@ -62,31 +62,33 @@ function ParseRoleDataLoadOk()
 	if nil ~= bgPrefab then
 		print("bg prefab asset load ok")
 	end
-	local mainBgTrans = GameObject.Instantiate(bgPrefab).transform
-    mainBgTrans:SetParent(SceneRoot(), false)
-    mainBgTrans.gameObject.name = "mainBG"
+	local mainBgGo = GameObject.Instantiate(bgPrefab)
+    mainBgGo.transform:SetParent(SceneRoot(), false)
+    mainBgGo.name = "mainBG"
 
     local mainAB = ABManager.get("prefab_main_ui")
 
     local goldPrefab = mainAB:LoadAsset("prop_gold")
-    local goldTrans = GameObject.Instantiate(goldPrefab).transform
-    goldTrans:SetParent(UIRoot(), false)
-    --goldTrans.gameObject.name = "prop_gold"
+    local goldGo = GameObject.Instantiate(goldPrefab)
+    goldGo.transform:SetParent(UIRoot(), false)
+    goldGo.name = "prop_gold"
 
     local cashPrefab = mainAB:LoadAsset("prop_cash")
-    local cashTrans = GameObject.Instantiate(cashPrefab).transform
-    cashTrans:SetParent(UIRoot(), false)
-    --cashTrans.gameObject.name = "prop_cash"
+    local cashGo = GameObject.Instantiate(cashPrefab)
+    cashGo.transform:SetParent(UIRoot(), false)
+    cashGo.name = "prop_cash"
 
     local strengthPrefab = mainAB:LoadAsset("prop_strength")
-    local strengthTrans = GameObject.Instantiate(strengthPrefab).transform
-    strengthTrans:SetParent(UIRoot(), false)
+    local strengthGo = GameObject.Instantiate(strengthPrefab)
+    strengthGo.transform:SetParent(UIRoot(), false)
+    strengthGo.name = "prop_strength"
 
 	local levelBtnPrefab = mainAB:LoadAsset("btn_level")
-    local levelBtnTrans = GameObject.Instantiate(levelBtnPrefab).transform
-    levelBtnTrans:SetParent(UIRoot(), false)
+    local levelBtnGo = GameObject.Instantiate(levelBtnPrefab)
+    levelBtnGo.transform:SetParent(UIRoot(), false)
+    levelBtnGo.name = "btn_level"
 
-    local test = CSInterface.AddComponent(levelBtnTrans.gameObject, "BehaviourTest")
-    local btn = levelBtnTrans:GetComponent("Button")
+    local test = CSInterface.AddComponent(levelBtnGo, "BehaviourTest")
+    local btn = levelBtnGo:GetComponent("Button")
     CSInterface.AddClick(btn, test.OnClick)
 end

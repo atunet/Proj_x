@@ -346,7 +346,7 @@ public class Tool : MonoBehaviour
         {
             if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
             {
-                Debug.Log("please upload ios/osx files from osx system!!!");
+				EditorUtility.DisplayDialog("Warnning", "please upload ios/osx files from osx system!!!", "ok");
                 return;
             }
         }
@@ -354,14 +354,16 @@ public class Tool : MonoBehaviour
         {
             if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
             {
-				Debug.Log("please upload ios/osx files from windows system!!!");
+				EditorUtility.DisplayDialog("Warnning", "please upload ios/osx files from windows system!!!", "ok");
                 return;
             }
         }
 
         string localDir = AppConst.STREAMING_PATH;
-        UpdateProgress(1, 10, "Uploading files to web server");
-       
+        UpdateProgress(1, 10, "Uploading files to server");
+
+        string[] dirList = Directory.GetDirectories(localDir);
+
         ProcessStartInfo processInfo = new ProcessStartInfo();  
         processInfo.WindowStyle = ProcessWindowStyle.Hidden;
         processInfo.ErrorDialog = true;
