@@ -360,9 +360,40 @@ public class Tool : MonoBehaviour
         }
 
         string localDir = AppConst.STREAMING_PATH;
-        UpdateProgress(1, 10, "Uploading files to server");
+       // UpdateProgress(1, 10, "Uploading files to server");
 
         string[] dirList = Directory.GetDirectories(localDir);
+        for (int i = 0; i < dirList.Length; ++i)
+        {
+            string relativePath = dirList[i].Substring(localDir.Length);
+            string remotePath = AppConst.RES_SERVER_PATH + relativePath;
+            Debug.Log(remotePath);
+
+            ProcessStartInfo pInfo = new ProcessStartInfo();  
+            pInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            pInfo.ErrorDialog = true;
+
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                pInfo.FileName = "plink.exe";
+                pInfo.Arguments = "-l tfx -pw sunrise 121.199.48.63 mkdir -p " + remotePath;
+                pInfo.UseShellExecute = true;
+
+                string currDir = Directory.GetCurrentDirectory();
+                string exeDir = AppConst.PROJECT_PATH + "/putty/";
+
+                Directory.SetCurrentDirectory(exeDir);
+                Process.Start(pInfo).WaitForExit();
+                Directory.SetCurrentDirectory(currDir);
+            }
+            else if (Application.platform == RuntimePlatform.OSXEditor)
+            {
+                pInfo.FileName = "sshpass";
+                pInfo.Arguments = "-p sunrise ssh tfx@" + AppConst.RES_SERVER_IP + " \"mkdir -p " + remotePath + "\"";
+                pInfo.UseShellExecute = false;
+                Process.Start(pInfo).WaitForExit();
+            }
+        }
 
         ProcessStartInfo processInfo = new ProcessStartInfo();  
         processInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -375,7 +406,7 @@ public class Tool : MonoBehaviour
             processInfo.UseShellExecute = true;
 
             string currDir = Directory.GetCurrentDirectory();
-            string exeDir = AppConst.PROJECT_PATH + "/pscp/";
+            string exeDir = AppConst.PROJECT_PATH + "/putty/";
 
 		    Directory.SetCurrentDirectory(exeDir);
 			Process.Start(processInfo).WaitForExit();

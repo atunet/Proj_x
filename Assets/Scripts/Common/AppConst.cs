@@ -28,7 +28,7 @@ public static class AppConst
     public static string REMOTE_VERSION_FILE_URL = REMOTE_ASSET_URL + "/" + VERSION_FILE_NAME;	// do not use Path.Combine()
 
     public static string RES_SERVER_IP = "121.199.48.63";
-    public static string RES_SERVER_PATH = "/var/www/html/res/firwork";
+    public static string RES_SERVER_PATH = "/var/www/html/res/firwork/" + PLATFORM;
     public static string UPLOAD_URL = "ftp://121.199.48.63/res/firework";
 	public static string UPLOAD_ASSET_URL = UPLOAD_URL + "/" + PLATFORM;							// do not use Path.Combine()
 
