@@ -346,7 +346,7 @@ public class Tool : MonoBehaviour
         {
             if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
             {
-				EditorUtility.DisplayDialog("Warnning", "please upload ios/osx files from osx system!!!", "ok");
+				EditorUtility.DisplayDialog("Warnning", "Please upload ios/osx files in osx system!", "ok");
                 return;
             }
         }
@@ -354,25 +354,22 @@ public class Tool : MonoBehaviour
         {
             if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
             {
-				EditorUtility.DisplayDialog("Warnning", "please upload ios/osx files from windows system!!!", "ok");
+				EditorUtility.DisplayDialog("Warnning", "Please upload android/windows files in windows system!", "ok");
                 return;
             }
         }
 
-        string localDir = AppConst.STREAMING_PATH;
-       // UpdateProgress(1, 10, "Uploading files to server");
-
-        string[] dirList = Directory.GetDirectories(localDir);
+		string[] dirList = Directory.GetDirectories(AppConst.STREAMING_PATH);
         for (int i = 0; i < dirList.Length; ++i)
         {
-            string relativePath = dirList[i].Substring(localDir.Length);
+			string relativePath = dirList[i].Substring(AppConst.STREAMING_PATH.Length);
             string remotePath = AppConst.RES_SERVER_PATH + relativePath;
-            Debug.Log(remotePath);
+            remotePath = remotePath.Replace("\\", "/");
+            Debug.Log("Upload dir: " + dirList[i] + " => " + remotePath);
 
             ProcessStartInfo pInfo = new ProcessStartInfo();  
             pInfo.WindowStyle = ProcessWindowStyle.Hidden;
             pInfo.ErrorDialog = true;
-
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 pInfo.FileName = "plink.exe";
@@ -395,33 +392,45 @@ public class Tool : MonoBehaviour
             }
         }
 
-        ProcessStartInfo processInfo = new ProcessStartInfo();  
-        processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        processInfo.ErrorDialog = true;
+		string[] fileList = Directory.GetFiles(AppConst.STREAMING_PATH, "*", SearchOption.AllDirectories);
+        for(int i = 0; i < fileList.Length; ++i)
+        {			
+			fileList[i] = fileList[i].Replace("/", "\\");
+			string relativePath = fileList[i].Substring(AppConst.STREAMING_PATH.Length);
+			string remotePath = AppConst.RES_SERVER_PATH + relativePath;
+            remotePath = remotePath.Replace("\\", "/");
 
-        if (Application.platform == RuntimePlatform.WindowsEditor) 
-        {
-            processInfo.FileName = "pscp.exe";
-            processInfo.Arguments = "-pw sunrise -r " + localDir + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
-            processInfo.UseShellExecute = true;
+			string barInfo = "Uploading file:" + relativePath.Substring(1) + "(" + (i+1) + "/" + fileList.Length + ")";
+			EditorUtility.DisplayProgressBar("Uploading files to server", barInfo, (float)(i+1) / (float)fileList.Length);
 
-            string currDir = Directory.GetCurrentDirectory();
-            string exeDir = AppConst.PROJECT_PATH + "/putty/";
+           	ProcessStartInfo processInfo = new ProcessStartInfo();  
+	        processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+	        processInfo.ErrorDialog = true;
+	        if (Application.platform == RuntimePlatform.WindowsEditor) 
+	        {
+	            processInfo.FileName = "pscp.exe";
+	            processInfo.Arguments = "-pw sunrise -r " + fileList[i] + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":" + remotePath;
+	            processInfo.UseShellExecute = true;
 
-		    Directory.SetCurrentDirectory(exeDir);
-			Process.Start(processInfo).WaitForExit();
-			Directory.SetCurrentDirectory(currDir);
-        }
-        else if (Application.platform == RuntimePlatform.OSXEditor) 
-        {
-            processInfo.FileName = "scp";
-            processInfo.Arguments = "-r " + localDir + "   tfx@" + AppConst.RES_SERVER_IP + ":/var/www/html/res/firework/";
-            processInfo.UseShellExecute = false;
-            Process.Start(processInfo).WaitForExit();
-        }
+	            string currDir = Directory.GetCurrentDirectory();
+	            string exeDir = AppConst.PROJECT_PATH + "/putty/";
 
-        Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+			    Directory.SetCurrentDirectory(exeDir);
+				Process.Start(processInfo).WaitForExit();
+				Directory.SetCurrentDirectory(currDir);
+	        }
+	        else if (Application.platform == RuntimePlatform.OSXEditor) 
+	        {
+	            processInfo.FileName = "scp";
+	            processInfo.Arguments = "-r " + fileList[i] + "   tfx@" + AppConst.RES_SERVER_IP + ":" + remotePath;
+	            processInfo.UseShellExecute = false;
+	            Process.Start(processInfo).WaitForExit();
+	        }
+			Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
+	    }
+
         EditorUtility.ClearProgressBar();
+		EditorUtility.DisplayDialog("Message", "All resource files upload finished!", "ok");
     }
 
 
