@@ -6,9 +6,6 @@ using System.Text;
 using System.IO;
 using System;
 
-using SevenZip.Compression.LZMA;
-
-
 public class ResUpdateController : MonoBehaviour 
 {
     private Dictionary<string, Hash128> m_remoteDict = null;
@@ -40,7 +37,7 @@ public class ResUpdateController : MonoBehaviour
             AssetBundle remoteAB = manifestWWW.assetBundle;
             AssetBundleManifest remoteManifest = remoteAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
             ParseManifestFile(remoteManifest, m_remoteDict);
-            Debug.Log("Download and parse remote version file done: " + AppConst.REMOTE_VERSION_FILE_URL + ",total count:" + remoteManifest.GetAllAssetBundles().Length);
+            Debug.Log("Download remote version file done: " + AppConst.REMOTE_VERSION_FILE_URL + ",total count:" + remoteManifest.GetAllAssetBundles().Length);
 
             remoteManifest = null;
             remoteAB.Unload(false);
@@ -52,7 +49,7 @@ public class ResUpdateController : MonoBehaviour
             {               
                 AssetBundleManifest persistentManifest = persistentAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
                 ParseManifestFile(persistentManifest, m_localDict);
-                Debug.Log("Load and parse local version file done: " + AppConst.PERSISTENT_VERSION_FILE_PATH + ",total count:" + persistentManifest.GetAllAssetBundles().Length);
+                Debug.Log("Load local version file done: " + AppConst.PERSISTENT_VERSION_FILE_PATH + ",total count:" + persistentManifest.GetAllAssetBundles().Length);
 
                 persistentManifest = null;
                 persistentAB.Unload(false);           
@@ -66,10 +63,10 @@ public class ResUpdateController : MonoBehaviour
                 StartCoroutine(DownloadAssetBundles());
             }
             else
-                Debug.LogError("ResUpdate:load persistent manifest file failed:" + AppConst.PERSISTENT_VERSION_FILE_PATH);
+                Debug.LogError("load persistent version file failed:" + AppConst.PERSISTENT_VERSION_FILE_PATH);
         }
         else
-            Debug.LogError("download manifest file failed:" + AppConst.REMOTE_VERSION_FILE_URL + "," + manifestWWW.error);
+            Debug.LogError("download version file failed:" + AppConst.REMOTE_VERSION_FILE_URL + "," + manifestWWW.error);
     }
 
     private void ParseManifestFile(AssetBundleManifest abm_, Dictionary<string, Hash128> dict_)
@@ -79,7 +76,7 @@ public class ResUpdateController : MonoBehaviour
         string[] abList = abm_.GetAllAssetBundles();
         foreach(string abName in abList)
         {
-            Debug.Log("Parse version file add ab: " + abName + " , hashcode:" + abm_.GetAssetBundleHash(abName));
+            //Debug.Log("Parse version file add ab: " + abName + " , hashcode:" + abm_.GetAssetBundleHash(abName));
             dict_.Add(abName, abm_.GetAssetBundleHash(abName));            
         }
     }
@@ -98,8 +95,13 @@ public class ResUpdateController : MonoBehaviour
                 m_downloadList.Add(abName);
                 m_totalSize += 1f;
                 
-                Debug.Log("Compare ab file's hascode,download list add: " + abName);
+                Debug.Log("Download list add:" + abName + ",local code:" + localHash + ",remote code:" + remoteHash);
             }
+        }
+
+        if(0 == m_totalSize)
+        {
+        	Debug.Log("All resource file is up to date!!!");
         }
     }
 

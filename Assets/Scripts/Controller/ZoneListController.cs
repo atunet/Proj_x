@@ -14,7 +14,7 @@ public class ZoneListController : MonoBehaviour
 
 	private IEnumerator LoadZoneList()
 	{
-		WWW w = new WWW(s_zoneListURL);
+		/*WWW w = new WWW(s_zoneListURL);
         yield return w;
 
         if(!string.IsNullOrEmpty(w.error))
@@ -23,7 +23,8 @@ public class ZoneListController : MonoBehaviour
 		}
         w.Dispose();
         w = null;
-
+        */
+        yield return new WaitForSeconds(0.5f);
 		NetController.Instance.ServerIP = "121.199.48.63";
 		NetController.Instance.ServerPort = 8888;
 

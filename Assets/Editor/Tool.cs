@@ -81,7 +81,7 @@ public class Tool : MonoBehaviour
 		}
 		string relativeOutPath = AppConst.STREAMING_PATH.Substring(AppConst.PROJECT_PATH_LEN + 1);
 
-		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle | BuildAssetBundleOptions.UncompressedAssetBundle;
+		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle;
 		BuildPipeline.BuildAssetBundles(relativeOutPath, s_abMaps.ToArray(), options, target_);
 
 		string[] fileList = Directory.GetFiles(AppConst.STREAMING_PATH, "*", SearchOption.TopDirectoryOnly);
@@ -359,6 +359,7 @@ public class Tool : MonoBehaviour
             }
         }
 
+        // step 1: create new dirs 
 		string[] dirList = Directory.GetDirectories(AppConst.STREAMING_PATH);
         for (int i = 0; i < dirList.Length; ++i)
         {
@@ -392,7 +393,11 @@ public class Tool : MonoBehaviour
             }
         }
 
-		string[] fileList = Directory.GetFiles(AppConst.STREAMING_PATH, "*", SearchOption.AllDirectories);
+        // step 2: upload all resource files to server
+		string[] allList = Directory.GetFiles(AppConst.STREAMING_PATH, "*.unity3d", SearchOption.AllDirectories);
+		string[] fileList = new string[allList.Length+1];
+		allList.CopyTo(fileList, 0);
+		fileList[fileList.Length-1] = AppConst.STREAMING_PATH + "/" + AppConst.VERSION_FILE_NAME;
         for(int i = 0; i < fileList.Length; ++i)
         {			
 			fileList[i] = fileList[i].Replace("/", "\\");

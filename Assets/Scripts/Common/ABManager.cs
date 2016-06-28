@@ -31,7 +31,7 @@ public sealed class ABManager
             string[] assetNames = ab.GetAllAssetNames();
             for (int i = 0; i < assetNames.Length; ++i)
             {
-                Debug.Log("asset name:" + assetNames[i]);
+                //Debug.Log("asset name:" + assetNames[i]);
             }
         }
         else
@@ -51,4 +51,16 @@ public sealed class ABManager
             s_abMaps.Remove(abName_);
         }
     }
+
+    public static void UnloadAll()
+    {
+		foreach(KeyValuePair<string, AssetBundle> kv in s_abMaps)
+		{
+			Resources.UnloadAsset(kv.Value);
+			Debug.Log("ABManager: unload all ab resources:" + kv.Key);
+		}
+
+		s_abMaps.Clear();
+		Resources.UnloadUnusedAssets();
+	}
 }
