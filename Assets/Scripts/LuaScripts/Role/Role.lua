@@ -42,7 +42,11 @@ end
 
 function ParseRoleDataLoadOk()
 	print("Role data load ok")
+	
+	CSInterface.LoadLevel("MainScene")
+    
 
+    --[[
     local GameObject = UnityEngine.GameObject           
 
 	local btnTrans = UIRoot():FindChild("login_btn(Clone)")
@@ -91,4 +95,5 @@ function ParseRoleDataLoadOk()
     local test = CSInterface.AddComponent(levelBtnGo, "BehaviourTest")
     local btn = levelBtnGo:GetComponent("Button")
     CSInterface.AddClick(btn, test.OnClick)
+    --]]
 end

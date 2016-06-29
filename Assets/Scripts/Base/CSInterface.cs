@@ -70,4 +70,9 @@ public sealed class CSInterface
         }
         btn_.onClick.AddListener(delegate() { func_.Call(btn_.gameObject); });
     }
+
+    public static void LoadLevel(string levelName_)
+    {
+		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(levelName_, UnityEngine.SceneManagement.LoadSceneMode.Single);
+    }
 }

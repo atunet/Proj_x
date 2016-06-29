@@ -17,6 +17,7 @@ public class CSInterfaceWrap
 		L.RegFunction("SceneRoot", SceneRoot);
 		L.RegFunction("AddComponent", AddComponent);
 		L.RegFunction("AddClick", AddClick);
+		L.RegFunction("LoadLevel", LoadLevel);
 		L.RegVar("s_uiRoot", get_s_uiRoot, set_s_uiRoot);
 		L.RegVar("s_sceneRoot", get_s_sceneRoot, set_s_sceneRoot);
 		L.RegVar("s_recvProtoId", get_s_recvProtoId, set_s_recvProtoId);
@@ -180,6 +181,22 @@ public class CSInterfaceWrap
 			UnityEngine.UI.Button arg0 = (UnityEngine.UI.Button)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.UI.Button));
 			LuaFunction arg1 = ToLua.CheckLuaFunction(L, 2);
 			CSInterface.AddClick(arg0, arg1);
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int LoadLevel(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			string arg0 = ToLua.CheckString(L, 1);
+			CSInterface.LoadLevel(arg0);
 			return 0;
 		}
 		catch(Exception e)

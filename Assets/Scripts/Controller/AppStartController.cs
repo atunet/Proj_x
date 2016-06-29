@@ -14,7 +14,6 @@ public class AppStartController : MonoBehaviour
 	void Start () 
 	{
         AppConst.PrintPath();
-        //ABManager.UnloadAll();
 
         CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
         CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;

@@ -9,6 +9,7 @@ public class ABManagerWrap
 		L.BeginStaticLibs("ABManager");
 		L.RegFunction("get", get);
 		L.RegFunction("UnloadAB", UnloadAB);
+		L.RegFunction("UnloadAll", UnloadAll);
 		L.EndStaticLibs();
 	}
 
@@ -37,6 +38,21 @@ public class ABManagerWrap
 			ToLua.CheckArgsCount(L, 1);
 			string arg0 = ToLua.CheckString(L, 1);
 			ABManager.UnloadAB(arg0);
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int UnloadAll(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 0);
+			ABManager.UnloadAll();
 			return 0;
 		}
 		catch(Exception e)

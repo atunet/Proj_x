@@ -44,7 +44,12 @@ public class ResUpdateController : MonoBehaviour
             manifestWWW.Dispose();
             manifestWWW = null;
 
-            AssetBundle persistentAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_VERSION_FILE_PATH);
+            AssetBundle persistentAB = null;
+            if (File.Exists(AppConst.PERSISTENT_VERSION_FILE_PATH))
+            {
+            	persistentAB = AssetBundle.LoadFromFile(AppConst.PERSISTENT_VERSION_FILE_PATH);
+            }
+
             if (null != persistentAB)
             {               
                 AssetBundleManifest persistentManifest = persistentAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
@@ -53,17 +58,16 @@ public class ResUpdateController : MonoBehaviour
 
                 persistentManifest = null;
                 persistentAB.Unload(false);           
-
-                CompareManifestFile();
-                if (m_downloadList.Count > 0)
-                {
-                    m_downloadList.Add(AppConst.VERSION_FILE_NAME);
-                    m_totalSize++;
-                }
-                StartCoroutine(DownloadAssetBundles());
             }
-            else
-                Debug.LogError("load persistent version file failed:" + AppConst.PERSISTENT_VERSION_FILE_PATH);
+
+            CompareManifestFile();
+            if (m_downloadList.Count > 0)
+            {
+                m_downloadList.Add(AppConst.VERSION_FILE_NAME);
+                m_totalSize++;
+            }
+
+            StartCoroutine(DownloadAssetBundles());
         }
         else
             Debug.LogError("download version file failed:" + AppConst.REMOTE_VERSION_FILE_URL + "," + manifestWWW.error);
