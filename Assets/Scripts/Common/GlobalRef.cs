@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class GlobalRef : MonoBehaviour 
 {
 	// 全局引用
-	public static NetLogic s_ml = null;
 	public static GlobalRef s_gr = null;
 
     public GameObject m_playCamera = null;
@@ -43,7 +42,6 @@ public class GlobalRef : MonoBehaviour
 		GameObject NetLogic = GameObject.Find("NetLogic");
 		if(NetLogic)
 		{
-			s_ml = NetLogic.GetComponent<NetLogic>();
 			s_gr = NetLogic.GetComponent<GlobalRef>();
 			//Object.DontDestroyOnLoad(NetLogic);
 		}
