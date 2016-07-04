@@ -44,9 +44,9 @@ public class ZoneListController : MonoBehaviour
 		}
 
 		GameObject loginBtnGo = GameObject.Instantiate (loginBtnPrefab);
-        loginBtnGo.transform.SetParent (CSInterface.s_uiRoot);
-        loginBtnGo.transform.localPosition = new Vector3(0f, -425f, 0f);
-        loginBtnGo.transform.localScale = new Vector3(1f, 1f, 1f);
+        loginBtnGo.transform.SetParent(CSInterface.s_uiRoot, false);
+        //loginBtnGo.transform.localPosition = new Vector3(0f, -425f, 0f);
+        //loginBtnGo.transform.localScale = new Vector3(1f, 1f, 1f);
 
         Destroy(this.gameObject);
 		//BGMController btm = BGMController.Instance;

@@ -360,7 +360,7 @@ public class Tool : MonoBehaviour
         }
 
         // step 1: create new dirs 
-		string[] dirList = Directory.GetDirectories(AppConst.STREAMING_PATH);
+		/*string[] dirList = Directory.GetDirectories(AppConst.STREAMING_PATH);
         for (int i = 0; i < dirList.Length; ++i)
         {
 			string relativePath = dirList[i].Substring(AppConst.STREAMING_PATH.Length);
@@ -391,7 +391,7 @@ public class Tool : MonoBehaviour
                 pInfo.UseShellExecute = false;
                 Process.Start(pInfo).WaitForExit();
             }
-        }
+        }*/
 
         // step 2: upload all resource files to server
 		string[] allList = Directory.GetFiles(AppConst.STREAMING_PATH, "*.unity3d", SearchOption.AllDirectories);
