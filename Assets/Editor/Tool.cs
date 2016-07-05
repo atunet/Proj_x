@@ -100,7 +100,10 @@ public class Tool : MonoBehaviour
 			}
 		}
 
-		AssetDatabase.Refresh();
+        AssetDatabase.Refresh();
+
+        EditorUtility.ClearProgressBar();
+        EditorUtility.DisplayDialog("Message", "All assetBundles build ok!", "ok");
 	}
 
 	/// <summary>
