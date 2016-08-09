@@ -35,7 +35,7 @@ public class UnityEngine_MaterialWrap
 		L.RegFunction("IsKeywordEnabled", IsKeywordEnabled);
 		L.RegFunction("New", _CreateUnityEngine_Material);
 		L.RegFunction("__eq", op_Equality);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("shader", get_shader, set_shader);
 		L.RegVar("color", get_color, set_color);
 		L.RegVar("mainTexture", get_mainTexture, set_mainTexture);
@@ -789,23 +789,6 @@ public class UnityEngine_MaterialWrap
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
