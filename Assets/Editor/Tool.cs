@@ -18,7 +18,7 @@ public class Tool : MonoBehaviour
 	// 需要打包的Lua文件目录列表
 	private static string[] s_luaSrcDirs = 
 	{ 
-		CustomSettings.toluaLuaDir,		// tolua自带的lua库目录 
+        AppConst.LUA_TOLUA_ROOT,		// tolua自带的lua库目录 
 		AppConst.LUA_LOGIC_PATH, 		// 游戏lua逻辑脚本目录
 	};
 	private static List<AssetBundleBuild> s_abMaps = new List<AssetBundleBuild>();

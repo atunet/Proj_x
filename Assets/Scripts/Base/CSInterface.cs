@@ -73,6 +73,7 @@ public sealed class CSInterface
 
     public static void LoadLevel(string levelName_)
     {
-		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(levelName_, UnityEngine.SceneManagement.LoadSceneMode.Single);
+        LoadingController.setNextScene(levelName_);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("LoadingScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }

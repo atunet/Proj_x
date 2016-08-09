@@ -35,6 +35,7 @@ public static class AppConst
 	public static string LUA_TEMP_PATH = "Assets/StreamingAssets/Temp/Lua";
 	public static string LUA_TOLUA_PATH = Application.dataPath + "/ToLua/Lua/protobuf";
 	public static string LUA_LOGIC_PATH = Application.dataPath + "/Scripts/LuaScripts";
+    public static string LUA_TOLUA_ROOT = Application.dataPath + "/ToLua/Lua";
 
 	public static string AB_EXT_NAME = ".unity3d";
 

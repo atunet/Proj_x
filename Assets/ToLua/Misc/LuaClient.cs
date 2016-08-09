@@ -127,7 +127,7 @@ public class LuaClient : MonoBehaviour
         luaState.LuaSetField(-2, "cjson");
 
         luaState.OpenLibs(LuaDLL.luaopen_cjson_safe);
-        luaState.LuaSetField(-2, "cjson.safe");                
+        luaState.LuaSetField(-2, "cjson.safe");                               
     }
 
     protected virtual void CallMain()
@@ -175,7 +175,7 @@ public class LuaClient : MonoBehaviour
 
     protected virtual void OnLoadFinished()
     {
-        luaState.Start();                
+        luaState.Start();
         StartLooper();
         StartMain();
     }
@@ -195,6 +195,9 @@ public class LuaClient : MonoBehaviour
     {
         if (luaState != null)
         {
+            LuaState state = luaState;
+            luaState = null;
+
             if (levelLoaded != null)
             {
                 levelLoaded.Dispose();
@@ -207,12 +210,7 @@ public class LuaClient : MonoBehaviour
                 loop = null;
             }
 
-            if (luaState != null)
-            {
-                luaState.Dispose();
-                luaState = null;
-            }
-
+            state.Dispose();            
             Instance = null;
         }
     }
