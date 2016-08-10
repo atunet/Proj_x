@@ -28,9 +28,6 @@ public class AccountController : MonoBehaviour
             {
                 GameObject zoneListGo = GameObject.Instantiate(zongListPrefab);
                 zoneListGo.transform.SetParent(CSInterface.s_uiRoot, false);
-                //zoneListGo.transform.localPosition = new Vector3(0f, -425f, 0f);
-                //zoneListGo.transform.localScale = new Vector3(1f, 1f, 1f);
-
                 Destroy(this.gameObject);   // destroy account controller instance
             }
             else

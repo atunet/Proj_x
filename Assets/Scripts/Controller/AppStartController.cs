@@ -34,13 +34,13 @@ public class AppStartController : MonoBehaviour
         } 
         else
         {
-        	GameObject defaultBG = Resources.Load("defaultBGPrefab") as GameObject;
+        	GameObject defaultBG = Resources.Load("default_bg") as GameObject;
         	if(null != defaultBG)
 			{	
                 GameObject bgGo = GameObject.Instantiate(defaultBG) as GameObject;
-                bgGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+                bgGo.transform.SetParent(CSInterface.s_uiRoot, false);
         	}
-            GameObject defaultText = Resources.Load("defaultTextPrefab") as GameObject;
+            GameObject defaultText = Resources.Load("default_text") as GameObject;
             if(null != defaultText)
             {   
                 GameObject textGo = GameObject.Instantiate(defaultText) as GameObject;
@@ -53,9 +53,9 @@ public class AppStartController : MonoBehaviour
 
     void CheckResUpdate()
     {
-        Transform bgTrans = CSInterface.s_sceneRoot.FindChild("defaultBGPrefab(clone)");
+        Transform bgTrans = CSInterface.s_uiRoot.FindChild("default_bg(clone)");
         if (bgTrans) GameObject.Destroy(bgTrans.gameObject);
-        Transform textTrans = CSInterface.s_sceneRoot.FindChild("defaultTextPrefab(clone)");
+        Transform textTrans = CSInterface.s_sceneRoot.FindChild("default_text(clone)");
         if (textTrans) GameObject.Destroy(textTrans.gameObject);
 
         AssetBundle loginAB = ABManager.get(AppConst.AB_LOGIN);
@@ -85,7 +85,7 @@ public class AppStartController : MonoBehaviour
 				return;
 			}
 			GameObject accountGo = GameObject.Instantiate (accountPrefab);
-            accountGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+            accountGo.transform.SetParent(CSInterface.s_uiRoot, false);
 
             Destroy(this.gameObject);   // destroy appstartcontroller instance
 		} 
@@ -98,7 +98,7 @@ public class AppStartController : MonoBehaviour
 				return;
 			}			
 			GameObject resUpdateGo = GameObject.Instantiate (resUpdatePrefab);
-            resUpdateGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+            resUpdateGo.transform.SetParent(CSInterface.s_uiRoot, false);
 		}
 	}
 
