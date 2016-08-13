@@ -2,7 +2,7 @@
 module(..., package.seeall)
 
 function New(metatable_)
-	print("MainBehaviour New called")
+	print("InitMainBehaviour New called")
 	local tb = {}
 	setmetatable(tb, metatable_)
 	metatable_.__index = metatable_
@@ -10,11 +10,11 @@ function New(metatable_)
 end
 
 function Awake()
-	--print ("MainBehaviour Awake called")
+	--print ("InitMainBehaviour Awake called")
 end
 
 function Start()
-	--print("MainBehaviour Start called")
+	--print("InitMainBehaviour Start called")
 
     local GameObject = UnityEngine.GameObject           
 
@@ -36,7 +36,7 @@ function Start()
     mainuiGo.transform:SetParent(UIRoot(), false)
     mainuiGo.name = "panel_main_ui"
 
-    local uiBehaviour = CSInterface.AddComponent(mainuiGo, "MainUIBehaviour")
+    local uiBehaviour = CSInterface.AddComponent(mainuiGo, "UIMainBehaviour")
     local lvBtnTrans = mainuiGo.transform:FindChild("btn_level")
     if nil ~= lvBtnTrans then
         local lvBtn = lvBtnTrans.gameObject:GetComponent("Button")
@@ -71,19 +71,19 @@ function Start()
 end
 
 function Update()
-	--print("MainBehaviour Update called")
+	--print("InitMainBehaviour Update called")
 end
 
 function LateUpdate()
-	--print("MainBehaviour LateUpdate called")
+	--print("InitMainBehaviour LateUpdate called")
 end
 
 function FixedUpdate()
-	--print("MainBehaviour FixedUpdate called")
+	--print("InitMainBehaviour FixedUpdate called")
 end
 
 function OnDestroy()
-	--print("MainBehaviour OnDestroy called")
+	--print("InitMainBehaviour OnDestroy called")
 end
 
 function OnClick(go_)

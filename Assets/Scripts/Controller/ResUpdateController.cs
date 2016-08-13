@@ -113,7 +113,7 @@ public class ResUpdateController : MonoBehaviour
     {    
         if (m_downloadList.Count == 0)
         {
-            AppStartController.setResChecked(true);
+            InitAppController.setResChecked(true);
             Application.LoadLevel(Application.loadedLevelName);
         }
         else

@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MainStartController : MonoBehaviour 
+public class InitBattleController : MonoBehaviour 
 {
-
-	void Start () 
+    void Start () 
     {
         CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
         CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
@@ -14,7 +13,7 @@ public class MainStartController : MonoBehaviour
             return;
         }
 
-        LuaBehaviour.LuaFileName = "MainBehaviour";
+        LuaBehaviour.LuaFileName = "InitBattleBehaviour";
         gameObject.AddComponent<LuaBehaviour>();
-	}
+    }
 }

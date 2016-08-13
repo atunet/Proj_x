@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class LoadingController : MonoBehaviour 
+public class InitLoadingController : MonoBehaviour 
 {
     public static string s_sceneName;
     public static void setNextScene(string name)

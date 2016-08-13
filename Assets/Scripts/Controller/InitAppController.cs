@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-public class AppStartController : MonoBehaviour 
+public class InitAppController : MonoBehaviour 
 {
     private int m_streamingFileIndex = 0;
     private string[] m_streamingFileList = null;
