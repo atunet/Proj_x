@@ -430,7 +430,7 @@ public class Tool : MonoBehaviour
 	        else if (Application.platform == RuntimePlatform.OSXEditor) 
 	        {
 	            processInfo.FileName = "scp";
-	            processInfo.Arguments = "-r " + fileList[i] + "   tfx@" + AppConst.RES_SERVER_IP + ":" + remotePath;
+                processInfo.Arguments = "-r " + fileList[i].Replace("\\", "/") + "   tfx@" + AppConst.RES_SERVER_IP + ":" + remotePath;
 	            processInfo.UseShellExecute = false;
 	            Process.Start(processInfo).WaitForExit();
 	        }

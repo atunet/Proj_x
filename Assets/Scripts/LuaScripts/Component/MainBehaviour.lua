@@ -36,6 +36,15 @@ function Start()
     mainuiGo.transform:SetParent(UIRoot(), false)
     mainuiGo.name = "panel_main_ui"
 
+    local uiBehaviour = CSInterface.AddComponent(mainuiGo, "MainUIBehaviour")
+    local lvBtnTrans = mainuiGo.transform:FindChild("btn_level")
+    if nil ~= lvBtnTrans then
+        local lvBtn = lvBtnTrans.gameObject:GetComponent("Button")
+        if nil ~= lvBtn then
+            CSInterface.AddClick(lvBtn, uiBehaviour.OnClickLv)
+        end
+    end
+
     -- local goldPrefab = mainAB:LoadAsset("prop_gold")
     -- local goldGo = GameObject.Instantiate(goldPrefab)
     -- goldGo.transform:SetParent(UIRoot(), false)

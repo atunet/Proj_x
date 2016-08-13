@@ -83,6 +83,7 @@ public static class CustomSettings
         _GT(typeof(AudioSource)),
         //_GT(typeof(LineRenderer))
         //_GT(typeof(TrailRenderer))
+            _GT(typeof(RectTransform)),
 #endif
       
         _GT(typeof(Behaviour)),

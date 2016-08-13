@@ -36,3 +36,7 @@ end
 function OnClick(go_)
 	print ("OnClick called: " .. go_.name)
 end
+
+function OnClickLv(go_)
+	print ("OnClickLv called: " .. go_.name)
+end
