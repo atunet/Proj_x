@@ -33,18 +33,18 @@ public class AppStartController : MonoBehaviour
             CheckResUpdate();
         } 
         else
-        {
+        {   // enter game first time, init ...
         	GameObject defaultBG = Resources.Load("default_bg") as GameObject;
         	if(null != defaultBG)
 			{	
                 GameObject bgGo = GameObject.Instantiate(defaultBG) as GameObject;
-                bgGo.transform.SetParent(CSInterface.s_uiRoot, false);
+                bgGo.transform.SetParent(CSInterface.s_sceneRoot, false);
         	}
             GameObject defaultText = Resources.Load("default_text") as GameObject;
             if(null != defaultText)
             {   
                 GameObject textGo = GameObject.Instantiate(defaultText) as GameObject;
-                textGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+                textGo.transform.SetParent(CSInterface.s_uiRoot, false);
             }
 
         	StartCoroutine(InitPersistentPath());
@@ -53,9 +53,9 @@ public class AppStartController : MonoBehaviour
 
     void CheckResUpdate()
     {
-        Transform bgTrans = CSInterface.s_uiRoot.FindChild("default_bg(clone)");
+        Transform bgTrans = CSInterface.s_sceneRoot.FindChild("default_bg(clone)");
         if (bgTrans) GameObject.Destroy(bgTrans.gameObject);
-        Transform textTrans = CSInterface.s_sceneRoot.FindChild("default_text(clone)");
+        Transform textTrans = CSInterface.s_uiRoot.FindChild("default_text(clone)");
         if (textTrans) GameObject.Destroy(textTrans.gameObject);
 
         AssetBundle loginAB = ABManager.get(AppConst.AB_LOGIN);

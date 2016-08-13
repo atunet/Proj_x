@@ -29,22 +29,27 @@ function Start()
     mainBgGo.transform:SetParent(SceneRoot(), false)
     mainBgGo.name = "mainBG"
 
-    local mainAB = ABManager.get("prefab_main_ui")
+    local mainAB = ABManager.get("prefab_mainui")
 
-    local goldPrefab = mainAB:LoadAsset("prop_gold")
-    local goldGo = GameObject.Instantiate(goldPrefab)
-    goldGo.transform:SetParent(UIRoot(), false)
-    goldGo.name = "prop_gold"
+    local mainuiPrefab = mainAB:LoadAsset("panel_main_ui")
+    local mainuiGo = GameObject.Instantiate(mainuiPrefab)
+    mainuiGo.transform:SetParent(UIRoot(), false)
+    mainuiGo.name = "panel_main_ui"
 
-    local cashPrefab = mainAB:LoadAsset("prop_cash")
-    local cashGo = GameObject.Instantiate(cashPrefab)
-    cashGo.transform:SetParent(UIRoot(), false)
-    cashGo.name = "prop_cash"
+    -- local goldPrefab = mainAB:LoadAsset("prop_gold")
+    -- local goldGo = GameObject.Instantiate(goldPrefab)
+    -- goldGo.transform:SetParent(UIRoot(), false)
+    -- goldGo.name = "prop_gold"
 
-    local strengthPrefab = mainAB:LoadAsset("prop_strength")
-    local strengthGo = GameObject.Instantiate(strengthPrefab)
-    strengthGo.transform:SetParent(UIRoot(), false)
-    strengthGo.name = "prop_strength"
+    -- local cashPrefab = mainAB:LoadAsset("prop_cash")
+    -- local cashGo = GameObject.Instantiate(cashPrefab)
+    -- cashGo.transform:SetParent(UIRoot(), false)
+    -- cashGo.name = "prop_cash"
+
+    -- local strengthPrefab = mainAB:LoadAsset("prop_strength")
+    -- local strengthGo = GameObject.Instantiate(strengthPrefab)
+    -- strengthGo.transform:SetParent(UIRoot(), false)
+    -- strengthGo.name = "prop_strength"
 
 	--local levelBtnPrefab = mainAB:LoadAsset("btn_level")
     --local levelBtnGo = GameObject.Instantiate(levelBtnPrefab)
