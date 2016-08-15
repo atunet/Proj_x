@@ -105,7 +105,12 @@ public class InitAppController : MonoBehaviour
 
 	private IEnumerator InitPersistentPath()
 	{
-		WWW versionWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
+        #if UNITY_ANDROID
+        WWW versionWWW = new WWW(AppConst.STREAMING_VERSION_FILE_PATH);
+        #else
+        WWW versionWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
+        #endif
+
         yield return versionWWW;
 
         if (string.IsNullOrEmpty(versionWWW.error))
@@ -159,7 +164,7 @@ public class InitAppController : MonoBehaviour
             BinaryWriter bw = new BinaryWriter(fs);
             bw.Write(w.bytes, 0, w.bytes.Length);
             bw.Flush();
-			Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN + 1) + " to " + dstPath + " done,length:" + w.bytes.Length);
+			//Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN + 1) + " to " + dstPath + " done,length:" + w.bytes.Length);
 
             bw.Close(); bw = null;
             fs.Close(); fs = null;

@@ -2,23 +2,19 @@
 
 public static class AppConst
 {
+#if UNITY_EDITOR
 	public static string ASSETS_DIR_NAME = "/Assets";
-	public static string PROJECT_PATH = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf(ASSETS_DIR_NAME));	// without last '/'
-	public static int PROJECT_PATH_LEN = PROJECT_PATH.Length;	// without last '/'
+	public static string PROJECT_PATH = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf(ASSETS_DIR_NAME));
+	public static int PROJECT_PATH_LEN = PROJECT_PATH.Length;
+#endif
 
     public static string PLATFORM = GetPlatformStr(Application.platform);
 	public static string VERSION_FILE_NAME = "version_file";
 
 	public static string STREAMING_PATH = Application.streamingAssetsPath + "/" + PLATFORM;
-	public static string STREAMING_RELATIVE_PATH = Application.streamingAssetsPath.Substring(PROJECT_PATH_LEN+1);
     public static string STREAMING_VERSION_FILE_PATH = STREAMING_PATH + "/" + VERSION_FILE_NAME;
 
-    //#if UNITY_EDITOR || UNITY_EDITOR_64 || UNITY_EDITOR_OSX
-      //  public static string PERSISTENT_PATH = STREAMING_PATH;
-    //#else
-	    public static string PERSISTENT_PATH = Application.persistentDataPath + "/" + PLATFORM;
-    //#endif
-    public static string PERSISTENT_RELATIVE_PATH = Application.persistentDataPath.Substring(PROJECT_PATH_LEN+1);
+	public static string PERSISTENT_PATH = Application.persistentDataPath + "/" + PLATFORM;
     public static string PERSISTENT_VERSION_FILE_PATH = PERSISTENT_PATH + "/" + VERSION_FILE_NAME;
 
 	public static string REMOTE_URL = "http://121.199.48.63/res/firework";
@@ -52,9 +48,7 @@ public static class AppConst
     }
 	public static void PrintPath()
 	{
-		Debug.Log ("PROJ_PATH:" + PROJECT_PATH);
-
-		Debug.Log("PLATFROM:" + PLATFORM);
+   		Debug.Log("PLATFROM:" + PLATFORM);
         //Debug.Log("VERSION_FILE_NAME:" + VERSION_FILE_NAME);
 
 		//Debug.Log("STREAMING_PATH:" + STREAMING_PATH);
