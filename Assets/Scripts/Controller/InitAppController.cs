@@ -106,11 +106,12 @@ public class InitAppController : MonoBehaviour
 	private IEnumerator InitPersistentPath()
 	{
         #if UNITY_ANDROID
-        WWW versionWWW = new WWW(AppConst.STREAMING_VERSION_FILE_PATH);
+        string versionPath = AppConst.STREAMING_VERSION_FILE_PATH;
         #else
-        WWW versionWWW = new WWW("file://" + AppConst.STREAMING_VERSION_FILE_PATH);
+        string versionPath = "file://" + AppConst.STREAMING_VERSION_FILE_PATH;
         #endif
 
+        WWW versionWWW = new WWW(versionPath);
         yield return versionWWW;
 
         if (string.IsNullOrEmpty(versionWWW.error))
@@ -138,7 +139,7 @@ public class InitAppController : MonoBehaviour
             versionAB.Unload(true);
         }
         else
-            Debug.LogError("www load streaming version file failed:" + versionWWW.error + ",file://" + AppConst.STREAMING_VERSION_FILE_PATH);
+            Debug.LogError("www load streaming version file failed:" + versionWWW.error + "," + versionPath);
 
         versionWWW.Dispose();
         versionWWW = null;
@@ -147,7 +148,12 @@ public class InitAppController : MonoBehaviour
 
     private IEnumerator CopyFileToPersistent(string filePath_)
     {
+        #if UNITY_ANDROID
+        WWW w = new WWW(filePath_);
+        #else
         WWW w = new WWW("file://" + filePath_);
+        #endif
+
         yield return w;
        
         if (string.IsNullOrEmpty(w.error))

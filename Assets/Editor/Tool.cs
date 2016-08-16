@@ -63,7 +63,7 @@ public class Tool : MonoBehaviour
         }
         if (Application.platform == RuntimePlatform.OSXEditor)
         {
-            if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
+            if (target_ == BuildTarget.StandaloneWindows)
             {
 				Debug.Log("please build assetbundle in windows system!!!");
                 return;
@@ -74,25 +74,26 @@ public class Tool : MonoBehaviour
 		PreprocessLuaFiles();
 		PreprocessArtFiles();
 
-		if (!Directory.Exists (AppConst.STREAMING_PATH)) 
+        string streamingPath = Application.streamingAssetsPath + "/" + GetTargetStr(target_);
+        if (!Directory.Exists (streamingPath)) 
 		{
-			Directory.CreateDirectory (AppConst.STREAMING_PATH);
+            Directory.CreateDirectory (streamingPath);
 			AssetDatabase.Refresh ();
 		}
-		string relativeOutPath = AppConst.STREAMING_PATH.Substring(AppConst.PROJECT_PATH_LEN + 1);
+        string relativeOutPath = streamingPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
 
 		BuildAssetBundleOptions options = BuildAssetBundleOptions.DeterministicAssetBundle;
 		BuildPipeline.BuildAssetBundles(relativeOutPath, s_abMaps.ToArray(), options, target_);
 
-		string[] fileList = Directory.GetFiles(AppConst.STREAMING_PATH, "*", SearchOption.TopDirectoryOnly);
+        string[] fileList = Directory.GetFiles(streamingPath, "*", SearchOption.TopDirectoryOnly);
 		for(int i = 0; i < fileList.Length; ++i)
 		{
 			string filePath = fileList[i];
             filePath = filePath.Replace("\\", "/");
 			string relativePath = filePath.Substring(filePath.LastIndexOf("/"));
-			if(relativePath.Contains(AppConst.PLATFORM))
+            if(relativePath.Contains(GetTargetStr(target_)))
 			{
-				string newRelativePath = relativePath.Replace(AppConst.PLATFORM, AppConst.VERSION_FILE_NAME);
+                string newRelativePath = relativePath.Replace(GetTargetStr(target_), AppConst.VERSION_FILE_NAME);
 				string newPath = filePath.Substring(0, filePath.Length-relativePath.Length) + newRelativePath;
                 //Debug.Log("path:" + filePath + ",newpath:" + newPath);
                 if(File.Exists(newPath)) File.Delete(newPath);
@@ -355,9 +356,9 @@ public class Tool : MonoBehaviour
         }
         else if (Application.platform == RuntimePlatform.OSXEditor)
         {
-            if (target_ == BuildTarget.Android || target_ == BuildTarget.StandaloneWindows)
+            if (target_ == BuildTarget.StandaloneWindows)
             {
-				EditorUtility.DisplayDialog("Warnning", "Please upload android/windows files in windows system!", "ok");
+				EditorUtility.DisplayDialog("Warnning", "Please upload windows files in windows system!", "ok");
                 return;
             }
         }
@@ -396,16 +397,18 @@ public class Tool : MonoBehaviour
             }
         }*/
 
+        string streamingPath = Application.streamingAssetsPath + "/" + GetTargetStr(target_);
+
         // step 2: upload all resource files to server
-		string[] allList = Directory.GetFiles(AppConst.STREAMING_PATH, "*.unity3d", SearchOption.AllDirectories);
+        string[] allList = Directory.GetFiles(streamingPath, "*.unity3d", SearchOption.AllDirectories);
 		string[] fileList = new string[allList.Length+1];
 		allList.CopyTo(fileList, 0);
-		fileList[fileList.Length-1] = AppConst.STREAMING_PATH + "/" + AppConst.VERSION_FILE_NAME;
+        fileList[fileList.Length-1] = streamingPath + "/" + AppConst.VERSION_FILE_NAME;
         for(int i = 0; i < fileList.Length; ++i)
         {			
 			fileList[i] = fileList[i].Replace("/", "\\");
-			string relativePath = fileList[i].Substring(AppConst.STREAMING_PATH.Length);
-			string remotePath = AppConst.RES_SERVER_PATH + relativePath;
+            string relativePath = fileList[i].Substring(streamingPath.Length);
+            string remotePath = AppConst.RES_SERVER_PATH + GetTargetStr(target_) + "/" + relativePath;
             remotePath = remotePath.Replace("\\", "/");
 
 			string barInfo = "Uploading file:" + relativePath.Substring(1) + "(" + (i+1) + "/" + fileList.Length + ")";
