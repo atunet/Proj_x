@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class LoginController : MonoBehaviour 
+public class LoginBtnController : MonoBehaviour 
 {
     void Start()
     {
@@ -10,15 +10,13 @@ public class LoginController : MonoBehaviour
 
 	public void OnLoginClick()
 	{   
-		// show the loading UI ...
-
-        GameObject loadingPrefab = ABManager.get(AppConst.AB_LOGIN).LoadAsset ("LoadingPrefab") as GameObject;
+     /*   GameObject loadingPrefab = ABManager.get(AppConst.AB_LOGIN).LoadAsset ("LoadingPrefab") as GameObject;
 		if (null == loadingPrefab)
 		{
             Debug.LogError("load loadingprefab failed");
             //return;
 		}
-
+*/
 		//GameObject loadingGo = GameObject.Instantiate (loadingPrefab);
 		//loadingGo.transform.SetParent (this.transform.parent);
 
@@ -27,10 +25,6 @@ public class LoginController : MonoBehaviour
 		{
 			NetController.Instance.Connect ();
 		}
-	}
-
-	public static void InitChapterUI()
-	{
 	}
 
     public void OnDestroy()
