@@ -148,12 +148,11 @@ public class InitAppController : MonoBehaviour
 
     private IEnumerator CopyFileToPersistent(string filePath_)
     {
-        #if UNITY_ANDROID
-        WWW w = new WWW(filePath_);
-        #else
-        WWW w = new WWW("file://" + filePath_);
+        #if !UNITY_ANDROID
+        filePath_ = "file://" + filePath_;
         #endif
 
+        WWW w = new WWW(filePath_);
         yield return w;
        
         if (string.IsNullOrEmpty(w.error))
@@ -192,7 +191,7 @@ public class InitAppController : MonoBehaviour
             }
         }
         else
-            Debug.LogError("Init copy files to persistent path failed,file: file://" + filePath_ + "," + w.error);
+            Debug.LogError("Init copy files to persistent path failed: " + filePath_ + "," + w.error);
     }
 
     public void OnDestroy()

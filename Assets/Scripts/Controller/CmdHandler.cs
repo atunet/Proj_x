@@ -34,6 +34,7 @@ public class CmdHandler : IDisposable
                 if (null != luaAB)
                 {
                     loader.AddSearchBundle(Path.GetFileNameWithoutExtension(luaList[i]), luaAB);
+                    Debug.Log("lua res loader add search bundle ok:" + Path.GetFileNameWithoutExtension(luaList[i]));
                 }
                 else
                     Debug.LogError("Load lua AB file error:" + luaList[i]);
