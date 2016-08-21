@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using LuaInterface;
+using UnityEngine;
 
 public class CmdHandler : IDisposable
 {
@@ -19,7 +20,26 @@ public class CmdHandler : IDisposable
 			return s_instance;
 		}
 	}	
-	private CmdHandler() {}
+	private CmdHandler() 
+    {
+        LuaResLoader loader = new LuaResLoader();
+
+        string luaPersistentPath = AppConst.PERSISTENT_PATH + "/lua";
+        string[] luaList = Directory.GetFiles(luaPersistentPath);
+        for (int i = 0; i < luaList.Length; ++i)
+        {
+            if (luaList[i].EndsWith(AppConst.AB_EXT_NAME))
+            {
+                AssetBundle luaAB = AssetBundle.LoadFromFile(luaList[i]);
+                if (null != luaAB)
+                {
+                    loader.AddSearchBundle(Path.GetFileNameWithoutExtension(luaList[i]), luaAB);
+                }
+                else
+                    Debug.LogError("Load lua AB file error:" + luaList[i]);
+            }
+        }
+    }
 
 	public LuaState GetLuaState() { return m_ls; }
 
