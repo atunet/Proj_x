@@ -7,7 +7,6 @@ public static class AppConst
 	public static string PROJECT_PATH = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf(ASSETS_DIR_NAME));
 	public static int PROJECT_PATH_LEN = PROJECT_PATH.Length;
 #endif
-
     public static string PLATFORM = GetPlatformStr(Application.platform);
 	public static string VERSION_FILE_NAME = "version_file";
 
@@ -18,13 +17,11 @@ public static class AppConst
     public static string PERSISTENT_VERSION_FILE_PATH = PERSISTENT_PATH + "/" + VERSION_FILE_NAME;
 
 	public static string REMOTE_URL = "http://121.199.48.63/res/firework";
-    public static string REMOTE_ASSET_URL = REMOTE_URL + "/" + PLATFORM;							                // do not use Path.Combine()
+    public static string REMOTE_ASSET_URL = REMOTE_URL + "/" + PLATFORM;						// do not use Path.Combine()
     public static string REMOTE_VERSION_FILE_URL = REMOTE_ASSET_URL + "/" + VERSION_FILE_NAME;	// do not use Path.Combine()
 
     public static string RES_SERVER_IP = "121.199.48.63";
     public static string RES_SERVER_PATH = "/var/www/html/res/firework/";
-    //public static string UPLOAD_URL = "ftp://121.199.48.63/res/firework";
-	//public static string UPLOAD_ASSET_URL = UPLOAD_URL + "/" + PLATFORM;							// do not use Path.Combine()
 
 	public static string LUA_TEMP_PATH = "Assets/StreamingAssets/Temp/Lua";
 	public static string LUA_TOLUA_PATH = Application.dataPath + "/ToLua/Lua/protobuf";

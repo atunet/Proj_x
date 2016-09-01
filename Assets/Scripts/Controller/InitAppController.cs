@@ -8,7 +8,7 @@ public class InitAppController : MonoBehaviour
     private string[] m_streamingFileList = null;
 
 	private static bool s_resUpdateChecked = false;
-	public static void setResChecked(bool checked_) { s_resUpdateChecked = checked_; }
+	public  static void setResChecked(bool checked_) { s_resUpdateChecked = checked_; }
 
 
 	void Start () 
@@ -17,7 +17,7 @@ public class InitAppController : MonoBehaviour
 
         CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
         CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
-        if (null == CSInterface.s_uiRoot || null == CSInterface.s_sceneRoot)
+        if(null == CSInterface.s_uiRoot || null == CSInterface.s_sceneRoot)
         {
             Debug.LogError("uiRoot or sceneRoot not found!!!");
             return;
@@ -118,7 +118,7 @@ public class InitAppController : MonoBehaviour
         {         
             AssetBundle versionAB = versionWWW.assetBundle;
             AssetBundleManifest abManifest = versionAB.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
-            if(null != abManifest)
+            if (null != abManifest)
             {
                 string[] fileList = abManifest.GetAllAssetBundles();
 
@@ -130,7 +130,7 @@ public class InitAppController : MonoBehaviour
                 m_streamingFileList[fileList.Length] = AppConst.VERSION_FILE_NAME;
                 m_streamingFileIndex = 0;
 
-				StartCoroutine(CopyFileToPersistent(AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex]));
+                StartCoroutine(CopyFileToPersistent(AppConst.STREAMING_PATH + "/" + m_streamingFileList[m_streamingFileIndex]));
             }
             else
                 Debug.LogError("streaming version file do not contains AssetBundleManifest object");
@@ -169,7 +169,6 @@ public class InitAppController : MonoBehaviour
             BinaryWriter bw = new BinaryWriter(fs);
             bw.Write(w.bytes, 0, w.bytes.Length);
             bw.Flush();
-			//Debug.Log("Init copy streaming file:" + filePath_.Substring(AppConst.PROJECT_PATH_LEN + 1) + " to " + dstPath + " done,length:" + w.bytes.Length);
 
             bw.Close(); bw = null;
             fs.Close(); fs = null;
