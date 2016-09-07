@@ -156,14 +156,20 @@ public class InitAppController : MonoBehaviour
         yield return w;
        
         if (string.IsNullOrEmpty(w.error))
-        {          
-            string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length);
+        { 
+			#if !UNITY_ANDROID
+            string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length+7);
+			#else
+			string relativePath = filePath_.Substring(AppConst.STREAMING_PATH.Length);
+			#endif
             string dstPath = AppConst.PERSISTENT_PATH + relativePath;
             string dirPath = Path.GetDirectoryName(dstPath);
             if (!Directory.Exists(dirPath))
             {
                 Directory.CreateDirectory(dirPath);
             }
+
+			Debug.Log ("Init copy file:" + filePath_ + "," + relativePath + "," + dstPath);
 
             FileStream fs = new FileStream(dstPath, FileMode.Create, FileAccess.ReadWrite);      
             BinaryWriter bw = new BinaryWriter(fs);
