@@ -1,91 +1,74 @@
-﻿
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using System;
+using System.Collections;
+using UnityEngine.EventSystems;
+using UnityStandardAssets.CrossPlatformInput;
 
-[RequireComponent(typeof(RectTransform))]
-public class MyJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IEndDragHandler
-{
-    public RectTransform joystick;
-    public Vector2 autoReturnSpeed = new Vector2(4.0f, 4.0f);
-    public float radius = 40.0f;
-    
-    public event Action<MyJoystick, Vector2> OnStartJoystickMovement;
-    public event Action<MyJoystick, Vector2> OnJoystickMovement;
-    public event Action<MyJoystick> OnEndJoystickMovement;
-    
-    private bool _returnJoystick;
-    private RectTransform _touchZone;
-    private Vector2 _resolutionCorrection;
-    
-    public Vector2 Coordinates
-    {
-        get
-        {
-            if (joystick.localPosition.magnitude < radius)
-                return joystick.localPosition / radius;
-            return joystick.localPosition.normalized;
-        }
+public class MyJoystick : MonoBehaviour , IPointerDownHandler, IPointerUpHandler, IDragHandler {
+
+    [Header("最大移动距离")]
+    public  int      maxMoveDistance    = 100;
+    public  string   horizontalAxisName = "Horizontal";
+    public  string   verticalAxisName   = "Vertical";
+    //摇杆移动位置
+    private Vector3  moveToPosition;
+    //摇杆初始位置
+    private Vector3  stickOriginPosition;
+    //摇杆移动距离
+    private float    distanceOriginToDrag;
+    private  RectTransform TouchAtlas;
+    [SerializeField]
+    [Header("摇杆位移比例")]
+    private Vector2 deltaPosition;
+    public  CrossPlatformInputManager.VirtualAxis virtualAxisHorizontal;
+    public  CrossPlatformInputManager.VirtualAxis virtualAxisVertical;
+
+    // Use this for initialization
+    void Start () {
+
+        TouchAtlas = transform.GetComponent<RectTransform> ();
+        stickOriginPosition = TouchAtlas.anchoredPosition3D;
+        virtualAxisHorizontal = new CrossPlatformInputManager.VirtualAxis ( horizontalAxisName ); 
+        virtualAxisVertical   = new CrossPlatformInputManager.VirtualAxis ( verticalAxisName );
+        CrossPlatformInputManager.RegisterVirtualAxis ( virtualAxisHorizontal );
+        CrossPlatformInputManager.RegisterVirtualAxis ( virtualAxisVertical   );
+
     }
-    
-    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+
+    void Update()
     {
-        _returnJoystick = false;
-        var joystickOffset = GetJoystickOffset(eventData);
-        joystick.localPosition = joystickOffset;
-        if (OnStartJoystickMovement != null)
-            OnStartJoystickMovement(this, Coordinates);
+        distanceOriginToDrag = Vector3.Distance (    TouchAtlas.anchoredPosition3D, stickOriginPosition  );
+        if (distanceOriginToDrag >= maxMoveDistance) {
+            moveToPosition = stickOriginPosition + ( TouchAtlas.anchoredPosition3D - stickOriginPosition ) * maxMoveDistance / distanceOriginToDrag;
+            TouchAtlas.anchoredPosition3D = moveToPosition;
+        } 
     }
-    
-    void IDragHandler.OnDrag(PointerEventData eventData)
+
+    public void OnDrag (PointerEventData eventData)
     {
-        var joystickOffset = GetJoystickOffset(eventData);
-        joystick.localPosition = joystickOffset;
-        if (OnJoystickMovement != null)
-            OnJoystickMovement(this, Coordinates);
+
+        TouchAtlas.anchoredPosition  +=  eventData.delta*2;
+
+        deltaPosition.x = (  TouchAtlas.anchoredPosition3D.x - stickOriginPosition.x )/ maxMoveDistance;
+        deltaPosition.y = (  TouchAtlas.anchoredPosition3D.y - stickOriginPosition.y )/ maxMoveDistance;
+        UpdateVirtualAxes ( deltaPosition );
     }
-    
-    void IEndDragHandler.OnEndDrag(PointerEventData eventData)
+
+    public void OnPointerDown (PointerEventData eventData)
     {
-        _returnJoystick = true;
-        if (OnEndJoystickMovement != null)
-            OnEndJoystickMovement(this);
+        Debug.Log ("OnPointerDown");
     }
-    
-    private Vector2 GetJoystickOffset(PointerEventData eventData)
+
+    public void OnPointerUp (PointerEventData eventData)
     {
-        var eventDataPos = new Vector2(eventData.position.x * _resolutionCorrection.x, eventData.position.y * _resolutionCorrection.y);
-        var joystickOffset3D = _touchZone.TransformPoint(eventDataPos) - _touchZone.position * 2;
-        var joystickOffset = new Vector2(joystickOffset3D.x, joystickOffset3D.y);
-        if (joystickOffset.magnitude > radius)
-            joystickOffset = joystickOffset.normalized * radius;
-        joystick.localPosition = joystickOffset;
-        return joystickOffset;
+        Debug.Log ("OnPointerUp");
+        UpdateVirtualAxes ( Vector2.zero );
+        TouchAtlas.anchoredPosition3D = stickOriginPosition;
     }
-    
-    private void Start()
+
+    void UpdateVirtualAxes(Vector2 value)
     {
-        _returnJoystick = true;
-        _touchZone = GetComponent<RectTransform>();
-        _touchZone.pivot = Vector2.one * 0.5f;
-        joystick.transform.parent = transform;
-        _resolutionCorrection = Vector2.one;
-        CanvasScaler rRes;
-        for (var i = transform; i != null; i = i.parent)
-        {
-            if ((rRes = i.GetComponent<CanvasScaler>()) != null)
-            {
-                var res = rRes.referenceResolution;
-                _resolutionCorrection = new Vector2(res.x / Screen.width, res.y / Screen.height);
-                break;
-            }
-        }
-    }
-    
-    private void Update()
-    {
-        if (_returnJoystick && joystick.localPosition.magnitude > Mathf.Epsilon)
-            joystick.localPosition -= new Vector3(joystick.localPosition.x * autoReturnSpeed.x, joystick.localPosition.y * autoReturnSpeed.y, 0.0f) * Time.deltaTime;
+        virtualAxisHorizontal.Update(value.x);
+        virtualAxisVertical.Update(value.y);
     }
 }
