@@ -422,6 +422,7 @@ public class Tool : MonoBehaviour
 	            processInfo.FileName = "pscp.exe";
 	            processInfo.Arguments = "-pw sunrise -r " + fileList[i] + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":" + remotePath;
 	            processInfo.UseShellExecute = true;
+				Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
 
 	            string currDir = Directory.GetCurrentDirectory();
 	            string exeDir = AppConst.PROJECT_PATH + "/putty/";
