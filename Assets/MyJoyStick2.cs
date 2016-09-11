@@ -11,20 +11,19 @@ public class MyJoyStick2 : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         MOVING,
     }
     private State m_state;
+    private Animation m_character;
+
 
     private Vector2 m_rootPostion;
     private float m_rootWidth;
     private float m_rootHeight;
 
-    //private Vector2 m_rootSize;
 
     private RectTransform m_thumbRectTrans;
     private Vector2 m_thumbOriginPostion;
 
-    private GameObject m_character;
 
-	// Use this for initialization
-	void Start () 
+    void Start () 
     {
         m_state = State.IDLE;
 
@@ -39,14 +38,13 @@ public class MyJoyStick2 : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         Debug.Log("root x:" + m_rootPostion.x + ",y:" + m_rootPostion.y + ",width:" + m_rootWidth + ",height:" + m_rootHeight);
     }
 	
-	// Update is called once per frame
 	void Update () 
     {
         if (m_state == State.IDLE)
         {
             if (m_thumbRectTrans.anchoredPosition != m_thumbOriginPostion)
             {
-                
+                //Mathf.ler
             }
         }
         else if (m_state == State.MOVING)
@@ -57,32 +55,11 @@ public class MyJoyStick2 : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerDown(PointerEventData data)
     {
         m_state = State.MOVING;
+        m_character.Play("Moving");
 
-        float deltaX = data.position.x - m_rootPostion.x;
-        float deltaY = data.position.y - m_rootPostion.y;
-        if (Mathf.Pow(deltaX, 2) + Mathf.Pow(deltaY, 2) > Mathf.Pow(m_rootWidth, 2))
-        {
-            if (Mathf.Abs(deltaX) > m_rootWidth)
-            {
-                if (deltaX > 0)
-                {
-                    deltaX = m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaY/deltaX), 2) + 1.0f); 
-                }
-                else
-                    deltaX = -(m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaY/deltaX), 2) + 1.0f));
-            }
-
-            if (Mathf.Abs(deltaY) > m_rootWidth)
-            {
-                if (deltaY > 0)
-                {
-                    deltaY = m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaX/deltaY), 2) + 1.0f); 
-                }
-                else
-                    deltaY = -(m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaX/deltaY), 2) + 1.0f));
-            }
-        }
-        m_thumbRectTrans.anchoredPosition = new Vector2(deltaX, deltaY);
+        float dstX = 0f, dstY = 0f;
+        CalcPos(data.position, out dstX, out dstY);
+        m_thumbRectTrans.anchoredPosition = new Vector2(dstX, dstY);
 
         Debug.Log("OnPointerDown position," + data.position.x + "," + data.position.y);
     }
@@ -90,39 +67,33 @@ public class MyJoyStick2 : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerUp(PointerEventData data)
     {
         m_state = State.IDLE;
-        m_thumbRectTrans.anchoredPosition = m_thumbOriginPostion;
+        m_character.Play("Idle");
 
+        m_thumbRectTrans.anchoredPosition = m_thumbOriginPostion;
         Debug.Log("OnPointerUp was called");
     }
 
     public void OnDrag(PointerEventData data)
     {
-        float deltaX = data.position.x - m_rootPostion.x;
-        float deltaY = data.position.y - m_rootPostion.y;
-        if (Mathf.Pow(deltaX, 2) + Mathf.Pow(deltaY, 2) > Mathf.Pow(m_rootWidth, 2))
+        float dstX = 0f, dstY = 0f;
+        CalcPos(data.position, out dstX, out dstY);
+        m_thumbRectTrans.anchoredPosition = new Vector2(dstX, dstY);
+
+        Debug.Log("OnDrag was called," + data.position.x + "," + data.position.y + ",delta:" + dstX + "," + dstY);
+    }
+
+    private void CalcPos(Vector2 clickPos, out float dstX, out float dstY)
+    {
+        float distance = Vector2.Distance(clickPos, m_rootPostion);
+        if (distance > m_rootWidth)
         {
-            if (Mathf.Abs(deltaX) > m_rootWidth)
-            {
-                if (deltaX > 0)
-                {
-                    deltaX = m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaY/deltaX), 2) + 1.0f); 
-                }
-                else
-                    deltaX = -(m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaY/deltaX), 2) + 1.0f));
-            }
-
-            if (Mathf.Abs(deltaY) > m_rootWidth)
-            {
-                if (deltaY > 0)
-                {
-                    deltaY = m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaX/deltaY), 2) + 1.0f); 
-                }
-                else
-                    deltaY = -(m_rootWidth / Mathf.Sqrt(Mathf.Pow(Mathf.Abs(deltaX/deltaY), 2) + 1.0f));
-            }
+            dstX = (m_rootWidth / distance) * (clickPos.x - m_rootPostion.x);
+            dstY = (m_rootHeight / distance) * (clickPos.y - m_rootPostion.y);
         }
-        m_thumbRectTrans.anchoredPosition = new Vector2(deltaX, deltaY);
-
-        Debug.Log("OnDrag was called");
+        else
+        {
+            dstX = clickPos.x - m_rootPostion.x;
+            dstY = clickPos.y - m_rootPostion.y;
+        }
     }
 }
