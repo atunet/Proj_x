@@ -60,6 +60,18 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnDrag(PointerEventData data)
     {
+       /* Vector3 worldPos;
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(m_thumbTrans, data.position, data.pressEventCamera, out worldPos))
+        {
+            m_thumbTrans.position = worldPos;
+        }
+        Vector3 dir = (m_thumbTrans.position - m_thumbOriginPosition).normalized;
+        if (Vector3.Distance(m_thumbTrans.position, m_thumbOriginPosition) > m_movementRadius)
+        {
+            m_thumbTrans.position = m_thumbOriginPosition + dir * m_movementRadius;
+        }*/
+        // http://blog.csdn.net/qq992817263/article/details/50925802
+
         Vector2 newPos = Vector2.zero;
         CalcNewPos(data.delta, out newPos);
         m_thumbTrans.anchoredPosition = newPos;
