@@ -16,8 +16,8 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     private RectTransform m_rectTrans;
     private Vector2 m_originPosition;
-    private float m_movementRadius;     // 像素单位
-    private float m_resetSpeed = 500.0f; 
+    private float m_movementRadius;     // 像素单位半径
+    private float m_resetSpeed = 5.0f;  // 像素单位回归速度
 
     CrossPlatformInputManager.VirtualAxis m_horizontalVirtualAxis;  // Reference to the joystick in the cross platform input
     CrossPlatformInputManager.VirtualAxis m_verticalVirtualAxis;    // Reference to the joystick in the cross platform input
@@ -32,17 +32,6 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         m_movementRadius = m_rectTrans.sizeDelta.x/2;
 
         Debug.Log("start called,origin position x:" + m_originPosition.x + ",y:" + m_originPosition.y + ",radius:" + m_movementRadius);
-
-
-        Vector3 t1 = new Vector3(0.000000001f, 0.000000001f, 0.00000000f);
-        Vector3 t2 = t1.normalized;
-        Debug.Log(t1.ToString());
-        Debug.Log(t2.ToString());
-        Debug.Log(t1.magnitude);
-        Debug.Log(t1.sqrMagnitude);
-
-        t1.Normalize();
-        Debug.Log(t1.ToString());
     }
 	
     void OnEnable()
@@ -64,11 +53,9 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         if (m_state == EState.IDLE)
         {
-            if ((m_rectTrans.anchoredPosition - m_originPosition).magnitude > 0.1f)
+            if ((m_rectTrans.anchoredPosition - m_originPosition).magnitude > 0.3f)
             {
-                Vector2 offset = m_rectTrans.anchoredPosition - m_originPosition;
-                //Vector2.Lerp(m_rectTrans.anchoredPosition, m_originPosition, Time.deltaTime * m_resetSpeed);
-                m_rectTrans.anchoredPosition -= offset.normalized * Time.deltaTime * m_resetSpeed;
+                m_rectTrans.anchoredPosition = Vector2.Lerp(m_rectTrans.anchoredPosition, m_originPosition, Time.deltaTime * m_resetSpeed);
             }
         }
     }
@@ -80,6 +67,8 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         m_state = EState.MOVING;
 
         SetNewPos(data);
+
+        UpdateVirtualAxes(m_rectTrans.anchoredPosition);
     }
 
     public void OnPointerUp(PointerEventData data)
@@ -87,8 +76,6 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Debug.Log("OnPointerUp was called");
 
         m_state = EState.IDLE;
-
-        //m_rectTrans.position = m_originPosition;
     }
 
     public void OnDrag(PointerEventData data)
@@ -97,17 +84,7 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
         SetNewPos(data);
 
-        // http://blog.csdn.net/qq992817263/article/details/50925802
-
-       /* Vector2 newPos = Vector2.zero;
-        CalcNewPos(data.delta, out newPos);
-        m_thumbTrans.anchoredPosition = newPos;
-        Debug.Log("OnDrag new pos:" + newPos.x + "," + newPos.y);
-
-        UpdateVirtualAxes(m_thumbTrans.anchoredPosition);
-
-        PrintPointerEventData(data);
-        */
+        UpdateVirtualAxes(m_rectTrans.anchoredPosition);
     }
 
     private void SetNewPos(PointerEventData data)
@@ -125,12 +102,7 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             m_rectTrans.anchoredPosition = offset;
         }
     }
-
-   /* Vector2 NormalizedOffset(Vector2 offset)
-    {
-        return (offset.magnitude < m_movementRadius) ? (offset.normalized / m_movementRadius) : offset.normalized;
-    }*/
-
+        
     private void UpdateVirtualAxes(Vector2 value)
     {
         var delta = m_originPosition - value;
@@ -139,5 +111,7 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
        
         m_horizontalVirtualAxis.Update(-delta.x);
         m_verticalVirtualAxis.Update(delta.y);
+
+        Debug.Log("Update virtual axes,x:" + -delta.x + ",y:" + delta.y);
     }
 }
