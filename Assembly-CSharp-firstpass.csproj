@@ -90,7 +90,7 @@
      <Compile Include="Assets\Standard Assets\Utility\WaypointCircuit.cs" />
      <Compile Include="Assets\Standard Assets\Utility\WaypointProgressTracker.cs" />
      <None Include="Assets\Resources\Font\debug.fnt" />
-     <None Include="Assets\TempArt\C&amp;C_Pack\Goblin_rouge\readme.txt" />
+     <None Include="Assets\TempArt\3dCharactor\C&amp;C_Pack\Goblin_rouge\readme.txt" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />
      <None Include="Assets\ToLua\readme.txt" />

@@ -1,0 +1,70 @@
+﻿using UnityEngine;
+
+public class xInputManager 
+{
+    static public void SetHorizontalValue(float val, bool use)
+    {
+        s_horizontalValue = val;
+        s_useJoystick = use;
+    }
+
+    static public float GetHorizontalValue()
+    {
+        if (s_useJoystick)
+        {
+            return s_horizontalValue;
+        }
+        else
+        {
+            return Input.GetAxis("Horizontal");
+        }
+    }
+
+    static public float GetHorizontalValueRaw()
+    {
+        if (s_useJoystick)
+        {
+            return (s_horizontalValue >= 0) ? Mathf.Ceil(s_horizontalValue) : Mathf.Floor(s_horizontalValue);
+        }
+        else
+        {
+            float h = Input.GetAxis("Horizontal");
+            return (h >= 0) ? Mathf.Ceil(h) : Mathf.Floor(h);
+        }
+    }
+
+    static public void SetVerticalValue(float val, bool use)
+    {
+        s_verticalValue = val;
+        s_useJoystick = use;
+    }
+
+    static public float GetVerticalValue()
+    {
+        if (s_useJoystick)
+        {
+            return s_verticalValue;
+        }
+        else
+        {
+            return Input.GetAxis("Vertical");
+        }
+    }
+
+    static public float GetVerticalValueRaw()
+    {
+        if (s_useJoystick)
+        {
+            return (s_verticalValue >= 0) ? Mathf.Ceil(s_verticalValue) : Mathf.Floor(s_verticalValue);
+        }
+        else
+        {
+            float v = Input.GetAxis("Vertical");
+            return (v >= 0) ? Mathf.Ceil(v) : Mathf.Floor(v);
+        }
+    }
+
+    static private bool s_useJoystick = false;
+    static private float s_horizontalValue = 0.0f;
+    static private float s_verticalValue = 0.0f;
+}

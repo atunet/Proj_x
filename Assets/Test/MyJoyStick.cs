@@ -17,11 +17,7 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     private RectTransform m_rectTrans;
     private Vector2 m_originPosition;
     private float m_movementRadius;     // 像素单位半径
-    private float m_resetSpeed = 5.0f;  // 像素单位回归速度
-
-    CrossPlatformInputManager.VirtualAxis m_horizontalVirtualAxis;  // Reference to the joystick in the cross platform input
-    CrossPlatformInputManager.VirtualAxis m_verticalVirtualAxis;    // Reference to the joystick in the cross platform input
-
+    private float m_resetSpeed = 10.0f;  // 像素单位回归速度
 
     void Start () 
     {      
@@ -34,20 +30,6 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Debug.Log("start called,origin position x:" + m_originPosition.x + ",y:" + m_originPosition.y + ",radius:" + m_movementRadius);
     }
 	
-    void OnEnable()
-    {
-        m_horizontalVirtualAxis = new CrossPlatformInputManager.VirtualAxis("Horizontal");
-        CrossPlatformInputManager.RegisterVirtualAxis(m_horizontalVirtualAxis);
-
-        m_verticalVirtualAxis = new CrossPlatformInputManager.VirtualAxis("Vertical");
-        CrossPlatformInputManager.RegisterVirtualAxis(m_verticalVirtualAxis);
-    }
-
-    void OnDisable()
-    {
-        m_horizontalVirtualAxis.Remove();
-        m_verticalVirtualAxis.Remove();
-    }
 
     void Update()
     {
@@ -68,7 +50,7 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
         SetNewPos(data);
 
-        UpdateVirtualAxes(m_rectTrans.anchoredPosition);
+        UpdateInputValue(m_rectTrans.anchoredPosition, true);
     }
 
     public void OnPointerUp(PointerEventData data)
@@ -76,6 +58,8 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Debug.Log("OnPointerUp was called");
 
         m_state = EState.IDLE;
+
+        UpdateInputValue(Vector2.zero, false);
     }
 
     public void OnDrag(PointerEventData data)
@@ -84,7 +68,7 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
         SetNewPos(data);
 
-        UpdateVirtualAxes(m_rectTrans.anchoredPosition);
+        UpdateInputValue(m_rectTrans.anchoredPosition, true);
     }
 
     private void SetNewPos(PointerEventData data)
@@ -103,15 +87,15 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         }
     }
         
-    private void UpdateVirtualAxes(Vector2 value)
+    private void UpdateInputValue(Vector2 value, bool useJoystick)
     {
         var delta = m_originPosition - value;
         delta.y = -delta.y;
         delta /= m_movementRadius;
        
-        m_horizontalVirtualAxis.Update(-delta.x);
-        m_verticalVirtualAxis.Update(delta.y);
+        xInputManager.SetHorizontalValue(-delta.x, useJoystick);
+        xInputManager.SetVerticalValue(delta.y, useJoystick);
 
-        Debug.Log("Update virtual axes,x:" + -delta.x + ",y:" + delta.y);
+        Debug.Log("update input value:" + -delta.x + "," + delta.y);
     }
 }
