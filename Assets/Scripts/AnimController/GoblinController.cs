@@ -16,18 +16,29 @@ public class GoblinController : MonoBehaviour {
 	void Update () {
 	
         if (m_animator)
-        {         
-            float h = xInputManager.GetHorizontalValue();
-            float hRaw = xInputManager.GetHorizontalValueRaw();
-
+        {    
             float v = xInputManager.GetVerticalValue();
-            float vRaw = xInputManager.GetVerticalValueRaw();
+            m_animator.SetFloat("Speed", v);
 
-            if (Mathf.Abs(h) > 0 || Mathf.Abs(v) > 0)
-            {
-                Debug.Log("axis,h:" + h + ",hraw:" + hRaw + ",v:" + v + ",vRaw:" + vRaw);
-            }
-            m_animator.SetInteger("moving", (int)hRaw);
+            float h = xInputManager.GetHorizontalValue();
+            m_animator.SetFloat("Direction", h);
         }
 	}
+
+    void OnAnimatorMove()
+    {
+        AnimatorStateInfo currentState = m_animator.GetCurrentAnimatorStateInfo(0);
+        if (currentState.IsName("Base Layer.Run"))
+        {
+            float v = m_animator.GetFloat("Speed");
+
+            Vector3 newPos = transform.position;
+            newPos.z += v * Time.deltaTime;
+
+            float h = m_animator.GetFloat("Direction");
+            newPos.x += h * Time.deltaTime;
+
+            transform.position = newPos;
+        }
+    }
 }
