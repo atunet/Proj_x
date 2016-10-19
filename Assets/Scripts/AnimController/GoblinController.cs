@@ -30,15 +30,23 @@ public class GoblinController : MonoBehaviour {
         AnimatorStateInfo currentState = m_animator.GetCurrentAnimatorStateInfo(0);
         if (currentState.IsName("Base Layer.Run"))
         {
-            float v = m_animator.GetFloat("Speed");
+           // float v = m_animator.GetFloat("Speed");
 
-            Vector3 newPos = transform.position;
-            newPos.z += v * Time.deltaTime;
+            //transform.Translate(Vector3.forward * 2 * v * Time.deltaTime);
 
-            float h = m_animator.GetFloat("Direction");
-            newPos.x += h * Time.deltaTime;
+            //Vector3 newPos = transform.position;
+            //newPos.z += 2 * v * Time.deltaTime;
 
-            transform.position = newPos;
+            //float h = m_animator.GetFloat("Direction");
+            //newPos.x += h * Time.deltaTime;
+
+            //transform.position = newPos;
+            float v = xInputManager.GetVerticalValue();
+            float h = xInputManager.GetHorizontalValue();
+
+            transform.LookAt(new Vector3(transform.position.x + h, transform.position.y, transform.position.z + v));  
+            //移动玩家的位置（按朝向位置移动）  
+            transform.Translate(Vector3.forward * Time.deltaTime * 7.5F);  
         }
     }
 }
