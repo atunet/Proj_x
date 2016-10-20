@@ -18,7 +18,7 @@ public class GoblinController : MonoBehaviour {
         if (m_animator)
         {    
             float v = xInputManager.GetVerticalValue();
-            m_animator.SetFloat("Speed", v);
+            m_animator.SetFloat("Speed", v*v);
 
             float h = xInputManager.GetHorizontalValue();
             m_animator.SetFloat("Direction", h);
