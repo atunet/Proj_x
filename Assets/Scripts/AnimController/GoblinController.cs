@@ -23,8 +23,15 @@ public class GoblinController : MonoBehaviour {
             float h = xInputManager.GetHorizontalValue();
             m_animator.SetFloat("Direction", h);
         }
+
+
+        Debug.Log("update:" + Time.time + "," + Time.deltaTime);
 	}
 
+    void FixedUpdate()
+    {
+        Debug.Log("Fixed update:" + Time.fixedTime + "," + Time.fixedDeltaTime);
+    }
     void OnAnimatorMove()
     {
         AnimatorStateInfo currentState = m_animator.GetCurrentAnimatorStateInfo(0);
