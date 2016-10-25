@@ -79,12 +79,18 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             m_rectTrans.position = worldPos;
         }
          
+        /*  
+        // method 1
         Vector2 offset = m_rectTrans.anchoredPosition - m_originPosition;
-        if (offset.magnitude > m_movementRadius)
+        if (offset.magnitude > m_movementRadius) // or use vector3.Distance(...)
         {
             offset = offset.normalized * m_movementRadius;
             m_rectTrans.anchoredPosition = offset;
         }
+        */
+        // method 2
+        Vector2 offset2 = m_rectTrans.anchoredPosition - m_originPosition;
+        m_rectTrans.anchoredPosition = m_originPosition + Vector2.ClampMagnitude(offset2, m_movementRadius);
     }
         
     private void UpdateInputValue(Vector2 value, bool useJoystick)
