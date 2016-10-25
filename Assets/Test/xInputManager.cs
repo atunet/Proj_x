@@ -7,7 +7,7 @@ public class xInputManager
         float h = GetHorizontalValue();
         float v = GetVerticalValue();
         float upRotation = Vector2.Angle(Vector2.up, new Vector2(h, v));
-        if (h < 0f) upRotation = -upRotation;
+        if (h < 0f) upRotation = 360f - upRotation;
         return Quaternion.Euler(0f, upRotation, 0f);
     }
 
