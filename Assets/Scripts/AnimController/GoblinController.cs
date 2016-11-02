@@ -6,6 +6,8 @@ public class GoblinController : MonoBehaviour
 {
     private Animator m_animator;
     private CharacterController m_cc;
+    private NavMeshAgent m_navAgent;
+    bool m_autoMoving = false;
 
     private Quaternion m_targetRotation = Quaternion.identity;
     public float m_moveSpeed = 8f;
@@ -14,24 +16,36 @@ public class GoblinController : MonoBehaviour
     {	        
         m_animator = GetComponent<Animator>();
         m_cc = GetComponent<CharacterController>();
+        m_navAgent = GetComponent<NavMeshAgent>();
 	}
 	
 	void Update () 
     {	
         if (!m_animator) return;
 
-        float v = xInputManager.GetVerticalValueRaw();
-        float h = xInputManager.GetHorizontalValueRaw();
-                  
-        if (v != 0f || h != 0f)
-        {            
+        if (m_autoMoving)
+        {
             m_animator.SetFloat("Speed", 1f);
-            m_targetRotation = xInputManager.GetWorldRotation();
-            Debug.Log("rotation degree:" + xInputManager.GetWorldRotation().eulerAngles.ToString());
+            if (m_navAgent.remainingDistance == 0f)
+            {
+                m_autoMoving = false;
+            }
         }
         else
         {
-            m_animator.SetFloat("Speed", 0f);
+            float v = xInputManager.GetVerticalValueRaw();
+            float h = xInputManager.GetHorizontalValueRaw();
+                  
+            if (v != 0f || h != 0f)
+            {            
+                m_animator.SetFloat("Speed", 1f);
+                m_targetRotation = xInputManager.GetWorldRotation();
+                Debug.Log("rotation degree:" + xInputManager.GetWorldRotation().eulerAngles.ToString());
+            }
+            else
+            {
+                m_animator.SetFloat("Speed", 0f);
+            }
         }
 
         AnimatorStateInfo currentState = m_animator.GetCurrentAnimatorStateInfo(0);
@@ -44,6 +58,18 @@ public class GoblinController : MonoBehaviour
             }
 
             m_cc.SimpleMove(transform.forward * m_moveSpeed);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit))
+            {
+                Vector3 destPos = hit.point;
+                m_navAgent.SetDestination(destPos);
+                m_autoMoving = true;
+            }
         }
 	}
 
