@@ -6,8 +6,9 @@ public class GoblinController : MonoBehaviour
 {
     private Animator m_animator;
     private CharacterController m_cc;
+
     private NavMeshAgent m_navAgent;
-    bool m_autoMoving = false;
+    bool m_pathFinding = false;
 
     private Quaternion m_targetRotation = Quaternion.identity;
     public float m_moveSpeed = 8f;
@@ -23,17 +24,30 @@ public class GoblinController : MonoBehaviour
     {	
         if (!m_animator) return;
 
-        if (m_autoMoving)
+        float v = xInputManager.GetVerticalValueRaw();
+        float h = xInputManager.GetHorizontalValueRaw();
+
+        if (v != 0f || h != 0f)
+        {
+            m_navAgent.Stop();
+            m_pathFinding = false;
+
+            m_animator.SetFloat("Speed", 1f);
+            m_targetRotation = xInputManager.GetWorldRotation();
+            Debug.Log("rotation degree:" + xInputManager.GetWorldRotation().eulerAngles.ToString());
+        }
+
+        if (m_pathFinding)
         {
             m_animator.SetFloat("Speed", 1f);
             if (m_navAgent.remainingDistance == 0f)
             {
-                m_autoMoving = false;
+                m_pathFinding = false;
             }
         }
         else
         {
-            float v = xInputManager.GetVerticalValueRaw();
+            /*float v = xInputManager.GetVerticalValueRaw();
             float h = xInputManager.GetHorizontalValueRaw();
                   
             if (v != 0f || h != 0f)
@@ -42,7 +56,7 @@ public class GoblinController : MonoBehaviour
                 m_targetRotation = xInputManager.GetWorldRotation();
                 Debug.Log("rotation degree:" + xInputManager.GetWorldRotation().eulerAngles.ToString());
             }
-            else
+            else */
             {
                 m_animator.SetFloat("Speed", 0f);
             }
@@ -51,13 +65,16 @@ public class GoblinController : MonoBehaviour
         AnimatorStateInfo currentState = m_animator.GetCurrentAnimatorStateInfo(0);
         if (currentState.IsName("Base Layer.Run"))
         {
-            if (Quaternion.Angle(transform.rotation, m_targetRotation) > 2f)
+            if (Quaternion.Angle(transform.rotation, m_targetRotation) > 1f)
             {
                 transform.rotation = Quaternion.Lerp(transform.rotation, m_targetRotation, 10f * Time.deltaTime);
                 //Debug.Log("after rotation lerp:" + transform.rotation.ToString() + ",target:" + m_targetRotation.ToString());
             }
 
-            m_cc.SimpleMove(transform.forward * m_moveSpeed);
+            if (!m_pathFinding)
+            {
+                m_cc.SimpleMove(transform.forward * m_moveSpeed);
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -68,7 +85,7 @@ public class GoblinController : MonoBehaviour
             {
                 Vector3 destPos = hit.point;
                 m_navAgent.SetDestination(destPos);
-                m_autoMoving = true;
+                m_pathFinding = true;
             }
         }
 	}
