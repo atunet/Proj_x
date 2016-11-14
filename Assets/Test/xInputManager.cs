@@ -2,12 +2,12 @@
 
 public class xInputManager 
 {
-    static public Quaternion GetWorldRotation()
+    static public Quaternion GetWorldRotation(float h_, float v_)
     {
-        float h = GetHorizontalValue();
-        float v = GetVerticalValue();
-        float upRotation = Vector2.Angle(Vector2.up, new Vector2(h, v));
-        if (h < 0f) upRotation = 360f - upRotation;
+        //float h = GetHorizontalValue();
+        //float v = GetVerticalValue();
+        float upRotation = Vector2.Angle(Vector2.up, new Vector2(h_, v_));
+        if (h_ < 0f) upRotation = 360f - upRotation;
         return Quaternion.Euler(0f, upRotation, 0f);
     }
 

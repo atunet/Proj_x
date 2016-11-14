@@ -33,8 +33,8 @@ public class GoblinController : MonoBehaviour
             m_pathFinding = false;
 
             m_animator.SetFloat("Speed", 1f);
-            m_targetRotation = xInputManager.GetWorldRotation();
-            Debug.Log("rotation degree:" + xInputManager.GetWorldRotation().eulerAngles.ToString());
+            m_targetRotation = xInputManager.GetWorldRotation(v, h);
+            Debug.Log("rotation degree:" + xInputManager.GetWorldRotation(v, h).eulerAngles.ToString());
         }
 
         if (m_pathFinding)
