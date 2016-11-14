@@ -66,6 +66,8 @@ public class MyJoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         Debug.Log("OnDrag was called");
 
+        //m_state = EState.MOVING;
+
         SetNewPos(data);
 
         UpdateInputValue(m_rectTrans.anchoredPosition, true);
