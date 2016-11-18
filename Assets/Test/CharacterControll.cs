@@ -16,6 +16,7 @@ public class CharacterControll : MonoBehaviour
     private Quaternion m_destRotation = Quaternion.identity;
     public float m_rotateSpeed = 100f;
 
+    private Vector2 m_touchStartPos = Vector2.zero;
 
     void Start () 
     {
@@ -102,8 +103,56 @@ public class CharacterControll : MonoBehaviour
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, m_destRotation, m_rotateSpeed);
+
+        if (Input.touchCount == 1)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                m_touchStartPos = t.position;
+            }
+            else if (t.phase == TouchPhase.Ended)
+            {
+                Vector2 deltaPos = t.position - m_touchStartPos;
+                if (deltaPos.x > 0f)
+                {
+                    if (deltaPos.y > 0f && deltaPos.y > deltaPos.x)
+                    {
+                        Debug.Log("touch slide to up");
+                    }
+                    else if (deltaPos.y < 0f && Mathf.Abs(deltaPos.y) > deltaPos.x)
+                    {
+                        Debug.Log("touch slide bottom");
+                    }
+                    else
+                    {
+                        Debug.Log("touch slide right");
+                    }
+                }
+                else if (deltaPos.x < 0f)
+                {
+                    if (deltaPos.y > 0f && deltaPos.y > Mathf.Abs(deltaPos.x))
+                    {
+                        Debug.Log("touch slide to up");
+                    }
+                    else if (deltaPos.y < 0f && Mathf.Abs(deltaPos.y) >  Mathf.Abs(deltaPos.x))
+                    {
+                        Debug.Log("touch slide bottom");
+                    }
+                    else
+                    {
+                        Debug.Log("touch slide left");
+                    }
+                }
+
+                m_touchStartPos = Vector2.zero;
+            }
+        }
     }
 
 
+    void OnGUI()
+    {
+    }
 
 }
