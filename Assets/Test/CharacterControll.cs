@@ -103,7 +103,7 @@ public class CharacterControll : MonoBehaviour
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, m_destRotation, m_rotateSpeed);
-
+        /*
         if (Input.touchCount == 1)
         {
             Touch t = Input.GetTouch(0);
@@ -148,6 +148,7 @@ public class CharacterControll : MonoBehaviour
                 m_touchStartPos = Vector2.zero;
             }
         }
+        */
     }
 
 
