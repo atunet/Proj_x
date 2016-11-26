@@ -1,0 +1,9 @@
+1. 通用的材质/贴图/shader分别打AssetBundle包,app运行时一次性加载到内存,后续提供共享使用
+2. TempRes/Animations:该目录放置公用的可用于重定向的人形动画(Humanoid),第一次使用前加载
+3. TempRes/Materials:该目录放置公用的材质,app初始化时加载
+4. TempRes/Shaders:该目录放置公用的着色器,app初始化时加载
+5. TempRes/Models:该目录放置3d模型(包括角色和场景物件)及相关的专有文件
+6. TempRes/Textures:该目录放置各类型的贴图文件,包括:UI贴图,法线贴图,灯光贴图等
+7. TempRes/Models/Character:3d角色的网格/材质/贴图/动画(非Humanoid类型)/动画控制器都和模型放在同一个目录中,不太会和其他模型公用
+8. TempRes/Models/Environment:3d场景物件没有动画,只需要将网格/专用材质/专用贴图和模型放在同一个目录下,材质和贴图可能会和其他物件公用
+9. TempRes/Prefabs:该目录放置预制件,一般包含角色模型/场景模型/UI界面等的预制件(基本来源于上述的Models,Textures目录)
