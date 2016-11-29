@@ -73,6 +73,7 @@ public class Tool : MonoBehaviour
 		s_abMaps.Clear();
 		PreprocessLuaFiles();
 		PreprocessArtFiles();
+        PreprocessModelFiles();
 
         string streamingPath = Application.streamingAssetsPath + "/" + GetTargetStr(target_);
         if (!Directory.Exists (streamingPath)) 
@@ -160,17 +161,19 @@ public class Tool : MonoBehaviour
 	/// </summary>
 	static void PreprocessArtFiles() 
 	{
-        string resPath = Application.dataPath + "/Delete";
+        string resPath = Application.dataPath + "/TempRes";
         SetSpriteTag(resPath);
 
         string[] dirList = Directory.GetDirectories(resPath, "*", SearchOption.AllDirectories);
         for (int i = 0; i < dirList.Length; ++i)
         {
+            if (dirList[i].Contains("TempRes") && dirList[i].Contains("Model"))
+                continue;
+
             string relativeDir = dirList[i].Substring(resPath.Length+1);
             string abName = relativeDir.Replace("\\", "_").Replace("/", "_") + AppConst.AB_EXT_NAME;
 
             string[] fileList = Directory.GetFiles(dirList[i], "*", SearchOption.TopDirectoryOnly);
-            if (0 == fileList.Length) continue;
 
             int realLength = 0; // 过滤xxx.meta之后的文件数量
             for(int j = 0; j < fileList.Length; ++j)
@@ -178,6 +181,7 @@ public class Tool : MonoBehaviour
                 if (fileList[j].EndsWith(".meta") || fileList[j].Contains("ds_store")) continue;
                 realLength++;
             }
+            if (0 == realLength) continue;
 
             AssetBundleBuild build = new AssetBundleBuild();
             build.assetNames = new string[realLength];
@@ -210,6 +214,56 @@ public class Tool : MonoBehaviour
 		AddBuildMap("prompt_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Prompt");
 		AddBuildMap("shared_asset" + AppConst.AB_EXT_NAME, "*.png", "Assets/LuaFramework/Examples/Textures/Shared");
 	    */
+    }
+
+    static void PreprocessModelFiles()
+    {
+        string modelPath = Application.dataPath + "/TempRes/Model";
+        string[] subPathList = Directory.GetDirectories(modelPath, "*", SearchOption.TopDirectoryOnly);
+
+        for (int n = 0; n < subPathList.Length; ++n)
+        {
+            string[] dirList = Directory.GetDirectories(subPathList[n], "*", SearchOption.TopDirectoryOnly);
+            for (int i = 0; i < dirList.Length; ++i)
+            {
+                string relativeDir = dirList[i].Substring(modelPath.Length + 1);
+                string abName = relativeDir.Replace("\\", "_").Replace("/", "_") + AppConst.AB_EXT_NAME;
+
+                string[] fileList = Directory.GetFiles(dirList[i], "*", SearchOption.AllDirectories);
+                
+                int realLength = 0; // 过滤xxx.meta之后的文件数量
+                for (int j = 0; j < fileList.Length; ++j)
+                {
+                    if (fileList[j].EndsWith(".meta") || fileList[j].Contains("ds_store"))
+                        continue;
+                    realLength++;
+                }
+                if (0 == realLength) continue;
+
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetNames = new string[realLength];
+                build.assetBundleName = abName;
+
+                int index = 0;
+                for (int k = 0; k < fileList.Length; ++k)
+                {             
+                    if (fileList[k].EndsWith(".meta") || fileList[k].Contains("ds_store"))
+                        continue;
+
+                    string relativeFilePath = fileList[k].Replace("\\", "/").Substring(AppConst.PROJECT_PATH_LEN + 1);
+                    build.assetNames[index++] = relativeFilePath;
+
+                    string barInfo = "Build ab file:" + relativeFilePath + " to " + abName + " ... (" + k + "/" + fileList.Length + ")";
+                    EditorUtility.DisplayProgressBar("Build assetbundle map", barInfo, (float)k / (float)fileList.Length);
+
+                    Debug.Log(barInfo);
+                }
+
+                s_abMaps.Add(build);
+            }
+        }
+        EditorUtility.ClearProgressBar();
+        AssetDatabase.Refresh();
     }
 
     static void SetSpriteTag(string path_)
