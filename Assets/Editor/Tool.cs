@@ -101,7 +101,7 @@ public class Tool : MonoBehaviour
                 File.Move(filePath, newPath);
 			}
 		}
-
+        BuildScenes(target_);
         AssetDatabase.Refresh();
 
         EditorUtility.ClearProgressBar();
@@ -294,6 +294,20 @@ public class Tool : MonoBehaviour
 
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
+    }
+
+
+    static void BuildScenes(BuildTarget target_)
+    {
+        string scenePath = Application.dataPath + "/Scenes";
+        string streamingPath = Application.streamingAssetsPath + "/" + GetTargetStr(target_);
+        string relativeOutPath = streamingPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
+
+        string[] fileList = Directory.GetFiles(scenePath, "*.unity", SearchOption.TopDirectoryOnly);
+        for (int i = 0; i < fileList.Length; ++i)
+        {
+            BuildPipeline.BuildPlayer(fileList, relativeOutPath, target_, BuildOptions.BuildAdditionalStreamedScenes);
+        }
     }
 
 	static void AddBuildMap(string abName_, string relativePath_, string pattern_) 
