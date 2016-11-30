@@ -101,7 +101,7 @@ public class Tool : MonoBehaviour
                 File.Move(filePath, newPath);
 			}
 		}
-        BuildScenes(target_);
+        //BuildScenes(target_);
         AssetDatabase.Refresh();
 
         EditorUtility.ClearProgressBar();
@@ -296,17 +296,22 @@ public class Tool : MonoBehaviour
         AssetDatabase.Refresh();
     }
 
-
-    static void BuildScenes(BuildTarget target_)
+    [MenuItem("Tool/Asset Bundle/Build Scenes(android)", false, 105)]
+    static void BuildScenes(/*BuildTarget target_*/)
     {
+        BuildTarget target_ = BuildTarget.StandaloneWindows64;
         string scenePath = Application.dataPath + "/Scenes";
         string streamingPath = Application.streamingAssetsPath + "/" + GetTargetStr(target_);
         string relativeOutPath = streamingPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
 
         string[] fileList = Directory.GetFiles(scenePath, "*.unity", SearchOption.TopDirectoryOnly);
-        for (int i = 0; i < fileList.Length; ++i)
+        for(int i = 0; i < fileList.Length; ++i)
         {
-            BuildPipeline.BuildPlayer(fileList, relativeOutPath, target_, BuildOptions.BuildAdditionalStreamedScenes);
+            Debug.Log(fileList[i]);
+        }
+        //for (int i = 0; i < fileList.Length; ++i)
+        {
+            BuildPipeline.BuildPlayer(fileList, relativeOutPath + "/scenes.unity3d", target_, BuildOptions.BuildAdditionalStreamedScenes);
         }
     }
 
@@ -400,7 +405,8 @@ public class Tool : MonoBehaviour
 
     private static string GetTargetStr(BuildTarget target_)
     {
-        if (target_ == BuildTarget.StandaloneWindows)
+        if (target_ == BuildTarget.StandaloneWindows ||
+            target_ == BuildTarget.StandaloneWindows64)
             return "Windows";
         else if (target_ == BuildTarget.StandaloneOSXIntel)
             return "Mac";
