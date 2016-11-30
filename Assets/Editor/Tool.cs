@@ -296,10 +296,51 @@ public class Tool : MonoBehaviour
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Tool/Asset Bundle/Build Scenes(android)", false, 105)]
-    static void BuildScenes(/*BuildTarget target_*/)
+
+    [MenuItem("Tool/Asset Bundle/Build Scenes Windows", false, 201)]
+    public static void BuildScenesWindows() 
     {
-        BuildTarget target_ = BuildTarget.StandaloneWindows64;
+        BuildScenes(BuildTarget.StandaloneWindows);
+    }
+
+    [MenuItem("Tool/Asset Bundle/Build Scenes Android", false, 202)]
+    public static void BuildScenesAndroid() 
+    {
+        BuildScenes(BuildTarget.Android);
+    }
+
+    [MenuItem("Tool/Asset Bundle/Build Scenes Mac", false, 203)]
+    public static void BuildScenesMac() 
+    {
+        BuildScenes(BuildTarget.StandaloneOSXIntel);
+    }
+
+    [MenuItem("Tool/Asset Bundle/Build Scenes iPhone", false, 204)]
+    public static void BuildScenesiPhone() 
+    {
+        BuildScenes(BuildTarget.iOS);
+    }
+
+    static void BuildScenes(BuildTarget target_)
+    {
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            if (target_ == BuildTarget.iOS || target_ == BuildTarget.StandaloneOSXIntel)
+            {
+                Debug.Log("please build scene assetbundle in osx system!!!");
+                return;
+            }
+        }
+        if (Application.platform == RuntimePlatform.OSXEditor)
+        {
+            if (target_ == BuildTarget.StandaloneWindows ||
+                target_ == BuildTarget.StandaloneWindows64)
+            {
+                Debug.Log("please build scene assetbundle in windows system!!!");
+                return;
+            }
+        }
+            
         string scenePath = Application.dataPath + "/Scenes";
         string streamingPath = Application.streamingAssetsPath + "/" + GetTargetStr(target_);
         string relativeOutPath = streamingPath.Substring(AppConst.PROJECT_PATH_LEN + 1);
@@ -313,6 +354,7 @@ public class Tool : MonoBehaviour
         {
             BuildPipeline.BuildPlayer(fileList, relativeOutPath + "/scenes.unity3d", target_, BuildOptions.BuildAdditionalStreamedScenes);
         }
+
     }
 
 	static void AddBuildMap(string abName_, string relativePath_, string pattern_) 
