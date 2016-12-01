@@ -11,7 +11,7 @@ public class CharacterControll : MonoBehaviour
     private bool m_moving = false;
 
     private int m_cornerIndex = 0;
-    private NavMeshPath m_navPath;
+    private UnityEngine.AI.NavMeshPath m_navPath;
 
     private Quaternion m_destRotation = Quaternion.identity;
     public float m_rotateSpeed = 100f;
@@ -22,7 +22,7 @@ public class CharacterControll : MonoBehaviour
     {
         m_animator = GetComponent<Animator>();
         m_character = GetComponent<CharacterController>();
-        m_navPath = new NavMeshPath();
+        m_navPath = new UnityEngine.AI.NavMeshPath();
 	}
 	
 	void Update ()
@@ -34,7 +34,7 @@ public class CharacterControll : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Vector3 destPoint = hit.point;
-                if (NavMesh.CalculatePath(transform.position, destPoint, -1, m_navPath))
+                if (UnityEngine.AI.NavMesh.CalculatePath(transform.position, destPoint, -1, m_navPath))
                 {
                     m_moving = true;
                     m_cornerIndex = -1;

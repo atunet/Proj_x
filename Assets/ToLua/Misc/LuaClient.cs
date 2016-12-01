@@ -25,6 +25,9 @@ using LuaInterface;
 using System.Collections;
 using System.IO;
 using System;
+#if UNITY_5
+using UnityEngine.SceneManagement;
+#endif
 
 public class LuaClient : MonoBehaviour
 {
@@ -171,6 +174,10 @@ public class LuaClient : MonoBehaviour
     {
         Instance = this;
         Init();
+
+#if UNITY_5_4
+        SceneManager.sceneLoaded += OnSceneLoaded;
+#endif        
     }
 
     protected virtual void OnLoadFinished()
@@ -180,7 +187,7 @@ public class LuaClient : MonoBehaviour
         StartMain();
     }
 
-    protected void OnLevelWasLoaded(int level)
+    void OnLevelLoaded(int level)
     {
         if (levelLoaded != null)
         {
@@ -189,12 +196,33 @@ public class LuaClient : MonoBehaviour
             levelLoaded.PCall();
             levelLoaded.EndPCall();
         }
+
+        if (luaState != null)
+        {
+            //luaState.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
+            luaState.RefreshDelegateMap();
+        }
     }
 
-    protected void Destroy()
+#if UNITY_5_4
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        OnLevelLoaded(scene.buildIndex);
+    }
+#else
+    protected void OnLevelWasLoaded(int level)
+    {
+        OnLevelLoaded(level);
+    }
+#endif
+
+    public virtual void Destroy()
     {
         if (luaState != null)
         {
+#if UNITY_5_4
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+#endif    
             LuaState state = luaState;
             luaState = null;
 

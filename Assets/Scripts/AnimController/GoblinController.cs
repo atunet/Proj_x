@@ -7,7 +7,7 @@ public class GoblinController : MonoBehaviour
     private Animator m_animator;
     private CharacterController m_cc;
 
-    private NavMeshAgent m_navAgent;
+    private UnityEngine.AI.NavMeshAgent m_navAgent;
     bool m_pathFinding = false;
 
     private Quaternion m_targetRotation = Quaternion.identity;
@@ -17,7 +17,7 @@ public class GoblinController : MonoBehaviour
     {	        
         m_animator = GetComponent<Animator>();
         m_cc = GetComponent<CharacterController>();
-        m_navAgent = GetComponent<NavMeshAgent>();
+        m_navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 	}
 	
 	void Update () 

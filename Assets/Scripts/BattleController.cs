@@ -3,10 +3,18 @@ using System.Collections;
 
 public class BattleController : MonoBehaviour 
 {
-    private float m_lastAttackTime = Time.time - 3f;
-    private float m_lastSkill1Time = m_lastAttackTime;
-    private float m_lastSkill2Time = m_lastAttackTime;
-    private float m_lastSkill3Time = m_lastAttackTime;
+    private float m_lastAttackTime = 0f;
+    private float m_lastSkill1Time = 0f;
+    private float m_lastSkill2Time = 0f;
+    private float m_lastSkill3Time = 0f;
+
+    public void OnStart()
+    {
+        m_lastAttackTime = Time.time - 3f;
+        m_lastSkill1Time = m_lastAttackTime;
+        m_lastSkill2Time = m_lastAttackTime;
+        m_lastSkill3Time = m_lastAttackTime;
+    }
 
     public void OnAttackClick()
     {
