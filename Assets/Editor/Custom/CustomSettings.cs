@@ -25,8 +25,9 @@ public static class CustomSettings
         typeof(UnityEngine.RenderSettings),
         typeof(UnityEngine.QualitySettings),
         typeof(UnityEngine.GL),
-            typeof(CSInterface),
-            typeof(ABManager),
+		 
+		typeof(CSInterface),
+        typeof(ABManager),
     };
 
     //附加导出委托类型(在导出委托时, customTypeList 中牵扯的委托类型都会导出， 无需写在这里)
@@ -83,7 +84,6 @@ public static class CustomSettings
         _GT(typeof(AudioSource)),
         //_GT(typeof(LineRenderer))
         //_GT(typeof(TrailRenderer))
-            _GT(typeof(RectTransform)),
 #endif
       
         _GT(typeof(Behaviour)),
@@ -137,11 +137,10 @@ public static class CustomSettings
         _GT(typeof(RenderSettings)),                                                   
         _GT(typeof(BlendWeights)),           
         _GT(typeof(RenderTexture)),
-
-        _GT(typeof(CSInterface)),
+		
+		_GT(typeof(CSInterface)),
         _GT(typeof(ABManager)),
 		_GT(typeof(LuaBehaviour)),
-
     };
 
     public static List<Type> dynamicList = new List<Type>()
