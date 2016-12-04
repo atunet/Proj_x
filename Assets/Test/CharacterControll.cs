@@ -150,10 +150,4 @@ public class CharacterControll : MonoBehaviour
         }
         */
     }
-
-
-    void OnGUI()
-    {
-    }
-
 }
