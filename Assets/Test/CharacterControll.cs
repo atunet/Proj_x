@@ -95,11 +95,13 @@ public class CharacterControll : MonoBehaviour
         if (m_moving)
         {
             m_character.SimpleMove(transform.forward * m_moveSpeed);
-            m_animator.SetFloat("Forward", 1f);
+            //m_animator.SetFloat("Forward", 1f);
+            m_animator.SetBool("Run", true);
         }
         else
         {
-            m_animator.SetFloat("Forward", 0f);
+            //m_animator.SetFloat("Forward", 0f);
+            m_animator.SetBool("Run", false);
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, m_destRotation, m_rotateSpeed);
