@@ -49,6 +49,8 @@ public class ZombieControll : MonoBehaviour
                 m_animator.SetBool("Attack", false);
                 m_animator.SetBool("Fall", false);
                 m_animator.SetFloat("Speed", 0.8f);
+                //transform.Rotate(Vector3.up, Random.Range(-90f, 90f));
+                transform.LookAt(m_target.position);
             }
             else if (1 == rand)
             {
@@ -63,6 +65,12 @@ public class ZombieControll : MonoBehaviour
                 m_animator.SetFloat("Speed", 0f);
             }
             m_lastTime = Time.time;
+        }
+
+        AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("walk"))
+        {
+            transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
         }
         /*
         float distance = Vector3.Distance(transform.position, m_target.position);

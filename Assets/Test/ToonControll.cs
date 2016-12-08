@@ -18,6 +18,7 @@ public class ToonControll : MonoBehaviour {
     public float m_rotateSpeed = 100f;
 
     private float m_lastTime = 0f;
+    public Transform m_target;
 
 	// Use this for initialization
 	void Start () {
@@ -38,6 +39,8 @@ public class ToonControll : MonoBehaviour {
             {
                 m_animator.SetBool("Attack", false);
                 m_animator.SetFloat("Speed", 0.9f);
+                transform.LookAt(m_target.position);
+
             }
             else if (1 == rand)
             {
@@ -48,8 +51,16 @@ public class ToonControll : MonoBehaviour {
             {
                 m_animator.SetBool("Attack", false);
                 m_animator.SetFloat("Speed", 0.3f);
+                transform.LookAt(m_target.position);
+
             }
             m_lastTime = Time.time;
+        }
+
+        AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("Walk") || stateInfo.IsName("Charge"))
+        {
+            transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
         }
 	}
 }

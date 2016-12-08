@@ -17,7 +17,7 @@ public class DungeonControll : MonoBehaviour
     private Quaternion m_destRotation = Quaternion.identity;
     public float m_rotateSpeed = 100f;
     private float m_lastTime = 0f;
-
+    public Transform m_target;
 	// Use this for initialization
 	void Start () {
         m_animator = GetComponent<Animator>();
@@ -35,6 +35,7 @@ public class DungeonControll : MonoBehaviour
             {
                 m_animator.SetBool("Attack", false);
                 m_animator.SetFloat("Speed", 0.8f);
+                transform.LookAt(m_target.position);
             }
             else if (1 == rand)
             {
@@ -43,6 +44,12 @@ public class DungeonControll : MonoBehaviour
             }
            
             m_lastTime = Time.time;
+        }
+
+        AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("Walk"))
+        {
+            transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
         }
 	}
 }
