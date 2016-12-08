@@ -17,6 +17,8 @@ public class ToonControll : MonoBehaviour {
     private Quaternion m_destRotation = Quaternion.identity;
     public float m_rotateSpeed = 100f;
 
+    private float m_lastTime = 0f;
+
 	// Use this for initialization
 	void Start () {
         m_animator = GetComponent<Animator>();
@@ -29,5 +31,25 @@ public class ToonControll : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+        if (Time.time - m_lastTime > 3f)
+        {            
+            int rand = Random.Range(0, 3);  
+            if (0 == rand)
+            {
+                m_animator.SetBool("Attack", false);
+                m_animator.SetFloat("Speed", 0.9f);
+            }
+            else if (1 == rand)
+            {
+                m_animator.SetBool("Attack", true);
+                m_animator.SetFloat("Speed", 0f);
+            }
+            else if (2 == rand)
+            {
+                m_animator.SetBool("Attack", false);
+                m_animator.SetFloat("Speed", 0.3f);
+            }
+            m_lastTime = Time.time;
+        }
 	}
 }

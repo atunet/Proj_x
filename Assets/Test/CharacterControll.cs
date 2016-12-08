@@ -152,4 +152,57 @@ public class CharacterControll : MonoBehaviour
         }
         */
     }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("OnTriggerEnter to:" + other.name);
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        Debug.Log("OnTriggerExit to:" + other.name);
+
+    }
+
+    public void OnTriggerStay(Collider other)
+    {
+        Debug.Log("OnTriggerStay to:" + other.name);
+
+    }
+
+    public void OnCollisionEnter(Collision collisionInfo)
+    {
+        Debug.Log("OnCollisionEnter to:" + collisionInfo.gameObject.name);
+
+    }
+
+    public void OnCollisionExit(Collision collisionInfo)
+    {
+        Debug.Log("OnCollisionExit to:" + collisionInfo.gameObject.name);
+
+    }
+
+    public void OnCollisionStay(Collision collisionInfo)
+    {
+        Debug.Log("OnCollisionStay to:" + collisionInfo.gameObject.name);
+
+    }
+
+    public void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        CharacterController cc = hit.gameObject.GetComponent<CharacterController>();
+        if (!cc)
+            return;
+
+        Animator animator = hit.gameObject.GetComponent<Animator>();
+        if (!animator)
+            return;
+        AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
+        if (info.IsName("Idle"))
+        {
+            animator.SetBool("Fall", true);
+        }
+
+        Debug.Log("OnControllerColliderHit to:" + hit.gameObject.name);
+    }
 }

@@ -28,19 +28,43 @@ public class ZombieControll : MonoBehaviour
     public float m_rotateSpeed = 100f;
 
     public Transform m_target;
-
+    private float m_lastTime = 0;
 	// Use this for initialization
 	void Start () {
         m_animator = GetComponent<Animator>();
         m_character = GetComponent<CharacterController>();
 
         m_navPath = new UnityEngine.AI.NavMeshPath();
-
+        m_lastTime = Time.time;
 	}
 	
 	// Update is called once per frame
 	void Update () 
     {
+        if (Time.time - m_lastTime > 3f)
+        {            
+            int rand = Random.Range(0, 3);  
+            if (0 == rand)
+            {
+                m_animator.SetBool("Attack", false);
+                m_animator.SetBool("Fall", false);
+                m_animator.SetFloat("Speed", 0.8f);
+            }
+            else if (1 == rand)
+            {
+                m_animator.SetBool("Attack", true);
+                m_animator.SetBool("Fall", false);
+                m_animator.SetFloat("Speed", 0f);
+            }
+            else if (2 == rand)
+            {
+                m_animator.SetBool("Attack", false);
+                m_animator.SetBool("Fall", true);
+                m_animator.SetFloat("Speed", 0f);
+            }
+            m_lastTime = Time.time;
+        }
+        /*
         float distance = Vector3.Distance(transform.position, m_target.position);
 
         if (distance > 15f)
@@ -65,6 +89,7 @@ public class ZombieControll : MonoBehaviour
         }
 
         MonsterControll();
+        */
 	}
 
     private void MonsterControll()
