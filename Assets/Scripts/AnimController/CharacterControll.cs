@@ -15,8 +15,9 @@ public class CharacterControll : MonoBehaviour
 
     private Quaternion m_destRotation = Quaternion.identity;
     public float m_rotateSpeed = 100f;
+    //private Vector2 m_touchStartPos = Vector2.zero;
 
-    private Vector2 m_touchStartPos = Vector2.zero;
+    public Animator[] m_monsterAnim = new Animator[4];
 
     void Start () 
     {
@@ -103,8 +104,8 @@ public class CharacterControll : MonoBehaviour
             //m_animator.SetFloat("Forward", 0f);
             m_animator.SetBool("Run", false);
         }
-
         transform.rotation = Quaternion.RotateTowards(transform.rotation, m_destRotation, m_rotateSpeed);
+
         /*
         if (Input.touchCount == 1)
         {
@@ -152,57 +153,51 @@ public class CharacterControll : MonoBehaviour
         }
         */
     }
-
-    public void OnTriggerEnter(Collider other)
+        
+    public void OnAttack()
     {
-        Debug.Log("OnTriggerEnter to:" + other.name);
-    }
-
-    public void OnTriggerExit(Collider other)
-    {
-        Debug.Log("OnTriggerExit to:" + other.name);
-
-    }
-
-    public void OnTriggerStay(Collider other)
-    {
-        Debug.Log("OnTriggerStay to:" + other.name);
-
-    }
-
-    public void OnCollisionEnter(Collision collisionInfo)
-    {
-        Debug.Log("OnCollisionEnter to:" + collisionInfo.gameObject.name);
-
-    }
-
-    public void OnCollisionExit(Collision collisionInfo)
-    {
-        Debug.Log("OnCollisionExit to:" + collisionInfo.gameObject.name);
-
-    }
-
-    public void OnCollisionStay(Collision collisionInfo)
-    {
-        Debug.Log("OnCollisionStay to:" + collisionInfo.gameObject.name);
-
-    }
-
-    public void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        CharacterController cc = hit.gameObject.GetComponent<CharacterController>();
-        if (!cc)
-            return;
-
-        Animator animator = hit.gameObject.GetComponent<Animator>();
-        if (!animator)
-            return;
-        AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
-        if (info.IsName("Idle"))
+        for (int i = 0; i < 4; i++)
         {
-            animator.SetBool("Fall", true);
-        }
+            Animator monsterAnim = m_monsterAnim[i];
+            Vector3 direction = monsterAnim.transform.position - transform.position;
+            if (Vector3.Angle(direction, transform.forward) < 60f)
+            {
+                if (Vector3.Distance(monsterAnim.transform.position, transform.position) < 4f)
+                {
+                    print("monster now is locked");
+                    Animator theAnimtor = monsterAnim.gameObject.GetComponent<Animator>();
+                    if (theAnimtor)
+                    {
+                        AnimatorStateInfo theState = theAnimtor.GetCurrentAnimatorStateInfo(0);
+                        if (theState.IsName("Idle") || theState.IsName("Walk"))
+                        {
+                            theAnimtor.SetBool("Fall", true);
+                            Debug.Log("Monster was attacked:" + monsterAnim.name);
+                        }                
+                    }
+                }
+            }
 
-        Debug.Log("OnControllerColliderHit to:" + hit.gameObject.name);
+        }
+        /*
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
+        if (colliders.Length > 0)
+        {
+            for (int i = 0; i < colliders.Length; ++i)
+            {
+                GameObject theGo = colliders[i].gameObject;
+                Animator theAnimtor = theGo.GetComponent<Animator>();
+                if (theAnimtor)
+                {
+                    AnimatorStateInfo theState = theAnimtor.GetCurrentAnimatorStateInfo(0);
+                    if (theState.IsName("Idle") || theState.IsName("Walk"))
+                    {
+                        theAnimtor.SetBool("Fall", true);
+                        Debug.Log("object attacked:" + theGo.name);
+                    }                
+                }
+            }
+        }
+        */
     }
 }

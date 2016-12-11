@@ -35,7 +35,8 @@ public class DungeonControll : MonoBehaviour
             {
                 m_animator.SetBool("Attack", false);
                 m_animator.SetFloat("Speed", 0.8f);
-                transform.LookAt(m_target.position);
+                Vector3 lookPosition = new Vector3(m_target.position.x, transform.position.y, m_target.position.z);
+                transform.LookAt(lookPosition);
             }
             else if (1 == rand)
             {
@@ -52,4 +53,49 @@ public class DungeonControll : MonoBehaviour
             transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
         }
 	}
+
+    public void OnAttack()
+    {
+        Vector3 direction = m_target.position - transform.position;
+        if (Vector3.Angle(direction, transform.forward) < 60f)
+        {
+            if (Vector3.Distance(m_target.position, transform.position) < 2f)
+            {
+                print("Zombie:MainCharacter now is locked！");
+                Animator theAnimtor = m_target.gameObject.GetComponent<Animator>();
+                if (theAnimtor)
+                {
+                    AnimatorStateInfo theState = theAnimtor.GetCurrentAnimatorStateInfo(0);
+                    if (theState.IsName("Idle") || theState.IsName("Walk"))
+                    {
+                        theAnimtor.SetTrigger("DamageDown");
+                        Debug.Log("MainCharacter was attacked:" + m_target.name);
+                    }                
+                }
+            }
+        }
+        /*
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
+        if (colliders.Length > 0)
+        {
+            for (int i = 0; i < colliders.Length; ++i)
+            {
+                GameObject theGo = colliders[i].gameObject;
+                if (theGo.layer == 8)
+                    continue;
+                
+                Animator theAnimtor = theGo.GetComponent<Animator>();
+                if (theAnimtor)
+                {
+                    AnimatorStateInfo theState = theAnimtor.GetCurrentAnimatorStateInfo(0);
+                    if (theState.IsName("Idle") || theState.IsName("Run"))
+                    {
+                        theAnimtor.SetTrigger("DamageDown");
+                        Debug.Log("object attacked:" + theGo.name);
+                    }                
+                }
+            }
+        }
+        */
+    }
 }

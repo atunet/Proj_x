@@ -30,7 +30,7 @@ public class BattleController : MonoBehaviour
 
     public void OnSkill1Click()
     {
-        Debug.Log("OnSkill1Click called");
+        //Debug.Log("OnSkill1Click called");
         if (Time.time - m_lastSkill1Time > 2)
         {
             m_lastSkill1Time = Time.time;
@@ -55,7 +55,7 @@ public class BattleController : MonoBehaviour
         if (Time.time - m_lastSkill3Time > 2)
         {           
             m_lastSkill3Time = Time.time;  
-            m_animator.SetTrigger("ScrewK");
+            m_animator.SetTrigger("RISING_P");
         }
     }
 

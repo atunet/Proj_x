@@ -98,4 +98,32 @@ public class GoblinController : MonoBehaviour
         {
         }
     }
+
+    public void OnAttack()
+    {
+        //Debug.Log("DoAttack");
+        /*
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
+        if (colliders.Length > 0)
+        {
+            for (int i = 0; i < colliders.Length; ++i)
+            {
+                GameObject theGo = colliders[i].gameObject;
+                if (theGo.layer == 8)
+                    continue;
+                
+                Animator theAnimtor = theGo.GetComponent<Animator>();
+                if (theAnimtor)
+                {
+                    AnimatorStateInfo theState = theAnimtor.GetCurrentAnimatorStateInfo(0);
+                    if (theState.IsName("Idle") || theState.IsName("Run"))
+                    {
+                        theAnimtor.SetTrigger("DamageDown");
+                        Debug.Log("object attacked:" + theGo.name);
+                    }                
+                }
+            }
+        }
+        */
+    }
 }
