@@ -162,9 +162,8 @@ public class CharacterControll : MonoBehaviour
             Vector3 direction = monsterAnim.transform.position - transform.position;
             if (Vector3.Angle(direction, transform.forward) < 60f)
             {
-                if (Vector3.Distance(monsterAnim.transform.position, transform.position) < 4f)
+                if (Vector3.Distance(monsterAnim.transform.position, transform.position) < 2f)
                 {
-                    print("monster now is locked");
                     Animator theAnimtor = monsterAnim.gameObject.GetComponent<Animator>();
                     if (theAnimtor)
                     {

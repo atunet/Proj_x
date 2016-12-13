@@ -19,7 +19,8 @@ public class ZombieControll : MonoBehaviour
     public Transform m_target;
     private float m_aiTime = 0;
 	// Use this for initialization
-	void Start () {
+	void Start () 
+    {
         m_animator = GetComponent<Animator>();
         m_character = GetComponent<CharacterController>();
 
@@ -52,6 +53,8 @@ public class ZombieControll : MonoBehaviour
                 m_animator.SetBool("Attack", false);
                 m_animator.SetBool("Fall", false);
                 m_animator.SetFloat("Speed", 0.3f);
+                Vector3 lookPosition = new Vector3(m_target.position.x, transform.position.y, m_target.position.z);
+                transform.LookAt(lookPosition);
             }
             m_aiTime = Time.time;
         }
@@ -59,7 +62,7 @@ public class ZombieControll : MonoBehaviour
         AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Walk"))
         {
-            transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
+            //transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
             m_character.SimpleMove(transform.forward * m_moveSpeed * Time.deltaTime);
 
         }
@@ -71,9 +74,8 @@ public class ZombieControll : MonoBehaviour
         Vector3 direction = m_target.position - transform.position;
         if (Vector3.Angle(direction, transform.forward) < 60f)
         {
-            if (Vector3.Distance(m_target.position, transform.position) < 2f)
+            if (Vector3.Distance(m_target.position, transform.position) < 3f)
             {
-                print("Zombie:MainCharacter now is locked！");
                 Animator theAnimtor = m_target.gameObject.GetComponent<Animator>();
                 if (theAnimtor)
                 {

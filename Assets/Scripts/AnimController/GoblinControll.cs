@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof (Animator))]
 [RequireComponent(typeof (CharacterController))]
-public class DungeonControll : MonoBehaviour 
+public class GoblinControll : MonoBehaviour 
 {
     private Animator m_animator;
     private CharacterController m_character;
@@ -18,42 +18,46 @@ public class DungeonControll : MonoBehaviour
     public float m_rotateSpeed = 100f;
     private float m_lastTime = 0f;
     public Transform m_target;
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         m_animator = GetComponent<Animator>();
         m_character = GetComponent<CharacterController>();
         m_navPath = new UnityEngine.AI.NavMeshPath();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+    }
+
+    // Update is called once per frame
+    void Update () {
+
         if (Time.time - m_lastTime > 3f)
         {            
-            int rand = Random.Range(0, 2);  
+            int rand = Random.Range(0, 3);  
             if (0 == rand)
             {
-                m_animator.SetBool("Attack", false);
-                m_animator.SetFloat("Speed", 0.8f);
+                m_animator.SetInteger("moving", 1);
+                m_animator.SetInteger("battle", 0);
                 Vector3 lookPosition = new Vector3(m_target.position.x, transform.position.y, m_target.position.z);
                 transform.LookAt(lookPosition);
             }
             else if (1 == rand)
             {
-                m_animator.SetBool("Attack", true);
-                m_animator.SetFloat("Speed", 0f);
+                m_animator.SetInteger("moving", 0);
+                m_animator.SetInteger("battle", 0);
             }
-           
+            else if (2 == rand)
+            {
+                m_animator.SetInteger("moving", 0);
+                m_animator.SetInteger("battle", 1);
+            }
+
             m_lastTime = Time.time;
         }
 
         AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Walk"))
         {
-            //transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
             m_character.SimpleMove(transform.forward * m_moveSpeed * Time.deltaTime);
         }
-	}
+    }
 
     public void OnAttack()
     {

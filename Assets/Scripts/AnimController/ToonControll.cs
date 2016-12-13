@@ -71,9 +71,8 @@ public class ToonControll : MonoBehaviour {
         Vector3 direction = m_target.position - transform.position;
         if (Vector3.Angle(direction, transform.forward) < 60f)
         {
-            if (Vector3.Distance(m_target.position, transform.position) < 2f)
+            if (Vector3.Distance(m_target.position, transform.position) < 3f)
             {
-                print("Zombie:MainCharacter now is locked！");
                 Animator theAnimtor = m_target.gameObject.GetComponent<Animator>();
                 if (theAnimtor)
                 {
