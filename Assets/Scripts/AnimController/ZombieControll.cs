@@ -8,7 +8,7 @@ public class ZombieControll : MonoBehaviour
 {
     private Animator m_animator;
     private CharacterController m_character;
-    public float m_moveSpeed = 1f;
+    public float m_moveSpeed = 30f;
 
     private int m_cornerIndex = 0;
     private UnityEngine.AI.NavMeshPath m_navPath;
@@ -60,6 +60,8 @@ public class ZombieControll : MonoBehaviour
         if (stateInfo.IsName("Walk"))
         {
             transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
+            m_character.SimpleMove(transform.forward * m_moveSpeed * Time.deltaTime);
+
         }
 	}
 

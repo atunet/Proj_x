@@ -8,7 +8,7 @@ public class DungeonControll : MonoBehaviour
 {
     private Animator m_animator;
     private CharacterController m_character;
-    public float m_moveSpeed = 1f;
+    public float m_moveSpeed = 30f;
     private bool m_moving = false;
 
     private int m_cornerIndex = 0;
@@ -50,7 +50,8 @@ public class DungeonControll : MonoBehaviour
         AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Walk"))
         {
-            transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
+            //transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
+            m_character.SimpleMove(transform.forward * m_moveSpeed * Time.deltaTime);
         }
 	}
 
