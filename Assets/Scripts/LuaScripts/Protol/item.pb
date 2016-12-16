@@ -1,45 +1,28 @@
 
-™	
+ú
 
-item.protoCmdbasetype.protoitemtype.proto"V
-SendItemList)
-id (2.Cmd.EProtoId:SEND_ITEM_LIST
-list (2.Cmd.ItemInfo"Q
-PieceToBladeReq-
-id (2.Cmd.EProtoId:PIECE_TO_BLADE_REQ
-bladeid ("@
-PieceToBladeRet-
-id (2.Cmd.EProtoId:PIECE_TO_BLADE_RET"T
-SellItemReq(
-id (2.Cmd.EProtoId:SELL_ITEM_REQ
-thisid (
-num ("7
-SellItemRet(
-id (2.Cmd.EProtoId:SELL_ITEM_RET"T
-NewItemList(
-id (2.Cmd.EProtoId:NEW_ITEM_LIST
-list (2.Cmd.ItemInfo"Z
-UpdateItemList+
-id (2.Cmd.EProtoId:UPDATE_ITEM_LIST
-list (2.Cmd.ItemInfo"K
-RemoveItemList+
-id (2.Cmd.EProtoId:REMOVE_ITEM_LIST
-list ("N
-PieceToSoulReq,
-id (2.Cmd.EProtoId:PIECE_TO_SOUL_REQ
-soulid ("N
-PieceToSoulRet,
-id (2.Cmd.EProtoId:PIECE_TO_SOUL_RET
-soulid ("U
-OpenItemReq(
-id (2.Cmd.EProtoId:OPEN_ITEM_REQ
-thisid (
-type ("X
-OpenItemRet(
-id (2.Cmd.EProtoId:OPEN_ITEM_RET
-item (2.Cmd.ItemNotiType"T
-PieceToRefinedReq/
-id (2.Cmd.EProtoId:PIECE_TO_REFINED_REQ
-thisid ("D
-PieceToRefinedRet/
-id (2.Cmd.EProtoId:PIECE_TO_REFINED_RET
+item.protoCmdprototype.protoitemtype.proto"U
+SendItemList(
+id (2.Cmd.EMessageID:ITEM_LIST_S
+list (2.Cmd.ItemInfo"^
+UpdateItemList/
+id (2.Cmd.EMessageID:UPDATE_ITEM_LIST_S
+list (2.Cmd.ItemInfo"O
+RemoveItemList/
+id (2.Cmd.EMessageID:REMOVE_ITEM_LIST_S
+list ("U
+SellItemReq)
+id (2.Cmd.EMessageID:SELL_ITEM_CS
+itemid (
+num ("8
+SellItemRet)
+id (2.Cmd.EMessageID:SELL_ITEM_SC"T
+
+UseItemReq(
+id (2.Cmd.EMessageID:USE_ITEM_CS
+itemid (
+type ("W
+
+UseItemRet(
+id (2.Cmd.EMessageID:USE_ITEM_SC
+item (2.Cmd.ItemNotiType

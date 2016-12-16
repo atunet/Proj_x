@@ -1,38 +1,32 @@
 
-œ
-login.protoCmdbasetype.protoerrorcode.proto"Q
-VerifyVersion)
-id (2.Cmd.EProtoId:VERIFY_VERSION
-clientversion ("C
-TempCredentialReq.
-id (2.Cmd.EProtoId:TEMP_CREDENTIAL_REQ"[
-TempCredentialRet.
-id (2.Cmd.EProtoId:TEMP_CREDENTIAL_RET
-tempcredential (	"[
-LoginReq*
-id (2.Cmd.EProtoId:LOGIN_LOGIN_REQ
-	accountid (
-verifier (	"¨
-LoginRet*
-id (2.Cmd.EProtoId:LOGIN_LOGIN_RET
-	accountid (
-token (
+å
+login.protoCmdprototype.protoerrorcode.proto"V
+VerifyVersion.
+id (2.Cmd.EMessageID:VERIFY_VERSION_CS
+clientversion ("l
+LoginReq+
+id (2.Cmd.EMessageID:LOGIN_LOGIN_CS
+	accountid (
+zoneid (
+verifier (	"‚
+LoginRet+
+id (2.Cmd.EMessageID:LOGIN_LOGIN_SC
+	accountid (
+tempid (
 	gatewayip (	
-gatewayport (
-	transitip (	
-transitport ("…
-LoginGatewayReq*
-id (2.Cmd.EProtoId:LOGIN_GATEW_REQ
-	accountid (
-token (
+gatewayport ("‡
+LoginGatewayReq+
+id (2.Cmd.EMessageID:LOGIN_GATEW_CS
+	accountid (
+tempid (
 
 appVersion (	
-deviceId ("=
-LoginGatewayRet*
-id (2.Cmd.EProtoId:LOGIN_GATEW_RET"b
-LoginTransitReq,
-id (2.Cmd.EProtoId:LOGIN_TRANSIT_REQ
-roleid (
-	accountid ("?
-LoginTransitRet,
-id (2.Cmd.EProtoId:LOGIN_TRANSIT_RET
+deviceId (">
+LoginGatewayRet+
+id (2.Cmd.EMessageID:LOGIN_GATEW_SC"\
+LoginCrossReq+
+id (2.Cmd.EMessageID:LOGIN_CROSS_CS
+userid (
+tempid ("<
+LoginCrossRet+
+id (2.Cmd.EMessageID:LOGIN_CROSS_SC

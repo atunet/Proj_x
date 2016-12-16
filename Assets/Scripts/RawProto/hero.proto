@@ -1,0 +1,31 @@
+
+//
+// 伙伴相关的协议
+//
+
+package Cmd;
+
+import "prototype.proto";
+import "herotype.proto";
+
+
+/// 发送角色伙伴数据给玩家
+message SendHeroList
+{
+	optional EMessageID	id		=	1		[default = HERO_LIST_S];
+	repeated HeroInfo	list	=	2;		// 伙伴列表
+}
+
+/// 伙伴更新通知玩家(包括新增)
+message UpdateHeroList
+{
+	optional EMessageID	id		=	1		[default = UPDATE_HERO_LIST_S];
+	repeated HeroInfo	list	=	2;		// 更新伙伴列表
+}
+
+/// 删除伙伴通知玩家
+message RemoveHeroList
+{
+	optional EMessageID	id		=	1		[default = REMOVE_HERO_LIST_S];
+	repeated uint64		list	=	2;		// 伙伴实例id列表
+}

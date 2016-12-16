@@ -1,11 +1,10 @@
 
-Ï
-itemtype.protoCmd"K
+È
+itemtype.protoCmd"D
 ItemInfo
 thisid (
-itemid (
-
-createtime (
+itemid (
+uid (
 num (";
 ItemNotiType
 type (
