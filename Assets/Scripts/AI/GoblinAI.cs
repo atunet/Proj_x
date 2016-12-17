@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof (Animator))]
 [RequireComponent(typeof (CharacterController))]
-public class GoblinControll : MonoBehaviour 
+public class GoblinAI : MonoBehaviour 
 {
     private Animator m_animator;
     private CharacterController m_character;

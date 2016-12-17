@@ -4,40 +4,36 @@ using UnityEngine;
 
 [RequireComponent(typeof (Animator))]
 [RequireComponent(typeof (CharacterController))]
-public class ZombieControll : MonoBehaviour 
+public class DungeonAI : MonoBehaviour 
 {
     private Animator m_animator;
     private CharacterController m_character;
     public float m_moveSpeed = 30f;
+    private bool m_moving = false;
 
     private int m_cornerIndex = 0;
     private UnityEngine.AI.NavMeshPath m_navPath;
 
     private Quaternion m_destRotation = Quaternion.identity;
     public float m_rotateSpeed = 100f;
-
+    private float m_lastTime = 0f;
     public Transform m_target;
-    private float m_aiTime = 0;
 	// Use this for initialization
-	void Start () 
-    {
+	void Start () {
         m_animator = GetComponent<Animator>();
         m_character = GetComponent<CharacterController>();
-
         m_navPath = new UnityEngine.AI.NavMeshPath();
-        m_aiTime = Time.time;
 	}
 	
 	// Update is called once per frame
-	void Update () 
-    {
-        if (Time.time - m_aiTime > 3f)
+	void Update () {
+		
+        if (Time.time - m_lastTime > 3f)
         {            
-            int rand = Random.Range(0, 3);  
+            int rand = Random.Range(0, 2);  
             if (0 == rand)
             {
                 m_animator.SetBool("Attack", false);
-                m_animator.SetBool("Fall", false);
                 m_animator.SetFloat("Speed", 0.8f);
                 Vector3 lookPosition = new Vector3(m_target.position.x, transform.position.y, m_target.position.z);
                 transform.LookAt(lookPosition);
@@ -45,18 +41,10 @@ public class ZombieControll : MonoBehaviour
             else if (1 == rand)
             {
                 m_animator.SetBool("Attack", true);
-                m_animator.SetBool("Fall", false);
                 m_animator.SetFloat("Speed", 0f);
             }
-            else if (2 == rand)
-            {
-                m_animator.SetBool("Attack", false);
-                m_animator.SetBool("Fall", false);
-                m_animator.SetFloat("Speed", 0.3f);
-                Vector3 lookPosition = new Vector3(m_target.position.x, transform.position.y, m_target.position.z);
-                transform.LookAt(lookPosition);
-            }
-            m_aiTime = Time.time;
+           
+            m_lastTime = Time.time;
         }
 
         AnimatorStateInfo stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
@@ -64,10 +52,8 @@ public class ZombieControll : MonoBehaviour
         {
             //transform.Translate(Vector3.forward*Time.deltaTime, Space.Self);
             m_character.SimpleMove(transform.forward * m_moveSpeed * Time.deltaTime);
-
         }
 	}
-
 
     public void OnAttack()
     {
@@ -89,7 +75,6 @@ public class ZombieControll : MonoBehaviour
             }
         }
         /*
-
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
         if (colliders.Length > 0)
         {
@@ -103,7 +88,7 @@ public class ZombieControll : MonoBehaviour
                 if (theAnimtor)
                 {
                     AnimatorStateInfo theState = theAnimtor.GetCurrentAnimatorStateInfo(0);
-                    if (theState.IsName("Idle") || theState.IsName("Walk"))
+                    if (theState.IsName("Idle") || theState.IsName("Run"))
                     {
                         theAnimtor.SetTrigger("DamageDown");
                         Debug.Log("object attacked:" + theGo.name);

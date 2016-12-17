@@ -3,7 +3,7 @@ using System.Collections;
 
 [RequireComponent(typeof (Animator))]
 [RequireComponent(typeof (CharacterController))]
-public class CharacterControll : MonoBehaviour 
+public class ActionController : MonoBehaviour 
 {
     private Animator m_animator;
     private CharacterController m_character;
