@@ -1,5 +1,5 @@
-require("Protol.basetype_pb")
-local BaseTypePb = Protol.basetype_pb
+require("Protol.prototype_pb")
+local ProtoTypePb = Protol.prototype_pb
 
 require("Protol.role_pb")
 local RolePb = Protol.role_pb
@@ -15,16 +15,16 @@ function ParseRoleList()
 		local createCmd = RolePb.CreateRoleReq()
 		createCmd.roletype = 11103000
 		createCmd.rolename = "atunet2"
-		createCmd.avatar:append(1)
-		createCmd.avatar:append(1)
-		createCmd.avatar:append(1)
-		createCmd.avatar:append(1)
-		SendCmd(BaseTypePb.CREATE_ROLE_REQ, createCmd:SerializeToString())
+		--createCmd.avatar:append(1)
+		--createCmd.avatar:append(1)
+		--createCmd.avatar:append(1)
+		--createCmd.avatar:append(1)
+		SendCmd(BaseTypePb.CREATE_USER_CS, createCmd:SerializeToString())
 		print("role size is 0, req create role: " .. createCmd.rolename)
 	else
 		local onlineCmd = RolePb.SelectRoleOnline()
 		onlineCmd.roleid = revCmd.rolebase[1].roleid
-		SendCmd(BaseTypePb.SELECT_ROLE_ONLINE, onlineCmd:SerializeToString())
+		SendCmd(BaseTypePb.USER_ONLINE_CS, onlineCmd:SerializeToString())
 		print("select role online:" .. revCmd.rolebase[1].roleid .. "," .. revCmd.rolebase[1].rolename)
 	end
 end
@@ -35,8 +35,8 @@ function ParseCreateRoleRet()
 	print ("create role success: " .. revCmd.rolebase.roleid .. revCmd.rolebase.rolename)
 
 	local onlineCmd = RolePb.SelectRoleOnline()
-	onlineCmd.roleid = revCmd.rolebase.roleid
-	SendCmd(BaseTypePb.SELECT_ROLE_ONLINE, onlineCmd:SerializeToString())
+	--onlineCmd.roleid = revCmd.rolebase.roleid
+	SendCmd(BaseTypePb.USER_ONLINE_CS, onlineCmd:SerializeToString())
 	print("select role online:" .. revCmd.rolebase.roleid .. revCmd.rolebase.rolename)
 end
 

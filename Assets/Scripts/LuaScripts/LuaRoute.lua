@@ -1,6 +1,6 @@
 
-require ("Protol.basetype_pb")
-local BaseTypePb = Protol.basetype_pb --_G['Protol.basetype_pb']
+require ("Protol.prototype_pb")
+local ProtoTypePb = Protol.prototype_pb --_G['Protol.prototype_pb']
 
 require ("Login.LoginSvr")
 require ("Role.Role")
@@ -10,10 +10,10 @@ module(..., package.seeall)
 
 controllers = 
 {
-	[BaseTypePb.LOGIN_LOGIN_RET] 		= 	Login.LoginSvr.ParseLoginRet,
-	[BaseTypePb.LOGIN_GATEW_RET] 		= 	Login.LoginSvr.ParseLoginGateRet,
-	[BaseTypePb.SEND_ROLE_LIST] 		= 	Role.Role.ParseRoleList,
-	[BaseTypePb.CREATE_ROLE_RET]		=	Role.Role.ParseCreateRoleRet,
-	[BaseTypePb.ERROR_CODE_S]			= 	Error.Error.ParseError,
-	[BaseTypePb.ROLE_DATA_LOAD_OK]		=	Role.Role.ParseRoleDataLoadOk,
+	[ProtoTypePb.LOGIN_LOGIN_SC] 		= 	Login.LoginSvr.ParseLoginRet,
+	[ProtoTypePb.LOGIN_GATEW_SC] 		= 	Login.LoginSvr.ParseLoginGateRet,
+	[ProtoTypePb.USER_LIST_S] 			= 	Role.Role.ParseRoleList,
+	[ProtoTypePb.CREATE_USER_SC]		=	Role.Role.ParseCreateRoleRet,
+	[ProtoTypePb.ERROR_CODE_S]			= 	Error.Error.ParseError,
+	[ProtoTypePb.DATA_LOAD_OK_S]		=	Role.Role.ParseRoleDataLoadOk,
 }

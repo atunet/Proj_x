@@ -1,5 +1,5 @@
-require("Protol.basetype_pb")
-local BaseTypePb = Protol.basetype_pb
+require("Protol.prototype_pb")
+local ProtoTypePb = Protol.prototype_pb
 
 require("Protol.errorcode_pb")
 local ErrorCodePb = Protol.errorcode_pb

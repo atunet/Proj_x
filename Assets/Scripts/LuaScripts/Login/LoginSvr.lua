@@ -1,5 +1,5 @@
-require("Protol.basetype_pb")
-local BaseTypePb = Protol.basetype_pb
+require("Protol.prototype_pb")
+local ProtoTypePb = Protol.prototype_pb
 
 require("Protol.login_pb")
 local LoginPb = Protol.login_pb
@@ -32,18 +32,18 @@ function LoginToServer()
 	if 0 == CSInterface.GetServerType() then	
 		local verifyCmd = LoginPb.VerifyVersion()
 		verifyCmd.clientversion = 796688481
-		SendCmd(BaseTypePb.VERIFY_VERSION, verifyCmd:SerializeToString())
+		SendCmd(ProtoTypePb.VERIFY_VERSION_CS, verifyCmd:SerializeToString())
 
 		local loginCmd = LoginPb.LoginReq()
 		loginCmd.accountid = 9528
 		loginCmd.verifier = "fasdfa"
-		SendCmd(BaseTypePb.LOGIN_LOGIN_REQ, loginCmd:SerializeToString())
+		SendCmd(ProtoTypePb.LOGIN_LOGIN_CS, loginCmd:SerializeToString())
 	else
 		local loginCmd = LoginPb.LoginGatewayReq()
 		loginCmd.accountid = 9528
 		loginCmd.token = Login.LoginSvr.globalToken
 		loginCmd.appVersion = "1.1.1"
 		loginCmd.deviceId = 8
-		SendCmd(BaseTypePb.LOGIN_GATEW_REQ, loginCmd:SerializeToString())
+		SendCmd(ProtoTypePb.LOGIN_GATEW_CS, loginCmd:SerializeToString())
 	end
 end
