@@ -7,6 +7,8 @@ using UnityEngine;
 
 internal class NetThread
 {
+    private ArrayList m_clients;
+
 	private TCPClient m_tcpClient = null;
 	private Thread m_thread = null;
 	private Boolean m_live = false;
@@ -14,7 +16,12 @@ internal class NetThread
 	private byte[] m_rcvBuffer;
 	private byte[] m_msgBuffer;
 	
-			
+    public NetThread(int capacity_)
+    {
+        m_clients = new ArrayList(capacity_);
+        m_thread = new Thread(new ThreadStart(Run));
+    }
+
 	public NetThread(TCPClient client_)
 	{
 		m_tcpClient = client_;
@@ -28,15 +35,15 @@ internal class NetThread
 
 	public void Start()
 	{
-		m_live = true;
 		m_thread.Start();
+        m_live = true;
 	}
 	
 	private void Run()
 	{
 		while(m_live)
 		{	
-			Thread.Sleep(10);
+			Thread.Sleep(5);
 			
 			if(null == m_tcpClient || !m_tcpClient.Connected()) 
 			{

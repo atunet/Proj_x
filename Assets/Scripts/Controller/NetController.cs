@@ -87,8 +87,8 @@ public class NetController : MonoBehaviour
             foreach (byte[] recvCmd in m_cmdList)
 			{	
 				CSInterface.s_recvProtoId = BitConverter.ToUInt16(recvCmd, 0);
-				byte[] realCmd = new byte[recvCmd.Length-TCPClient.PROTO_ID_LEN];
-				Array.Copy(recvCmd, TCPClient.PROTO_ID_LEN, realCmd, 0, realCmd.Length);
+				byte[] realCmd = new byte[recvCmd.Length-TCPClient.MSG_ID_LEN];
+				Array.Copy(recvCmd, TCPClient.MSG_ID_LEN, realCmd, 0, realCmd.Length);
 
 				if(0 == CSInterface.s_recvProtoId)
 				{
