@@ -2,35 +2,81 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Text;
-
-using UnityEngine;
+using System.IO;
 
 internal class NetThread
 {
-    private ArrayList m_clients;
+    private TCPClient m_loginClient = null;
+    private TCPClient m_gateClient = null;
+    private UDPClient m_crossClient = null;
 
-	private TCPClient m_tcpClient = null;
-	private Thread m_thread = null;
+    private TCPClient m_tcpClient = null;
+    private Thread m_thread = null;
 	private Boolean m_live = false;
+
+    private MemoryStream m_rcvBuf;
+    private MemoryStream m_msgBuf;
+
 
 	private byte[] m_rcvBuffer;
 	private byte[] m_msgBuffer;
-	
-    public NetThread(int capacity_)
+
+    public NetThread()
     {
-        m_clients = new ArrayList(capacity_);
         m_thread = new Thread(new ThreadStart(Run));
     }
 
-	public NetThread(TCPClient client_)
-	{
-		m_tcpClient = client_;
-		m_thread = new Thread(new ThreadStart(Run));
+//public NetThread(TCPClient client_)
+//{
+//	m_tcpClient = client_;
+//	m_thread = new Thread(new ThreadStart(Run));
+//
+//	m_rcvBuffer = new byte[128*1024];
+//	m_msgBuffer = new byte[0];
+//}
 
-		m_rcvBuffer = new byte[128*1024];
-		m_msgBuffer = new byte[0];
-	}
-	
+    public bool InitLoginClient(string ip_, int port_)
+    {
+        if (null != m_loginClient)
+        {
+            Console.WriteLine("tcp login client is not null, init ignored!!!");
+            return true;
+        }
+
+        m_loginClient = new TCPClient(ip_, port_);
+        if (!m_loginClient.Connect())
+        {
+            Console.WriteLine("tcp login client connect failed [{0}:{1}]", ip_, port_);
+            m_loginClient = null;
+            return false;
+        }
+
+        Console.WriteLine("tcp login client init connect ok [{0}:{1}]", ip_, port_);
+        return true;
+    }
+
+
+    public bool InitGateClient(string ip_, int port_)
+    {
+        if (null != m_gateClient)
+        {
+            Console.WriteLine("tcp gate client is not null, init ignored!!!");
+            return true;
+        }
+
+        m_gateClient = new TCPClient(ip_, port_);
+        if (!m_gateClient.Connect())
+        {
+            Console.WriteLine("tcp gate client connect failed [{0}:{1}]", ip_, port_);
+            m_gateClient = null;
+            return false;
+        }
+
+        Console.WriteLine("tcp gate client init connect ok [{0}:{1}]", ip_, port_);
+        return true;
+    }
+
+
     public TCPClient TCPClient { get { return m_tcpClient; } }
 
 	public void Start()
@@ -53,7 +99,7 @@ internal class NetThread
 			int recvLen = m_tcpClient.Receive(ref m_rcvBuffer);
 			if(recvLen < 0)
 			{
-				Debug.LogError("NetThread recv error: " + recvLen);
+                Console.WriteLine("NetThread recv error: " + recvLen);
 				break;
 			}
 
