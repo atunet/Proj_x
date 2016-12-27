@@ -12,7 +12,6 @@ public class CSInterfaceWrap
 		L.RegFunction("GetServerType", GetServerType);
 		L.RegFunction("SetServerType", SetServerType);
 		L.RegFunction("DisconnectToServer", DisconnectToServer);
-		L.RegFunction("LoginToServer", LoginToServer);
 		L.RegFunction("UIRoot", UIRoot);
 		L.RegFunction("SceneRoot", SceneRoot);
 		L.RegFunction("AddComponent", AddComponent);
@@ -99,21 +98,6 @@ public class CSInterfaceWrap
 		{
 			ToLua.CheckArgsCount(L, 0);
 			CSInterface.DisconnectToServer();
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int LoginToServer(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			CSInterface.LoginToServer();
 			return 0;
 		}
 		catch(Exception e)

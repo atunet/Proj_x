@@ -53,7 +53,65 @@ public class NetController : MonoBehaviour
 	private NetThread m_thread = null;
     private ArrayList m_cmdList = new ArrayList();
     
+    public bool Init()
+    {
+        if (null != m_thread)
+        {
+            Debug.LogWarning("NetController already inited,repeated init ignored!!!");
+            return false;
+        }
 
+        m_thread = new NetThread();
+        m_thread.Start();
+
+        Debug.Log("NetController init ok,netthread start working!!!");
+        return true;
+    }
+        
+    public void LoginToLoginServer()
+    {
+        if (m_thread.InitLoginClient("127.0.0.1", 4444))
+        {
+           /*
+            * local verifyCmd = LoginPb.VerifyVersion()
+                verifyCmd.clientversion = 796688481
+                SendCmd(ProtoTypePb.VERIFY_VERSION_CS, verifyCmd:SerializeToString())
+
+                local loginCmd = LoginPb.LoginReq()
+                loginCmd.accountid = 9528
+                loginCmd.verifier = "fasdfa"
+                SendCmd(ProtoTypePb.LOGIN_LOGIN_CS, loginCmd:SerializeToString())
+            */
+        }
+    }
+
+    public void LoginToGateServer()
+    {
+        if (m_thread.InitGateClient("127.0.0.1", 4444))
+        {
+            /*
+            local loginCmd = LoginPb.LoginGatewReq()
+                loginCmd.accountid = 9528
+                loginCmd.verifier = "fasdfa"
+                SendMsg(ProtoTypePb.LOGIN_GATE_CS, loginCmd:SerializeToString())
+                */
+
+
+        }
+    }
+
+    public void LoginToCrossServer()
+    {
+        if (m_thread.InitCrossClient("127.0.0.1", 4444))
+        {/*
+            local loginCmd = LoginPb.LoginCrossReq()
+                loginCmd.accountid = 9528
+                loginCmd.verifier = "fasdfa"
+                SendMsgToCross(ProtoTypePb.LOGIN_LOGIN_CS, loginCmd:SerializeToString())
+                */
+        }
+    }
+    /*
     public void Connect()
 	{
 		if (null != m_thread) 
@@ -62,21 +120,21 @@ public class NetController : MonoBehaviour
 			return;
 		}
 
-		/*TCPClient tcpClient = new TCPClient (m_serverIP, m_serverPort);
+		TCPClient tcpClient = new TCPClient (m_serverIP, m_serverPort);
 		if (!tcpClient.Connect ()) 
 		{
             Debug.LogError("connect to server failed (" + m_serverIP + ":" + m_serverPort + ")");
             tcpClient = null;
             return;
         }
-        */
+
 		//m_thread = new NetThread (tcpClient);
 		//m_thread.Start ();
 
 		CmdHandler.Instance.LoginToServer();
 
         Debug.Log("NetController connect server ok, netthread started");
-	}
+	}*/
 
     void LateUpdate()
     {
@@ -90,13 +148,42 @@ public class NetController : MonoBehaviour
 				byte[] realCmd = new byte[recvCmd.Length-TCPClient.MSG_ID_LEN];
 				Array.Copy(recvCmd, TCPClient.MSG_ID_LEN, realCmd, 0, realCmd.Length);
 
-				if(0 == CSInterface.s_recvProtoId)
-				{
-					Debug.Log("recv tickcmd,just send back");
-					SendCmd((UInt16)CSInterface.s_recvProtoId, realCmd);
-				}
-				else
-				{					
+                if (0 == CSInterface.s_recvProtoId)
+                {
+                    Debug.Log("recv tickcmd,just send back");
+                    SendMsg((UInt16)CSInterface.s_recvProtoId, realCmd);
+                }
+                else if (1 == CSInterface.s_recvProtoId)
+                {   // recv loginLoginRet msg,do connect to gate ...
+                    LoginToGateServer();
+
+                    /*
+                    local revCmd = LoginPb.LoginRet()
+                        revCmd:ParseFromString(CSInterface.s_recvBytes)
+                        print("ip:"..revCmd.gatewayip .. ",port:" .. revCmd.gatewayport .. ",accid:" .. revCmd.accountid .. ",token:" .. revCmd.token)
+
+                        CSInterface.SetServerAddr(revCmd.gatewayip, revCmd.gatewayport)
+                        CSInterface.SetServerType(100)  -- 0:loginserver; >0:gatewaserver
+                    globalToken = revCmd.token
+
+                        CSInterface.DisconnectToServer()
+                        CSInterface.LoginToServer()
+
+                        local loginCmd = LoginPb.LoginGatewayReq()
+                        loginCmd.accountid = 9528
+                        loginCmd.token = Login.LoginSvr.globalToken
+                        loginCmd.appVersion = "1.1.1"
+                        loginCmd.deviceId = 8
+                        SendCmd(ProtoTypePb.LOGIN_GATEW_CS, loginCmd:SerializeToString())
+
+                        */
+                }
+                else if (2 == (CSInterface.s_recvProtoId | 0xff00))
+                {
+                    // recv battle msg, do fighting logic in c#
+                }
+                else
+				{		// default do other logic in lua 			
 					CSInterface.s_recvBytes = new LuaInterface.LuaByteBuffer(realCmd);
     	            CmdHandler.Instance.CmdParse();
             	}
@@ -117,9 +204,15 @@ public class NetController : MonoBehaviour
 		Monitor.Exit(m_cmdList);
     }
 
-    public bool SendCmd(UInt16 protoId_, byte[] buf_)
+    public bool SendMsg(UInt16 protoId_, byte[] buf_)
     {
-        m_thread.TCPClient.Send(protoId_, buf_);
+        m_thread.TCPClient.SendMsg(protoId_, buf_);
+        return true;
+    }
+
+    public bool SendMsgToCross(UInt16 protoId_, byte[] buf_)
+    {
+        m_thread.TCPClient.SendMsg(protoId_, buf_);
         return true;
     }
 

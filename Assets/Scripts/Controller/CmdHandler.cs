@@ -116,7 +116,7 @@ public class CmdHandler : IDisposable
 	{
        m_cmdHander.Call();
 	}
-
+    /*
     public void LoginToServer()
     {
         LuaFunction loginFunc = m_ls.GetFunction("LoginToServer");
@@ -127,5 +127,6 @@ public class CmdHandler : IDisposable
         }
 
         loginFunc.Call();
-    }
+    }*/
+
 }

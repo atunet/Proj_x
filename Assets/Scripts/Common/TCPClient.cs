@@ -61,9 +61,11 @@ public class TCPClient
 	}
 	
 
-	public Boolean Send (UInt16 msgId_, byte[] msg_)
+	public Boolean SendMsg (UInt16 msgId_, byte[] msg_)
 	{	
-        if (m_socket.Poll(100 * 1000, SelectMode.SelectWrite))
+        
+        if (m_socket.Connected && 
+           !m_socket.Poll(10 * 1000, SelectMode.SelectError))
         {
             UInt32 packetLen = (UInt32)(MSG_ID_LEN + SEQUENCE_LEN + msg_.Length);
             byte[] sendBytes = new byte[HEAD_LEN + packetLen];
@@ -79,12 +81,12 @@ public class TCPClient
                 offset += m_socket.Send(sendBytes, offset, sendBytes.Length - offset, SocketFlags.None);
             }
 
-            Console.WriteLine("TCPClient send msgid:{0},msg len:{1},total len:{2}", msgId_.ToString("X"), msg_.Length, packetLen);
+            Console.WriteLine("TCPClient send msgid:{0} ok,msg len:{1},total len:{2}", msgId_.ToString("X"), msg_.Length, packetLen);
             return true;
         }
         else
         {
-            Console.WriteLine("TCPClient send msg failed,msgid:{0},len:{1}", msgId_.ToString("X"), msg_.Length);
+            Console.WriteLine("TCPClient send msg failed,socket is disconnected,msgid:{0},len:{1}", msgId_.ToString("X"), msg_.Length);
             return false;
         }
 	}

@@ -27,7 +27,7 @@ function ParseLoginGateRet()
 	print("login gatewayserver success!")	
 end
 
-
+--[[
 function LoginToServer()
 	if 0 == CSInterface.GetServerType() then	
 		local verifyCmd = LoginPb.VerifyVersion()
@@ -47,3 +47,4 @@ function LoginToServer()
 		SendCmd(ProtoTypePb.LOGIN_GATEW_CS, loginCmd:SerializeToString())
 	end
 end
+]]

@@ -16,8 +16,13 @@ public sealed class CSInterface
 
 	public static bool SendCmd()
 	{
-		return NetController.Instance.SendCmd((UInt16)s_sendProtoId, s_sendBytes.buffer);
+        return NetController.Instance.SendMsg((UInt16)s_sendProtoId, s_sendBytes.buffer);
 	}
+
+    public static bool SendMsgToCross()
+    {
+        return NetController.Instance.SendMsg((UInt16)s_sendProtoId, s_sendBytes.buffer);
+    }
 
 	public static void SetServerAddr(string ip_, ushort port_)
 	{
@@ -41,11 +46,12 @@ public sealed class CSInterface
 	{
 		NetController.Instance.Reset();
 	}
-
+    /*
 	public static void LoginToServer()
 	{
 		NetController.Instance.Connect();
 	}
+ */   
     public static Transform UIRoot()
     {
         return s_uiRoot;

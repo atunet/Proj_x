@@ -76,6 +76,11 @@ internal class NetThread
         return true;
     }
 
+    public bool InitCrossClient(string ip_, int port_)
+    {
+        return true;
+    }
+
 
     public TCPClient TCPClient { get { return m_tcpClient; } }
 
