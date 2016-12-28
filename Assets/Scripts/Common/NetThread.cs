@@ -6,6 +6,8 @@ using System.IO;
 
 internal class NetThread
 {
+    private Thread m_thread = null;
+
     private TCPClient m_loginClient = null;
     private TCPClient m_gateClient = null;
     private UDPClient m_crossClient = null;
@@ -14,35 +16,17 @@ internal class NetThread
     private byte[] m_gateRcvBuf = null;
     private byte[] m_crossRcvBuf = null;
 
-    //private float m_lastGateTime = System.DateTime.Now;
-    private TCPClient m_tcpClient = null;
-    private Thread m_thread = null;
-	private Boolean m_live = false;
-
-    private MemoryStream m_rcvBuf;
-    private MemoryStream m_msgBuf;
-
-
-	private byte[] m_rcvBuffer;
-	private byte[] m_msgBuffer;
 
     public NetThread()
     {
+        m_thread = new Thread(new ThreadStart(Run));
+
         m_loginRcvBuf = new byte[64*1024];
         m_gateRcvBuf = new byte[64*1024];
         m_crossRcvBuf = new byte[64*1024];
-
-        m_thread = new Thread(new ThreadStart(Run));
     }
+    public void Start() { m_thread.Start(); }
 
-//public NetThread(TCPClient client_)
-//{
-//	m_tcpClient = client_;
-//	m_thread = new Thread(new ThreadStart(Run));
-//
-//	m_rcvBuffer = new byte[128*1024];
-//	m_msgBuffer = new byte[0];
-//}
 
     public bool InitLoginClient(string ip_, int port_)
     {
@@ -85,12 +69,23 @@ internal class NetThread
         return true;
     }
 
+
     public bool InitCrossClient(string ip_, int port_)
     {
+        if (null == m_crossClient)
+        {
+            m_crossClient = new UDPClient(ip_, port_);
+        }
+        else
+        {
+            Console.WriteLine("udp cross client is not null, init ignored!!!");
+        }
+
         return true;
     }
 
-    public bool DestroyLoginClient()
+
+    public void DestroyLoginClient()
     {
         if (null != m_loginClient)
         {
@@ -104,29 +99,37 @@ internal class NetThread
             Console.WriteLine("tcp login client is null,destroy ignored!!!");
         }
     }
-    public TCPClient TCPClient { get { return m_tcpClient; } }
 
-	public void Start()
-	{
-		m_thread.Start();
-        m_live = true;
-	}
+    public bool SendMsgToLogin(UInt16 msgId_, byte[] msg_)
+    {
+        return (null != m_loginClient) ? m_loginClient.SendMsg(msgId_, msg_) : false;
+    }
+
+    public bool SendMsgToGate(UInt16 msgId_, byte[] msg_)
+    {
+        return (null != m_gateClient) ? m_gateClient.SendMsg(msgId_, msg_) : false;
+    }
+
+    public bool SendMsgToCross(UInt16 msgId_, byte[] msg_)
+    {
+        return (null != m_crossClient) ? m_crossClient.SendMsg(msgId_, msg_) : false;
+    }
 	
 	private void Run()
 	{
-		while(m_live)
+        while(m_thread.IsAlive)
 		{	
 			Thread.Sleep(5);
 			
-            if (m_loginClient)
+            if (null != m_loginClient)
             {
                 int retCode = m_loginClient.Receive();
                 if (retCode >= 0)
                 {
                     while (true)
                     {
-                        int msgLen = m_loginClient.bufToMsg(m_loginRcvBuf);
-                        if(msgLen <= 0) break;
+                        int msgLen = m_loginClient.bufToMsg(ref m_loginRcvBuf);
+                        if(msgLen <= 0) break;                        
                         NetController.Instance.AddCmd(m_loginRcvBuf, msgLen);
                     }
                 }
@@ -134,14 +137,14 @@ internal class NetThread
                 {
                 }
             }
-            if (m_gateClient)
+            if (null != m_gateClient)
             {
                 int retCode = m_gateClient.Receive();
                 if (retCode >= 0)
                 {
                     while (true)
                     {
-                        int msgLen = m_gateClient.bufToMsg(m_gateRcvBuf);
+                        int msgLen = m_gateClient.bufToMsg(ref m_gateRcvBuf);
                         if(msgLen <= 0) break;
                         NetController.Instance.AddCmd(m_gateRcvBuf, msgLen);
                     }
@@ -151,67 +154,44 @@ internal class NetThread
                     
                 }
             }
-            if (m_crossClient)
+            if (null != m_crossClient)
             {
                 int retCode = m_loginClient.Receive();
                 if (retCode >= 0)
                 {
                     while (true)
                     {
-                        int msgLen = m_loginClient.bufToMsg(m_loginRcvBuf);
+                        int msgLen = m_loginClient.bufToMsg(ref m_crossRcvBuf);
                         if(msgLen <= 0) break;
                         NetController.Instance.AddCmd(m_loginRcvBuf, msgLen);
                     }
                 }
             }
-
-			if(null == m_tcpClient || !m_tcpClient.Connected()) 
-			{
-				break;
-			}
-			
-			int recvLen = m_tcpClient.Receive(ref m_rcvBuffer);
-			if(recvLen < 0)
-			{
-                Console.WriteLine("NetThread recv error: " + recvLen);
-				break;
-			}
-
-			if(recvLen > 0)
-			{
-				int msgLen = (null==m_msgBuffer) ? 0 : m_msgBuffer.Length;
-				Array.Resize(ref m_msgBuffer, msgLen + recvLen);				
-                Array.Copy(m_rcvBuffer, 0, m_msgBuffer, msgLen, recvLen);
-			}
-
-			if(m_msgBuffer.Length > TCPClient.HEAD_LEN)
-			{				
-				int cmdLen = BitConverter.ToInt32(m_msgBuffer, 0);							
-				if(m_msgBuffer.Length >= cmdLen + TCPClient.HEAD_LEN)
-				{			
-					byte[] cmdBytes = new byte[cmdLen];
-					Array.Copy(m_msgBuffer, TCPClient.HEAD_LEN, cmdBytes, 0, cmdLen);
-						
-					NetController.Instance.AddCmd(cmdBytes);
-					
-                    int packetLen = cmdLen + TCPClient.HEAD_LEN;
-                    int lastLen = m_msgBuffer.Length - packetLen;
-
-					Array.Copy(m_msgBuffer, packetLen, m_msgBuffer, 0, lastLen);
-					Array.Resize(ref m_msgBuffer, lastLen); 
-				}
-			}
 		}
 	}
 	
+
 	public void Final()
 	{
-		if(m_live)
+        if(null != m_thread && m_thread.IsAlive)
 		{
-			m_tcpClient.Close();
-			m_tcpClient = null;
-			m_live = false;
+            if (null != m_loginClient)
+            {
+                m_loginClient.Close();
+                m_loginClient = null;
+            }
+            if (null != m_gateClient)
+            {
+                m_gateClient.Close();
+                m_gateClient = null;
+            }
+            if (null != m_crossClient)
+            {
+                m_crossClient.Close();
+                m_crossClient = null;
+            }
 			m_thread.Join();
+            m_thread = null;
 		}
 	}
 };

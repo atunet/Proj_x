@@ -23,7 +23,7 @@ public class LoginBtnController : MonoBehaviour
 		// lua init: load the config data and cached role data ...
 		if(CmdHandler.Instance.Init())
 		{
-            NetController.Instance.LoginToLoginServer ();
+            NetController.Instance.LoginToLoginServer ("121.199.48.63", 4444);
 		}
 	}
 

@@ -8,18 +8,22 @@ public class TCPClient
     internal static Byte HEAD_LEN = 4;
     internal static Byte MSG_ID_LEN = 2;
     internal static Byte SEQUENCE_LEN = 4;
-
+    private static int RCV_BUF_LEN = 256 * 1024;
 
     private String m_serverIP = null;
     private int m_serverPort = 0;
     private Socket m_socket = null;
-    private UInt32 s_seqNO = 0;
+    private UInt32 m_seqNO = 0;
 
+    private byte[] m_rcvBuf = null;
+    private int m_bufReadOffset = 0;
+    private int m_bufWriteOffset = 0;
 
     public TCPClient (String ip_, int port_)
     {	
         m_serverIP = ip_;
         m_serverPort = port_;
+        m_rcvBuf = new byte[RCV_BUF_LEN];
     }
 
 
@@ -61,9 +65,8 @@ public class TCPClient
 	}
 	
 
-	public Boolean SendMsg (UInt16 msgId_, byte[] msg_)
-	{	
-        
+    public Boolean SendMsg (UInt16 msgId_, byte[] msg_)
+	{	        
         if (m_socket.Connected && 
            !m_socket.Poll(10 * 1000, SelectMode.SelectError))
         {
@@ -72,7 +75,7 @@ public class TCPClient
 
             BitConverter.GetBytes(packetLen).CopyTo(sendBytes, 0);
             BitConverter.GetBytes(msgId_).CopyTo(sendBytes, HEAD_LEN);
-            BitConverter.GetBytes(++s_seqNO).CopyTo(sendBytes, HEAD_LEN + MSG_ID_LEN);
+            BitConverter.GetBytes(++m_seqNO).CopyTo(sendBytes, HEAD_LEN + MSG_ID_LEN);
             msg_.CopyTo(sendBytes, HEAD_LEN + MSG_ID_LEN + SEQUENCE_LEN);		
     		
             int offset = 0;
@@ -91,7 +94,7 @@ public class TCPClient
         }
 	}
 
-	public int Receive (ref byte[] recvBuf_)
+	public int Receive ()
 	{		
 		int code = 0;
 		if(m_socket.Poll(0, SelectMode.SelectError))
@@ -99,15 +102,12 @@ public class TCPClient
             Console.WriteLine("socket poll get error, may be disconnected!");
 			code = -1;
 		}
-		else if(m_socket.Poll(100*1000, SelectMode.SelectRead))
+		else if(m_socket.Poll(10*1000, SelectMode.SelectRead))
 		{
-			try
-			{
-				code = m_socket.Receive(recvBuf_);
-			}
-			catch(Exception e_)
-			{
-                Console.WriteLine(e_.ToString());
+            code = m_socket.Receive(m_rcvBuf, m_bufWriteOffset, RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None);
+            if (code > 0)
+            {
+                
             }
 		}
 		
@@ -116,8 +116,27 @@ public class TCPClient
 	
     public int bufToMsg(ref byte[] msgBuf_)
     {
+        if (m_bufWriteOffset - m_bufReadOffset <= (TCPClient.HEAD_LEN + TCPClient.MSG_ID_LEN))
+            return 0;
+        
+        int msgLen = BitConverter.ToInt32(m_rcvBuf, m_bufReadOffset);                          
+        if (m_bufWriteOffset - m_bufReadOffset < msgLen + TCPClient.HEAD_LEN)
+            return 0;
+        
+        Array.Copy(m_rcvBuf, m_bufReadOffset + TCPClient.HEAD_LEN, msgBuf_, 0, msgLen);
+        m_bufReadOffset += (msgLen + TCPClient.HEAD_LEN);
 
-        return 0;
+        if (m_bufReadOffset > TCPClient.RCV_BUF_LEN / 2)
+        {
+            if (m_bufWriteOffset > m_bufReadOffset)
+            {
+                Array.Copy(m_rcvBuf, m_bufReadOffset, m_rcvBuf, 0, m_bufWriteOffset - m_bufReadOffset);
+                m_bufWriteOffset -= m_bufReadOffset;
+                m_bufReadOffset = 0;
+            }
+        }
+
+        return msgLen;
     }
 
 	public bool Connected ()

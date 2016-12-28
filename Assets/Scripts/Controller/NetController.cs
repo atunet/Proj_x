@@ -68,7 +68,8 @@ public class NetController : MonoBehaviour
 
 	private NetThread m_thread = null;
     private ArrayList m_cmdList = new ArrayList();
-    
+    private MemoryStream m_pbStream = new MemoryStream();
+
     public bool Init()
     {
         if (null != m_thread)
@@ -88,14 +89,16 @@ public class NetController : MonoBehaviour
     {
         if (m_thread.InitLoginClient(ip_, port_))
         {
-            Cmd.VerifyVersion verify;
+            Cmd.VerifyVersion verify = new Cmd.VerifyVersion();
             verify.clientversion = 2017;
-            SendMsgToLogin(verify.id, verify.ToString());
+            Serializer.Serialize<Cmd.VerifyVersion>(m_pbStream, verify);
+            SendMsgToLogin(verify.id, m_pbStream.ToArray());
 
-            Cmd.LoginReq login;
+            Cmd.LoginReq login = new Cmd.LoginReq();
             login.accountid = 9529;
             login.verifier = "this is verifier code";
-            SendMsgToLogin(login.id, login.ToString());
+            Serializer.Serialize<Cmd.LoginReq>(m_pbStream, login);
+            SendMsgToLogin(login.id, m_pbStream.ToArray());
         }
     }
 
@@ -103,10 +106,11 @@ public class NetController : MonoBehaviour
     {
         if (m_thread.InitGateClient(ip_, port_))
         {
-            Cmd.LoginGatewayReq login;
+            Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
             login.accountid = 9529;
             login.tempid = 7777;
-            SendMsgToGate(login.id, login.ToString());          
+            Serializer.Serialize<Cmd.LoginGatewayReq>(m_pbStream, login);
+            SendMsgToGate(login.id, m_pbStream.ToArray());          
         }
     }
 
@@ -114,36 +118,13 @@ public class NetController : MonoBehaviour
     {
         if (m_thread.InitCrossClient(ip_, port_))
         {
-            Cmd.LoginCrossReq login;
+            Cmd.LoginCrossReq login = new Cmd.LoginCrossReq();
             login.userid = 868686868686;
             login.tempid = 6666;
-            SendMsgToCross(login.id, login.ToString());
+            Serializer.Serialize<Cmd.LoginCrossReq>(m_pbStream, login);
+            SendMsgToCross(login.id, m_pbStream.ToArray());
         }
     }
-    /*
-    public void Connect()
-	{
-		if (null != m_thread) 
-		{
-			Debug.LogWarning("Connect server ignored: netthread already running");
-			return;
-		}
-
-		TCPClient tcpClient = new TCPClient (m_serverIP, m_serverPort);
-		if (!tcpClient.Connect ()) 
-		{
-            Debug.LogError("connect to server failed (" + m_serverIP + ":" + m_serverPort + ")");
-            tcpClient = null;
-            return;
-        }
-
-		//m_thread = new NetThread (tcpClient);
-		//m_thread.Start ();
-
-		CmdHandler.Instance.LoginToServer();
-
-        Debug.Log("NetController connect server ok, netthread started");
-	}*/
 
     void LateUpdate()
     {
@@ -160,25 +141,27 @@ public class NetController : MonoBehaviour
                 if (0 == CSInterface.s_recvProtoId)
                 {   // TODO ... send to which server ???
                     Debug.Log("recv tickcmd,just send back");
-                    SendMsgToLogin((UInt16)CSInterface.s_recvProtoId, realCmd);
+                    SendMsgToGate((Cmd.EMessageID)CSInterface.s_recvProtoId, realCmd);
                 }
-                else if (Cmd.EMessageID.LOGIN_LOGIN_SC == CSInterface.s_recvProtoId)
+                else if (Cmd.EMessageID.LOGIN_LOGIN_SC == (Cmd.EMessageID)CSInterface.s_recvProtoId)
                 {  
                     MemoryStream ms = new MemoryStream(realCmd, 0, realCmd.Length);
                     Cmd.LoginRet ret = Serializer.Deserialize<Cmd.LoginRet>(ms);
 
-                    if (m_thread.InitGateClient(ret.gatewayip, ret.gatewayport))
+                    if (m_thread.InitGateClient(ret.gatewayip, (int)ret.gatewayport))
                     {
-                        Cmd.LoginGatewayReq login;
+                        Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
                         login.accountid = 9529;
                         login.tempid = 7777;
                         login.appVersion = "1.1.1";
                         login.deviceId = 100;
-                        SendMsgToGate(login.id, login.ToString());          
+
+                        Serializer.Serialize<Cmd.LoginGatewayReq>(m_pbStream, login);
+                        SendMsgToGate(login.id, m_pbStream.ToArray());          
                     }
                     m_thread.DestroyLoginClient();
                 }
-                else if (Cmd.EMessageID.PVP_CMD == (CSInterface.s_recvProtoId | 0xff00))
+                else if (Cmd.EMessageID.PVP_CMD == (Cmd.EMessageID)(CSInterface.s_recvProtoId | 0xff00))
                 {
                     // recv battle msg, do fighting logic in c#
                 }
@@ -195,31 +178,30 @@ public class NetController : MonoBehaviour
         Monitor.Exit(m_cmdList);
     }   
   
-    public void AddCmd(byte[] cmd_)
+    public void AddCmd(byte[] cmd_, int len_)
     {
-        Monitor.Enter(m_cmdList);        
-        
-		m_cmdList.Add(cmd_);       
+        Monitor.Enter(m_cmdList);  
+
+        byte[] msgBytes = new byte[len_];
+        Array.Copy(cmd_, msgBytes, len_);
+        m_cmdList.Add(msgBytes);       
         
 		Monitor.Exit(m_cmdList);
     }
 
-    public bool SendMsgToLogin(UInt16 protoId_, byte[] buf_)
+    public bool SendMsgToLogin(Cmd.EMessageID protoId_, byte[] buf_)
     {
-        m_thread.TCPClient.SendMsg(protoId_, buf_);
-        return true;
+        return m_thread.SendMsgToLogin((UInt16)protoId_, buf_);
     }
 
-    public bool SendMsgToGate(UInt16 protoId_, byte[] buf_)
+    public bool SendMsgToGate(Cmd.EMessageID protoId_, byte[] buf_)
     {
-        m_thread.TCPClient.SendMsg(protoId_, buf_);
-        return true;
+        return m_thread.SendMsgToGate((UInt16)protoId_, buf_);
     }
 
-    public bool SendMsgToCross(UInt16 protoId_, byte[] buf_)
+    public bool SendMsgToCross(Cmd.EMessageID protoId_, byte[] buf_)
     {
-        m_thread.TCPClient.SendMsg(protoId_, buf_);
-        return true;
+        return m_thread.SendMsgToCross((UInt16)protoId_, buf_);
     }
 
     public void Reset()
