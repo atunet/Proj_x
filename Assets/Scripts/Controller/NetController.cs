@@ -6,7 +6,7 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-
+using ProtoBuf;
 
 public class NetController : MonoBehaviour 
 { 
@@ -29,7 +29,23 @@ public class NetController : MonoBehaviour
     private NetController()
     {
     	m_serverType = 0;
+
+        m_loginIP = "";
+        m_loginPort = 0;
+        m_gateIP = "";
+        m_gatePort = 0;
+        m_crossIP = "";
+        m_crossPort = 0;
     }
+
+    private string m_loginIP;
+    private int m_loginPort;
+
+    private string m_gateIP;
+    private int m_gatePort;
+
+    private string m_crossIP;
+    private int m_crossPort;
 
     private string m_serverIP;
     public string ServerIP
@@ -68,47 +84,40 @@ public class NetController : MonoBehaviour
         return true;
     }
         
-    public void LoginToLoginServer()
+    public void LoginToLoginServer(string ip_, int port_)
     {
-        if (m_thread.InitLoginClient("127.0.0.1", 4444))
+        if (m_thread.InitLoginClient(ip_, port_))
         {
-           /*
-            * local verifyCmd = LoginPb.VerifyVersion()
-                verifyCmd.clientversion = 796688481
-                SendCmd(ProtoTypePb.VERIFY_VERSION_CS, verifyCmd:SerializeToString())
+            Cmd.VerifyVersion verify;
+            verify.clientversion = 2017;
+            SendMsgToLogin(verify.id, verify.ToString());
 
-                local loginCmd = LoginPb.LoginReq()
-                loginCmd.accountid = 9528
-                loginCmd.verifier = "fasdfa"
-                SendCmd(ProtoTypePb.LOGIN_LOGIN_CS, loginCmd:SerializeToString())
-            */
+            Cmd.LoginReq login;
+            login.accountid = 9529;
+            login.verifier = "this is verifier code";
+            SendMsgToLogin(login.id, login.ToString());
         }
     }
 
-    public void LoginToGateServer()
+    public void LoginToGateServer(string ip_, int port_)
     {
-        if (m_thread.InitGateClient("127.0.0.1", 4444))
+        if (m_thread.InitGateClient(ip_, port_))
         {
-            /*
-            local loginCmd = LoginPb.LoginGatewReq()
-                loginCmd.accountid = 9528
-                loginCmd.verifier = "fasdfa"
-                SendMsg(ProtoTypePb.LOGIN_GATE_CS, loginCmd:SerializeToString())
-                */
-
-
+            Cmd.LoginGatewayReq login;
+            login.accountid = 9529;
+            login.tempid = 7777;
+            SendMsgToGate(login.id, login.ToString());          
         }
     }
 
-    public void LoginToCrossServer()
+    public void LoginToCrossServer(string ip_, int port_)
     {
-        if (m_thread.InitCrossClient("127.0.0.1", 4444))
-        {/*
-            local loginCmd = LoginPb.LoginCrossReq()
-                loginCmd.accountid = 9528
-                loginCmd.verifier = "fasdfa"
-                SendMsgToCross(ProtoTypePb.LOGIN_LOGIN_CS, loginCmd:SerializeToString())
-                */
+        if (m_thread.InitCrossClient(ip_, port_))
+        {
+            Cmd.LoginCrossReq login;
+            login.userid = 868686868686;
+            login.tempid = 6666;
+            SendMsgToCross(login.id, login.ToString());
         }
     }
     /*
@@ -149,36 +158,27 @@ public class NetController : MonoBehaviour
 				Array.Copy(recvCmd, TCPClient.MSG_ID_LEN, realCmd, 0, realCmd.Length);
 
                 if (0 == CSInterface.s_recvProtoId)
-                {
+                {   // TODO ... send to which server ???
                     Debug.Log("recv tickcmd,just send back");
-                    SendMsg((UInt16)CSInterface.s_recvProtoId, realCmd);
+                    SendMsgToLogin((UInt16)CSInterface.s_recvProtoId, realCmd);
                 }
-                else if (1 == CSInterface.s_recvProtoId)
-                {   // recv loginLoginRet msg,do connect to gate ...
-                    LoginToGateServer();
+                else if (Cmd.EMessageID.LOGIN_LOGIN_SC == CSInterface.s_recvProtoId)
+                {  
+                    MemoryStream ms = new MemoryStream(realCmd, 0, realCmd.Length);
+                    Cmd.LoginRet ret = Serializer.Deserialize<Cmd.LoginRet>(ms);
 
-                    /*
-                    local revCmd = LoginPb.LoginRet()
-                        revCmd:ParseFromString(CSInterface.s_recvBytes)
-                        print("ip:"..revCmd.gatewayip .. ",port:" .. revCmd.gatewayport .. ",accid:" .. revCmd.accountid .. ",token:" .. revCmd.token)
-
-                        CSInterface.SetServerAddr(revCmd.gatewayip, revCmd.gatewayport)
-                        CSInterface.SetServerType(100)  -- 0:loginserver; >0:gatewaserver
-                    globalToken = revCmd.token
-
-                        CSInterface.DisconnectToServer()
-                        CSInterface.LoginToServer()
-
-                        local loginCmd = LoginPb.LoginGatewayReq()
-                        loginCmd.accountid = 9528
-                        loginCmd.token = Login.LoginSvr.globalToken
-                        loginCmd.appVersion = "1.1.1"
-                        loginCmd.deviceId = 8
-                        SendCmd(ProtoTypePb.LOGIN_GATEW_CS, loginCmd:SerializeToString())
-
-                        */
+                    if (m_thread.InitGateClient(ret.gatewayip, ret.gatewayport))
+                    {
+                        Cmd.LoginGatewayReq login;
+                        login.accountid = 9529;
+                        login.tempid = 7777;
+                        login.appVersion = "1.1.1";
+                        login.deviceId = 100;
+                        SendMsgToGate(login.id, login.ToString());          
+                    }
+                    m_thread.DestroyLoginClient();
                 }
-                else if (2 == (CSInterface.s_recvProtoId | 0xff00))
+                else if (Cmd.EMessageID.PVP_CMD == (CSInterface.s_recvProtoId | 0xff00))
                 {
                     // recv battle msg, do fighting logic in c#
                 }
@@ -204,7 +204,13 @@ public class NetController : MonoBehaviour
 		Monitor.Exit(m_cmdList);
     }
 
-    public bool SendMsg(UInt16 protoId_, byte[] buf_)
+    public bool SendMsgToLogin(UInt16 protoId_, byte[] buf_)
+    {
+        m_thread.TCPClient.SendMsg(protoId_, buf_);
+        return true;
+    }
+
+    public bool SendMsgToGate(UInt16 protoId_, byte[] buf_)
     {
         m_thread.TCPClient.SendMsg(protoId_, buf_);
         return true;

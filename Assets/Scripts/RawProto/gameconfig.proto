@@ -49,30 +49,6 @@ message DamageSer
 	optional int32 MovementDamageSkill			= 6;
 }
 
-message HeroStage
-{
-	optional int32 ID			= 1;
-	optional int32 Stage			= 2;
-	repeated int32 ItemID			= 3;
-	repeated int32 ItemCount			= 4;
-	optional int32 MaxHp			= 5;
-	optional int32 Atk_Value			= 6;
-	optional int32 Def_Value			= 7;
-}
-
-message HeroStar
-{
-	optional int32 ID			= 1;
-	optional int32 Quality			= 2;
-	optional int32 Star			= 3;
-	optional int32 HeroItemIDCount			= 4;
-	optional string StarColor			= 5;
-	optional float Hp_Percent			= 6;
-	optional float Atk_Percent			= 7;
-	optional float Def_Percent			= 8;
-	optional float Fight_Percent			= 9;
-}
-
 message Male
 {
 	optional int32 ID			= 1;
@@ -584,24 +560,25 @@ message OPHero
 	optional int32 Quality			= 14;
 	optional int32 InitLevel			= 15;
 	optional int32 InitStar			= 16;
-	optional int32 HeroItemId			= 17;
-	optional int32 HeroItemIdCount			= 18;
-	optional int32 HeroTransferItemCount			= 19;
-	optional int32 HeroIcon			= 20;
-	optional string HeroNormal			= 21;
-	optional float HealthBarOffset			= 22;
-	optional string HeroName			= 23;
-	optional string Des			= 24;
-	optional int32 VoiceIntr			= 25;
-	optional int32 VoiceComing			= 26;
-	repeated int32 KatasType			= 27;
-	optional int32 Gender			= 30;
-	repeated int32 AccessWay			= 31;
-	optional int32 HeroScore			= 32;
-	optional int32 DamageType			= 33;
-	repeated float CapsuleCenter			= 34;
-	optional float CapsuleRadius			= 35;
-	optional float CapsuleHeight			= 36;
+	optional int32 InitStage			= 17;
+	optional int32 HeroItemId			= 18;
+	optional int32 HeroItemIdCount			= 19;
+	optional int32 HeroTransferItemCount			= 20;
+	optional int32 HeroIcon			= 21;
+	optional string HeroNormal			= 22;
+	optional float HealthBarOffset			= 23;
+	optional string HeroName			= 24;
+	optional string Des			= 25;
+	optional int32 VoiceIntr			= 26;
+	optional int32 VoiceComing			= 27;
+	repeated int32 KatasType			= 28;
+	optional int32 Gender			= 31;
+	repeated int32 AccessWay			= 32;
+	optional int32 HeroScore			= 33;
+	optional int32 DamageType			= 34;
+	repeated float CapsuleCenter			= 35;
+	optional float CapsuleRadius			= 36;
+	optional float CapsuleHeight			= 37;
 }
 
 message OPHeroLevel
@@ -634,6 +611,30 @@ message OPHeroSkill
 	repeated int32 Animationstate			= 15;
 	repeated int32 level			= 16;
 	repeated int32 StopDuration			= 17;
+}
+
+message OPHeroStage
+{
+	optional int32 ID			= 1;
+	optional int32 HeroStage			= 2;
+	repeated int32 ItemID			= 3;
+	repeated int32 ItemCount			= 4;
+	optional int32 MaxHp			= 5;
+	optional int32 Atk_Value			= 6;
+	optional int32 Def_Value			= 7;
+}
+
+message OPHeroStar
+{
+	optional int32 ID			= 1;
+	optional int32 Quality			= 2;
+	optional int32 Star			= 3;
+	optional int32 HeroItemIDCount			= 4;
+	optional string StarColor			= 5;
+	optional float Hp_Percent			= 6;
+	optional float Atk_Percent			= 7;
+	optional float Def_Percent			= 8;
+	optional float Fight_Percent			= 9;
 }
 
 message OPHurtEffect
@@ -1043,6 +1044,14 @@ message OPStory
 	optional string LastPath			= 6;
 	repeated string Sound			= 7;
 	repeated float Time			= 8;
+}
+
+message OPTabs
+{
+	optional int32 ID			= 1;
+	optional string TabsName			= 2;
+	optional int32 BelongTabs			= 3;
+	optional string Reference			= 4;
 }
 
 message OPTalk

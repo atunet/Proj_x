@@ -137,13 +137,34 @@ message AnimationInfo
     optional string state   = 1;
     optional float time     = 2;
 }
+
+enum ESkillOperationType
+{
+	OPERATION_CLICK	=	1;
+	OPERATION_PRESS	=	2;
+	OPERATION_RELEASE =	3;
+}
+message FrameSkillData
+{
+	optional uint32 skillid = 1;
+	optional ESkillOperationType  operation_type = 2[default=OPERATION_CLICK];
+}
+message FrameDataOperation
+{
+	optional int32  directorx = 1;
+	optional int32  directorz = 2;
+	optional bool 	attack 	= 3;
+	optional bool 	jump 	= 4;
+	optional bool 	roll	= 5;
+}
+
 //帧同步
 message FrameData
 {
 	optional uint64 uid = 1;
-	optional uint32 type = 2;
-	optional bytes  content =3;
-	optional uint32 seq	= 4;
+	optional uint32 seq	= 2;
+	optional FrameDataOperation frame_operation = 3;
+	repeated FrameSkillData skills = 4;
 }
 
 //状态同步

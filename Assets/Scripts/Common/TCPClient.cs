@@ -114,6 +114,12 @@ public class TCPClient
 		return code;
 	}
 	
+    public int bufToMsg(ref byte[] msgBuf_)
+    {
+
+        return 0;
+    }
+
 	public bool Connected ()
 	{
 		return m_socket.Connected;

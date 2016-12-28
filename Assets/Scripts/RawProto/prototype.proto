@@ -49,12 +49,14 @@ enum EMessageID
 	HERO_LIST_S			    =	0x0401;			// 发送伙伴列表给玩家
 	UPDATE_HERO_LIST_S		=	0x0402;			// 更新伙伴通知给玩家
 	REMOVE_HERO_LIST_S		=	0x0403;			// 删除伙伴通知给玩家
-	HERO_LEVEL_UP_CS	    =	0x0404;			// 伙伴升级
-	HERO_LEVEL_UP_SC	    =	0x0405;			// 伙伴升级
-	HERO_QUALITY_UP_CS	    =	0x0406;			// 伙伴升品
-	HERO_QUALITY_UP_SC	    =	0x0407;			// 伙伴升品
-	HERO_STAR_UP_CS	        =	0x0408;			// 伙伴升星
-	HERO_STAR_UP_SC	        =	0x0409;			// 伙伴升星
+	HERO_ITEM_2_EXP_CS	    =	0x0404;			// 道具换伙伴经验
+	HERO_ITEM_2_EXP_SC	    =	0x0405;			// 道具换伙伴经验
+	HERO_STAGE_UP_CS	    =	0x0406;			// 伙伴升阶
+	HERO_STAGE_UP_SC	    =	0x0407;			// 伙伴升阶
+	HERO_QUALITY_UP_CS	    =	0x0408;			// 伙伴升品
+	HERO_QUALITY_UP_SC	    =	0x0409;			// 伙伴升品
+	HERO_STAR_UP_CS	        =	0x040a;			// 伙伴升星
+	HERO_STAR_UP_SC	        =	0x040b;			// 伙伴升星
 
     /*
     // 任务相关

@@ -23,7 +23,7 @@ message LoginReq
 /// 登录返回,成功则返回网关地址
 message LoginRet
 {
-	optional EMessageID	id				=	1		[default = LOGIN_LOGIN_SC];
+	optional uint32		id				=	1		[default = 0x0103];
 	optional uint64		accountid		=	2;		// 帐号id
 	optional uint32		tempid          =	3;		// 临时id
 	optional string		gatewayip		=	4;		// 网关ip

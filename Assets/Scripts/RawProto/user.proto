@@ -50,17 +50,17 @@ message SendUserBaseData
 	required UserInfo	info        =	2;		// 角色基础数据
 }
 
-/// 请求指定游戏模块的数据,支持多模块请求
-message GameModuleDataReq
-{
-	optional EMessageID	id			=	1		[default = MODULE_DATA_CS];
-	required uint64		moduleid    =	2;		// 游戏模块id,参见gamemodule.proto
-}
-
 // 角色数据加载完成
 message UserDataLoadOk
 {
 	optional EMessageID 		id 			= 1 	[default = DATA_LOAD_OK_S];
+}
+
+/// 请求指定游戏模块的数据,支持多模块请求
+message GameModuleDataReq
+{
+	optional EMessageID	id			=	1		[default = MODULE_DATA_CS];
+	repeated uint32     modulelist  =	2;		// 游戏模块id列表,参见gamemodule.proto
 }
 
 message MessageMarqueeNotice

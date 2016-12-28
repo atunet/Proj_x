@@ -8,47 +8,23 @@ import "prototype.proto";
 
 enum EErrorCode
 {
-	/// 通用返回码定义
+	/// 系统级别错误码
 	FAILED						=	0x17e6ffff;			// 操作失败
 	SUCCESS						=	0x17e60000;			// 操作成功
 	DB_ERROR					=	0x17e60001;			// 数据库操作出错
-    CONF_ERROR					=	0x17e60002;			// 后端配置错误
-	NAME_EXISTED				=	0x17e60003;			// 角色名称已存在
-	MAX_ITEM_NUM				=	0x17e60004;			// 包裹已满
-	USER_LV_LIMIT				=	0x17e60005;			// 不允许超过角色当前等级
-    LV_NOT_ENOUGH				=	0x17e60006;			// 玩家等级不足
-    SESSION_OVERDUE				=	0x17e60007;			// 会话过期,重连失败
+	VERSION_ERROR               =	0x17e60027;			// 客户端版本错误
+	PROTO_PARSE_ERROR           =   0x17e60014;			// 协议解析失败
+	SEQUENCE_ERROR              =	0x17e6002a;			// 序列号错误
     SERVER_IS_BUSY				=	0x17e60008;			// 服务器忙
+    SESSION_OVERDUE				=	0x17e60007;			// 会话过期,重连失败
+    CROSS_SVR_NOT_FOUND         =	0x17e60039;			// 找不到跨服服务器
+
+	/// SDK返回码定义
     SDK_OPT_ERROR				=	0x17e60009;			// sdk相关操作发生错误
-	CASH_NOT_ENOUGH				=	0x17e60010;			// 魂钻不足
-	GOLD_NOT_ENOUGH				=	0x17e60011;			// 金币不足
-	NAME_LEN_INVALID			=	0x17e60012;			// 名字长度不合法
-	CONTENT_HAVE_DIRTY			=   0x17e60013;			// 输入内容非法
-	PROTO_INVALID				=   0x17e60014;			// 协议解析失败
-	ITEM_NOT_FIND				=	0x17e60015;			// 没有找到对应物品
-	VIP_NOT_SATISFY				=	0x17e60016;			// vip等级不满足
+    TOKEN_ERROR					=	0x17e6001a;			// token错误
+    TOKEN_NOT_FOUND				=	0x17e60019;			// token找不到
 	BANK_OPEN_FAILED			=	0x17e60017;			// 打开交易失败
 	BANK_CLOSED_FAILED			=	0x17e60018;			// 关闭交易失败
-    TOKEN_NOT_FOUND				=	0x17e60019;			// token找不到
-    TOKEN_ERROR					=	0x17e6001a;			// token错误
-    IDLE_TIMEOUT				=	0x17e6001b;			// 空闲超时,长时间未操作
-	DAILY_REACH_LIMIT			=	0x17e6001c;			// 达到每日次数上限
-	IN_FORBID_TIME				=	0x17e6001d;			// 玩家处于禁言状态
-	FULL_OF_USER				=	0x17e6001e;			// 注册角色数已满
-	REWARD_HAVE_GOT				=	0x17e6001f;			// 奖励已经领取
-	REWARD_TIME_LIMIT			=	0x17e60020;		    // 领奖时间未到
-	SOULDUST_NOT_ENOUGH			=	0x17e60021;			// 灵魂之尘不足
-	ON_CREATING_USER			=	0x17e60022;			// 正在创角中,请稍候
-	MAX_USER_NUM_LIMIT			=	0x17e60023;			// 已达创角最大数量
-	CREATE_SAME_USER_FORBID		=	0x17e60024;			// 不允许重复创建相同类型的角色
-	TIMES_REACH_LIMIT			=	0x17e60025;			// 次数达到上限
-	MODULE_NOT_OPEN				=	0x17e60026;			// 游戏模块未开放
-	CONFIG_VERSION_ERROR        =	0x17e60027;			// 配置版本号错误
-	COND_NOT_SATISFY			=	0x17e60028;			// 条件不满足
-	TITLE_HAVE_ACTIVE			=	0x17e60029;			// 称号已经激活
-	SEQUENCE_ERROR              =	0x17e6002a;			// 序列号错误
-	FREETIMES_NOT_ENOUGH		=	0x17e6002b;			// 免费次数不足
-	PAYTIMES_NOT_ENOUGH		    =	0x17e6002c;			// 付费次数不足
 
 	/// 登录返回码定义 - 老涂
 	USER_ID_ERROR				=	0x17e60101;			// 用户帐号非法
@@ -57,200 +33,42 @@ enum EErrorCode
 	GATEWAY_NOT_FOUND			=	0x17e60104;			// 找不到可用的网关服务器
 	SYSTEM_KICK_OFF				=	0x17e60105;			// 系统踢下线
 
-    /// 角色返回定义 - 海滨
-    DRESS_NOT_FIND              =   0x17e60201;         // 时装不存在
-    DRESS_LV_MAX                =   0x17e60202;         // 时装进阶已达最大值
-    DRESSCONF_NOT_FIND          =   0x17e60203;         // 时装配置未找到
-    DRESSCONF_COSTITEM_ERROR    =   0x17e60204;         // 升阶消耗道具数量出错
-    DRESS_ITEM_NOT_ENOUGH       =   0x17e60205;         // 升阶消耗道具数量不够
-	STAR_NOT_ENOUGH				=	0x17e60206;			// 副本星数不够 - 章节奖励星数
-	BP_NOT_ENOUGH				=	0x17e60207;			// 战斗力不够 - 锁结，bug过滤
-	CONSUME_NOT_ENOUGH			=	0x17e60208;			// 累计消费不够 - 锁结，bug过滤
-	DUNGEON_NOT_ENOUGH			=	0x17e60209;			// 副本没有通过- 锁结，bug过滤
-	USER_DATA_ERROR				=	0x17e60210;			// 角色数据异常- 封号
-    DRESS_EXP_FULL              =   0x17e60211;         // 时装经验满了未升级- bug 前后端数据不统一
-    CLIMBTOWER_IS_NULL          =   0x17e60212;         // 爬塔功能未开启
-    SELECT_TOWER_TYPE_ERROR     =   0x17e60213;         // 爬塔类型出错
-    HAVE_BEEN_SELECT            =   0x17e60214;         // 爬塔类型已经选择
-    FIRST_TOWER_COPY_ERROR      =   0x17e60215;         // 爬塔初始关卡id出错
-    TOWER_RESETTIMES_FULL       =   0x17e60216;         // 今日爬塔重置次数已满
-    COST_CASH_IS_NULL           =   0x17e60217;         // 扣除魂钻数量不足
-    RESETTOWER_NOREWARDS        =   0x17e60218;         // 未领取奖励不得重置
-    HAVE_BEEN_RESET             =   0x17e60219;         // 爬塔已经重置
-    RESETTIMES_NOT_ENOUGHT      =   0x17e6021a;         // 爬塔重置次数不足
-	CLIMBTOWER_REWARD_GET 		= 	0x17e6021b; 		// 爬塔奖励已经领取
-	NO_CLIMBTOWER_RWARD 		= 	0x17e6021c; 		// 没有爬塔奖励
-	CLIMBTOWER_REWARD_INDEX_ERR = 	0x17e6021d; 		// 爬塔奖励索引出错
-	CLIMBTOWER_REWARD_DROP_ERR 	= 	0x17e6021e; 		// 爬塔奖励掉落报解析出错
-    CLIMBTOWER_IS_TOP           =   0x17e6021f;         // 已经爬到塔顶无需挑战
-    CLIMBTOWER_REVIVE_NULL      =   0x17e60220;         // 爬塔强力复活次数用完
-    CLIMBTOWER_VIP_NOT_REW      =   0x17e60221;         // vip不足无法领取双倍奖励
-    CLIMBTOWER_CASH_NOT_REW     =   0x17e60222;         // 魂钻不足无法领取双倍奖励
-    ACTION_ISNOT_EXIST          =   0x17e60223;         // 活动不存在
-    ACTION_ISCLOSE              =   0x17e60224;         // 活动已经关闭
-    ACTION_COND_ISNOT_EXIST     =   0x17e60225;         // 活动条件已不存在
-    ACTION_COND_ISDONE          =   0x17e60226;         // 活动条件已提交
-    ACTION_NOT_COMPLEATE        =   0x17e60227;         // 活动未完成
-    ACTION_NOT_REWARD_GET       =   0x17e60228;         // 该活动无需领奖
-    ACTION_REWARDTIME_NOTARRI   =   0x17e60229;         // 排行榜奖励未到领奖时间
-    ACTION_RANKREWARD_GET       =   0x17e6022a;         // 排行奖励已经领取
-    ACTION_NOTIN_RANK           =   0x17e6022b;         // 未能上榜
-    ACTION_SETGETREWARD_ERR     =   0x17e6022c;         // 设置排行奖励已领出错
-    ACTION_NO_SPECIAL           =   0x17e6022d;         // 没有特殊活动
-    ACTION_EXCHANGE_NOT_OK      =   0x17e6022e;         // 兑换条件不满足
-    ACTIVE_DRESS_ITEM_NOT       =   0x17e6022f;         // 激活时装道具不够
-    DRESS_HAS_ONE               =   0x17e60230;         // 激活的时装已经拥有
-
-	/// 场景返回码定义 - 海滨
-    LEADEROFFLINE				=	0x17e60301;			// 队长不在线 - 出Bug了
-    MEMBEROFFLINE				=	0x17e60302;			// 队员不在线
-    COPYINVALID					=	0x17e60303;			// 副本不存在 - 配置不存在
-    CREATECOPYFAIL				=	0x17e60304;			// 创建副本失败 - battleType不匹配
-    INICOPYFAIL					=	0x17e60305;			// 实例化出副本失败 -mapid不存在
-    PLAYINFIGHT					=	0x17e60306;			// 玩家正在战斗中 - 各种PK时的对手
-    PLAYSTRNOTENOUGH			=	0x17e60307;			// 玩家体力不足 - 会出现
-    CITYINVALID					=	0x17e60308;			// 城镇配置不存在 - bug了
-    CITY_NOT_OPEN				=	0x17e60309;			// 城镇暂未开放 - bug了
-    INVALID						=	0x17e6030a;			// 非法场景无法进入 - bug了
-    BEINSCENE					=	0x17e6030b;			// 已经在该场景中 - bug了
-    INCOPY						=	0x17e6030c;			// 玩家已经在副本中- bug了，重登陆
-    READYCOPYINVALID			=	0x17e6030d;			// 进入副本不存在 - bug了，关卡id不存在
-	NOTINCOPY					= 	0x17e6030e;         // 玩家不再副本中 - bug了
-    NOTHASBLADE                 =   0x17e6030f;         // 没有带一把斩魄刀进战斗 - bug了
-    COPYNOTACTIVE               =   0x17e60310;         // 关卡未激活 - bug了，任务未关联
-    TELEIDFAILED                =   0x17e60311;         // 章节id错误 - bug了
-    REVIVEFAILED                =   0x17e60312;         // 玩家复活失败- bug了
-    REVIVECOINNOTENOUGH         =   0x17e60313;         // 复活币不足 - 前端过滤
-    REVIVETIMESNOTENOUGH        =   0x17e60314;         // 复活次数不足- 前端过滤
-    REVIVECASHNOTENOUGH         =   0x17e60315;         // 复活魂钻不足- 前端过滤
-    REFRESHSHOPCASHFAIL         =   0x17e60316;         // 刷新商城魂钻不足- 前端过滤
-    REFRESHSHOPFAIL             =   0x17e60317;         // 刷新商城道具失败- bug了，配置问题
-    SHOPSNOTEXIST               =   0x17e60318;         // 非法商品- bug了，配置问题
-    SHOPSNOTENOUGH              =   0x17e60319;         // 商品数量不足- bug了，前端限制
-    BUYITEMRESNOTENOUGH         =   0x17e6031a;         // 购买资源不足- 所有的商店统一用（策划出需求，前端做表现）
-    COPYIDINVALID               =   0x17e6031b;         // 关卡id配置不存在 - bug了，配置问题
-	COPYNOTALLOWRUSH 			= 	0x17e6031c; 		// 关卡不允许扫荡  bug了，前端过滤
-	RUSHSTARNOTENOUGH 			= 	0x17e6031d; 		// 关卡星级不够无法扫荡 bug了，前端过滤
-	SWEEPITEMNOTENOUGH 			= 	0x17e6031e; 		// 扫荡劵不够
-	SWEEPCASHNOTENOUGH 			= 	0x17e6031f; 		// 扫荡魂钻不足
-	SWEEPNUMSNOTENOUGH 			= 	0x17e60320; 		// 扫荡次数不足
-	SWEEPPAYTYPEERROR 			= 	0x17e60321; 		// 扫荡付费类型不对 - bug了，前端错误
-    COPYNUMNOTENOUGH            =   0x17e60322;         // 关卡次数已用完 - bug了，前端过滤
-	BUYCOPYNUMTYPEERROR 		= 	0x17e60323; 		// 该关卡类型无需挑战次数 - bug了，前端过滤
-	COPYNUMNOTUSEOUT 			= 	0x17e60324; 		// 关卡剩余挑战次数未用完 - bug了，前端过滤
-	VIPCONFFAIL 				= 	0x17e60325; 		// vip配置出错 - bug了
-	COPYNUMUSEOUT 				= 	0x17e60326; 		// 今日购买次数已经用完 - bug了，前端过滤
-	BUYCOPYNUMCASHNOTENOUGH 	= 	0x17e60327; 		// 购买关卡挑战次数魂钻不够 - bug了，前端过滤
-    CHAPTERREWARD_STARERROR     =   0x17e60328;         // 领取章节奖励星级不足 - bug了，前端过滤
-    SWEEP_NOTUSECASH_VIP        =   0x17e60329;         // vip等级不够不能使用魂钻扫荡 - bug了，前端过滤
-    SWEEP_NUMS_ERROR            =   0x17e6032a;         // 非法的扫荡次数 - bug了
-    SWEEP_NOTTEN_VIP            =   0x17e6032b;         // 扫荡10次vip等级不足 -bug了
-    CHAPTER_REWARD_GET_DONE     =   0x17e6032c;         // 章节奖励已经领取 - bug了
-    CHAPTER_REWARD_TYPE_ERROR   =   0x17e6032d;         // 章节类型出错 - bug了
-    CHAPTER_REWARD_VIP_FAIL     =   0x17e6032e;         // 领取章节奖励vip等级不够 - bug了，前端过滤
-    DB_OPERATOR_ERROR           =   0x17e6032f;         // db操作失误 -bug了，后端错误
-    HAVE_NO_THIS_GIFT           =   0x17e60330;         // 没有该礼品码 -正常，需描述
-    DB_UPDATE_ERROR             =   0x17e60331;         // db更新失败 -bug了，后端错误
-    GIFT_SOME_CONFIG_USED       =   0x17e60332;         // 同批次礼品码已使用 -正常，需描述
-    DB_INSERT_ERROR             =   0x17e60333;         // db插入出错 -bug了，后端错误
-    GIFT_GROUP_ERROR            =   0x17e60334;         // 礼品码组别信息错误 -礼品码发生错误（配置错）
-    GIFT_SOME_GROUP_USED        =   0x17e60335;         // 同组的礼品码已被使用 -正常，需描述
-    GIFT_LIMITNUM_ERROR         =   0x17e60336;         // 礼品码使用次数配置出错 -礼品码发生错误（配置错）
-    GIFT_NOTIMES_TO_USE         =   0x17e60337;         // 礼品码次数使用完毕 -正常，需描述
-    GIFT_TYPE_ERROR             =   0x17e60338;         // 码类型不存在 -礼品码发生错误（配置错）
-    GIFT_LEN_ERROR              =   0x17e60339;         // 非法礼品码 -礼品码发生错误（配置错）
-    GIFT_REWARD_PARSEERROR      =   0x17e6033a;         // 礼包奖励解析失败 -礼品码发生错误（配置错）
-    GIFT_STARTTIME_ERROR        =   0x17e6033b;         // 开启礼包码时间未到 -正常，需描述
-    GIFT_ENDTIME_EXPIRE         =   0x17e6033c;         // 使用礼包吗已结束 -正常，需描述
-    GIFT_HAVE_USED              =   0x17e6033d;         // 码已被使用 -正常，需描述
-    BATTLESQUARE_NOT_OPEN       =   0x17e6033e;         // 演武场功能未开启
-    BATTLESQUARE_HAVE_BET       =   0x17e6033f;         // 演武场已经押注无需押注
-    BATTLESQUARE_WIN_NOTENOUGH  =   0x17e60340;         // 演武场连胜奖励次数不够
-    BATTLESQUARE_WINRWD_GET     =   0x17e60341;         // 连胜奖励已经领取
-    BATTLESQUARE_DROP_ERROR     =   0x17e60342;         // 演武场掉落包解析错误
-    BATTLESQUARE_BETCONF_ERR    =   0x17e60343;         // 押注价格配置出错
-    BATTLESQUARE_VIP_NOTBET     =   0x17e60344;         // vip等级不足不能押注
-    STRONGREWARD_HAVE_GOT       =   0x17e60345;         // 变强奖励已经领取
-    STRONGREWARD_INDEX_ERR      =   0x17e60346;         // 变强奖励索引出错
-    STRONGREWARD_BP_NOTENOU     =   0x17e60347;         // 变强战力不够
-    STRONGREWARD_DROP_ERR       =   0x17e60348;         // 变强奖励掉落包解析出错
-    BSCOIN_NOT_ENOUGHT          =   0x17e60349;         // 演武币不足
-
-    UNION_SUBLEADER_FULL        =   0x17e6034a;         // 公会副会长已满
-    UNION_ISNULL                =   0x17e6034b;         // 公会不存在
-    UNION_POWER_NULL            =   0x17e6034c;         // 权限不足
-    UNION_NOTIN_UNION           =   0x17e6034d;         // 不在公会中
-    UNION_NOT_APPLY             =   0x17e6034e;         // 没有任何申请信息
-    UNION_KICKPLAY_NOTINUNION   =   0x17e6034f;         // 被踢玩家不在公会中
-    UNION_NOT_LEADER            =   0x17e60350;         // 不是会长
-    UNION_PLAYER_NOT_INUNION    =   0x17e60351;         // 玩家不在公会中
-    UNION_TITLE_ILLEGAL         =   0x17e60352;         // 无效称号
-    UNION_ASSIGN_SAME_TITLE     =   0x17e60353;         // 玩家已经是该职位
-    UNION_CREATE_CASH_NOT_ENOU  =   0x17e60354;         // 创建公会元宝不足
-    UNION_NOT_KICKSELF          =   0x17e60355;         // 公会中自己不能踢自己
-    UNION_NOT_ASSIGNSELF        =   0x17e60356;         // 自己不能任命自己
-    UNION_CONTENT_TOOLONG        =   0x17e60357;        // 输入字符太长
-    UNION_SETPOINT_VIP_NOT      =   0x17e60358;         // 贡献vip等级不足
-    UNION_SETPOINT_CASH_NOT     =   0x17e60359;         // 贡献钻石不足
-    UNION_SKILLPOINT_NOT        =   0x17e6035a;         // 公会技能点不足
-    UNION_SKILL_NOT_FIND        =   0x17e6035b;         // 公会技能未激活
-    UNION_SKILLLV_FULL          =   0x17e6035c;         // 公会技能等级已满
-    UNION_IN_CD                 =   0x17e6035d;         // 处于退出公会cd中
-    UNION_CREATE_LV_NO          =   0x17e6035e;         // 创建公会等级不足
-    UNION_WASHSKILL_CASH_NO     =   0x17e6035f;         // 洗点钻石不足
-    UNION_PLAYER_FULL           =   0x17e60360;         // 公会人员已满
-    UNION_HAVE_IN_UNION         =   0x17e60361;         // 玩家已经在公会中
-    UNION_NAME_TOOLONG          =   0x17e60362;         // 公会名字太长
-    UNION_OPEN_NOTOPEN          =   0x17e60363;         // 公会功能未开启
-	UNIONPOINT_NOT_ENOUGH		=	0x17e60364;			// 公会贡献值不够
-    UNION_NAME_REPEATED         =   0x17e60365;         // 公会重名
-    UNION_LV_NOT_SATISFY		=   0x17e60366;         // 公会等级不满足
-    UNION_BOSS_RUNNING          =   0x17e60367;         // 公会boss已开启,不允许重复开启
-    UNION_LV_FULL               =   0x17e60368;         // 公会等级已满
-    UNION_DONATE_TIMES_FULL     =   0x17e60369;         // 每日捐献次数已用完
-
-    TOURNEY_NOT_PLAYER          =   0x17e6036a;         // 武斗台玩家不存在
-    TOURNEY_NOT_OPEN            =   0x17e6036b;         // 武斗台暂未开启
-    TOURNEY_DAILY_GET           =   0x17e6036c;         // 武斗台日常奖励已经领取
-    TOURNEY_DAILYCOUNT_ERR      =   0x17e6036d;         // 武斗台日常奖励次数出错
-    TOURNEY_DAILYCOUNT_NOT      =   0x17e6036e;         // 武斗台日常将此次数不够
-    TOURNEY_NOTOPEN_LEVEL       =   0x17e6036f;         // 武斗台开启等级不足
-    TOURNEY_NOTOPEN_TIME        =   0x17e60370;         // 武斗台开启时间未到
-    TOURNEY_DAILYDROP_ERR       =   0x17e60371;         // 武斗台每日奖励掉落包解析出错
-    CROSS_SVR_NOT_FOUND         =   0x17e60372;         // pvp服务器暂不可用
-
-    UNION_APPLY_HAS_SEND        =   0x17e60373;         // 公会申请已经发送
-    UNION_APPLY_FULL            =   0x17e60374;         // 公会申请已满
-    UNION_EXPITEM_NOT           =   0x17e60375;         // 公会经验道具不足
-    SHARE_COPY_REWDGET          =   0x17e60376;         // 分享关卡奖励已经领取
-    SHARE_COPY_DROPERR          =   0x17e60377;         // 分享掉落包出错
-
-	/// 刀灵返回码定义 - 老涂
-	MAX_STRENGTH_LV				=	0x17e60401;			// 达到最大强化等级
-	ITEM_NOT_ENOUGH				=	0x17e60402;			// 道具"{0}"不足 -？
-	MAX_BREAK_LV				=	0x17e60403;			// 达到最大突破等级 -？
-	SKILL_POINT_NOT_ENOUGH		=	0x17e60404;			// 灵子不足
-	MAX_SKILL_LV				=	0x17e60405;			// 达到最大技能等级
-	ILLEGAL_SKILL_ID			=	0x17e60406;			// 非法的技能id,刀灵不包含该技能
-	FRONT_NODE_1ST				=	0x17e60407;			// 请先解放前一个节点
-	BUY_LIBERATION_LIMIT		=	0x17e60408;			// 不允许购买,受vip等级限制
-	BANKAI_NOT_OPEN             =	0x17e60409;			// 卍解未开放
-	BANKAI_LIBERATION_FIRST     =	0x17e6040a;			// 刀节点未全部解放,不允许卍解
-	BANKAI_MAX_LV               =	0x17e6040b;			// 刀灵卍解已到最高等级
-	BANKAI_LV_NOT_ENOUGH        =	0x17e6040c;			// 刀节未卍解,不允许进行相关操作
-	BLADE_ALREADY_BANKAI        =	0x17e6040d;			// 刀节已经卍解,不允许重复卍解
-
-
+    /// 游戏逻辑通用返回码
+    CONF_ERROR					=	0x17e60002;			// 游戏配置错误
+	NAME_EXISTED				=	0x17e60003;			// 角色名已存在
+	MAX_ITEM_NUM				=	0x17e60004;			// 包裹已满
+	USER_LV_LIMIT				=	0x17e60005;			// 不允许超过角色当前等级
+    LV_NOT_ENOUGH				=	0x17e60006;			// 玩家等级不足
+	VIPLV_NOT_ENOUGH            =	0x17e60016;			// vip等级不满足
+	CASH_NOT_ENOUGH				=	0x17e60010;			// 魂钻不足
+	GOLD_NOT_ENOUGH				=	0x17e60011;			// 金币不足
+    ITEM_NOT_ENOUGH				=	0x17e60036;			// 道具不足
+	NAME_LEN_INVALID			=	0x17e60012;			// 名字长度不合法
+	CONTENT_HAVE_DIRTY			=   0x17e60013;			// 输入内容非法
+	ITEM_NOT_FOUND              =	0x17e60015;			// 没有找到对应物品
+	MAX_TIMES_LIMIT			    =	0x17e60025;			// 次数达到上限
+	DAILY_TIMES_LIMIT			=	0x17e6001c;			// 达到每日次数上限
+	IN_FORBID_TIME				=	0x17e6001d;			// 玩家处于禁言状态
+	FULL_OF_USER				=	0x17e6001e;			// 注册角色数已满
+	REWARD_HAVE_GOT				=	0x17e6001f;			// 奖励已经领取
+	ON_CREATING_USER			=	0x17e60022;			// 正在创角中,请稍候
+	MAX_USER_NUM_LIMIT			=	0x17e60023;			// 已达创角最大数量
+	CREATE_SAME_USER_FORBID		=	0x17e60024;			// 不允许重复创建相同类型的角色
+	MODULE_NOT_OPEN				=	0x17e60026;			// 游戏模块未开放
+	FREETIMES_NOT_ENOUGH		=	0x17e6002b;			// 免费次数不足
+	PAYTIMES_NOT_ENOUGH		    =	0x17e6002c;			// 付费次数不足
+	MODULE_NOT_INIT             =	0x17e6002d;			// 游戏模块未初始化
+	HERO_NOT_FOUND              =	0x17e6002e;			// 没有找到对应的英雄
 
 	/// 道具返回码定义 - 老涂
 	ITEM_SELL_FORBID			=	0x17e60501;			// 道具禁止出售
-	ITEM_OUT_OF_DATE			=	0x17e60502;			// 道具过期
 	ITEM_SELL_NUM_ERR			=	0x17e60503;			// 出售道具数量错误
 
-	/// 组队返回码定义
-	ALREADY_IN_TEAM				=	0x17e60601;			// 已经在队伍中
-	MAX_MEMBER_NUM				=	0x17e60602;			// 队伍人数已满
-	MEMBER_NOT_FOUND			=	0x17e60603;			// 队伍中不存在指定玩家
+	/// 伙伴系统返回码定义
+	MAX_STAGE_LIMIT             =	0x17e60601;			// 已达最高阶数
+	HERO_STAGE_FIRST            =	0x17e60602;			// 请先升级阶数
+	MAX_QUALITY_LIMIT           =	0x17e60603;			// 已达最高品质
+	MAX_STAR_LIMIT              =	0x17e60604;			// 已达最高星级
 
     /// 任务返回码定义 - 海滨
     QUEST_INVALID               =   0x17e60701;         // 非法任务
@@ -273,76 +91,6 @@ enum EErrorCode
 	MAIL_NOT_FOUND				=	0x17e60802;			// 邮件没有找到 -bug
 	MAIL_HAVE_EXPIRED		    =	0x17e60803;			// 邮件已经过期 -正常，描述
 
-    // 灵魂返回码定义 - 侯斌
-	SOUL_NUM_LIMIT				=   0x17e60901;         // 灵魂背包容量已达最大值
-	TYPE_INDEX_NOT_FIX			=   0x17e60902;         // 灵魂类型与位置不符
-	SAME_INDEX_FORBID			=   0x17e60903;         // 灵魂装备位置重复
-	SOUL_INDEX_ILLEGAL			=   0x17e60904;         // 灵魂装备位置未开放
-	SAME_EQUIP_SOUL_FORBID		=   0x17e60905;         // 禁止装备同类型的灵魂 - bug,前端过滤
-	MERGE_NUM_LIMIT				=   0x17e60906;         // 灵魂融合数量超上限
-	FOUND_SAME_SOUL				=   0x17e60907;         // 发现相同的灵魂 -?
-	SOUL_NOT_FOUND				=   0x17e60908;         // 找不到指定的灵魂 -- bug,前后端数据不统一
-	SOUL_LV_MAX					=   0x17e60909;			// 灵魂达到最高等级 - bug,前端过滤
-	SOUL_GRADE_MAX				=	0x17e6090a;			// 灵魂升阶达到最高等级 - bug,前端过滤
-	//灵魂热斗 - 侯斌
-	SOULFIGHT_REWARD_NOT_GET    =   0x17e60920;			// 灵魂热斗奖励没有领取
-	SOULFIGHT_CARD_HVAE_GOT		=	0x17e60921;			// 灵魂热斗卡牌已经领取过
-	SOULFIGHT_INVALID_STAGE		=	0x17e60922;			// 灵魂热斗错误关卡
-	SOULFIGHT_NO_BLADE			=	0x17e60923;			// 灵魂热斗没有刀不能进入战斗
-    SOULFIGHT_PLAYER_NULL       =   0x17e60924;         // 灵魂热斗中没有玩家 - bug
-    SOULFIGHT_STAGE_ERROR       =   0x17e60925;         // 灵魂热斗stage错误
-    SOULFIGHT_COPYID_ERROR      =   0x17e60926;         // 灵魂热斗进入关卡ID错误
-    SOULFIGHT_SP_NOT_ZERO		=   0x17e60927;         // 所携带刀灵压不能为0
-
-
-    /// 战斗返回错误码 - 海滨
-    BATTLE_IS_OVER              =   0x17e61001;         // 战斗已经结束
-    BATTLE_HAS_CALCULATE        =   0x17e61002;         // 战斗奖励已经结算
-    BATTLE_OBJECT_NOTIN         =   0x17e61003;         // 玩家已经不再战斗中
-    BATTLE_CHANGESWORD_FAILED   =   0x17e61004;         // 换刀失败
-    BATTLE_CROSSSCENE_FAILED    =   0x17e61005;         // 战斗中切换场景失败
-    BATTLE_NOTHAVEBUFF          =   0x17e61006;         // 释放者没有这个buff
-    BATTLE_CDNOTCLEAR           =   0x17e61007;         // buffcd时间未结束
-    BATTLE_NOTTHISSPELL         =   0x17e61008;         // 战斗中没有此技能
-	BATTLE_INSKILLCD			= 	0x17e61009; 		// 技能处于冷却中
-	BATTLE_EXPLODESWORD_NOTSKILL =  0x17e6100a; 		// 爆刀下不能释放技能
-	BATTLE_CPNOTENOUGH 			= 	0x17e6100b;			// cp不足不能释放技能
-	BATTLE_SKILLNOTFIND 		= 	0x17e6100c;			// 非法技能
-    BATTLE_HASNOTBULLETINSPELL  =   0x17e6100d;         // 技能中没有该飞行道具
-    BATTLE_NOTTHISBULLET        =   0x17e6100e;         // 没有此飞行道具
-    BATTLE_PVE_CANFIGHTAGAIN    =   0x17e6100f;         // 只有pve战斗才能再次战斗
-    BATTLE_NOTEND_FIGHTAGAIN    =   0x17e61010;         // 战斗未结束无法再战斗
-    BATTLE_SOULBAG_ISFULL       =   0x17e61011;         // 灵魂背包已满
-    BATTLE_SPELL_NOSUMMON       =   0x17e61012;         // 技能没有召唤物
-    BATTLE_CALLSUMMON_TYPE_ERR  =   0x17e61013;         // 召唤召唤物类型出错
-    BATTLE_RELEASEBULLET_TYPE_ERROR = 0x17e61014;       // 召唤飞行道具类型出错
-    BATTLE_BUFF_NOTEXIST        =   0x17e61015;         // buff不存在
-    BATTLE_REVIVE_CD_NOT        =   0x17e61016;         // 世界boss复活cd未到
-    BATTLE_NOT_CALCULATE        =   0x17e61017;         // 战斗奖励未结算
-    BATTLE_SEQUENCE_ERROR       =   0x17e61018;         // 验证序列号错误
-    BATTLE_BANKAIENERGY_NOT     =   0x17e61019;         // 卍解能量不足
-
-	/// 竞技场错误码 - 老涂
-	ARENA_IS_NOT_OPEN			=	0x17e61101;			// 竞技场未开放
-	ARENA_USER_ILLEGAL			=	0x17e61102;			// 挑战的玩家非法
-	ARENA_OUT_OF_FREE_TIMES		=	0x17e61103;			// 当天挑战次数已用完
-	ARENA_IN_CD					=	0x17e61104;			// 当前处于挑战冷却时间内
-	ARENA_BUY_TIMES_LIMIT		=	0x17e61105;			// 已达最大购买次数限制
-	ARENA_HAVE_FREE_TIMES		=	0x17e61106;			// 仍有免费次数,不允许购买
-	ARENA_HAVE_BUY_TIMES		=	0x17e61107;			// 仍有购买次数未使用,不允许购买
-	ARENA_CHALLENGE_FORBID		=	0x17e61108;			// 被挑战者状态不允许被挑战
-	ARENA_MATCHED_USER_1ST		=	0x17e61109;			// 必须先处理乱入事件
-	ARENA_MATCHED_TIMEOUT		=	0x17e6110a;			// 匹配的对手挑战超时(只能放弃) - 乱入十分钟，前端过滤，照理不该出现
-
-
-	/// 死神试练 - 侯斌
-	TRAINING_CD_NOT_END			=	0x17e61201;			// cd时间还没有结束
-	TRAINING_TIMES_LIMIT		=	0x17e61202;			// 已达到每日次数限制
-	TRAINING_TIME_INVALID		=	0x17e61203;			// 时间非法,不能参加活动
-	TRAINING_REQ_INVALID		=	0x17e61204;			// 请求非法,服务器没有数据 - 前后端数据不统一
-	TRAINING_LV_NOT_STATISFY    =	0x17e61205;			// 等级不满足
-	TRAINING_COPY_INVALID		=	0x17e61206;			// 进入错误的副本 - 前后端数据不统一
-
 	/// 扭蛋系统 - 侯斌
 	GACHA_REQ_INVALID			=	0x17e61301;			// 非法的gacha请求
 	GACHA_GOLD_NOT_ENOUGH       =	0x17e61302;			// 金币不足
@@ -352,38 +100,6 @@ enum EErrorCode
 	//浦原商店 - 侯斌
 	SHOP_REQ_INVALID			=   0x17e61401;			// 浦原商店请求非法 - 刷新失败
 	GOODS_HAVE_BUY				=   0x17e61402;			// 已经购买过该商品 - 前后端数据不统一
-
-	//世界boss - 老涂
-	BOSS_IS_NOT_OPEN			=	0x17e61501;			// boss系统未开放
-	BOSS_OUT_OF_TIMES			=	0x17e61502;			// 次数用完
-	BOSS_KENSEI_RUNING			=	0x17e61503;			// 同一时刻只能开启一个拳西
-	BOSS_IN_CD					=	0x17e61504;			// 猪男CD中
-	BOSS_CURRENT_NOT_OPEN		=	0x17e61505;			// boss未开启
-	BOSS_USER_NUM_LIMIT			=	0x17e61506;			// 当前boss参与人数满员
-	BOSS_YAMMY_OVER				=	0x17e61507;			// 当前牙密boss已打完
-	KEISEI_JOIN_TIMES_LIMIT		=	0x17e61508;			// 拳西boss当日助战次数用完
-
-	SLOT_ALREADY_OPEN           =	0x17e61601;			// 刀槽已开启
-	SLOT_NOT_OPEN               =	0x17e61602;			// 刀槽未开启
-	SCABBARD_INDEX_ERROR        = 	0x17e61603; 		// 索引错误
-	SCABBARD_SLOT_IN_CD         = 	0x17e61604; 		// 刀槽cd中,不允许装备
-	SLOT_HAVE_BLADE             = 	0x17e61605; 		// 刀槽中已经有刀
-	SLOT_QUALITY_NOT_FIX        = 	0x17e61606; 		// 装配的刀品质不匹配
-	SCABBARD_BLADE_IN_SLOT      = 	0x17e61607; 		// 刀灵已在其他槽中,不允许重复装备
-	SCABBARD_BLADE_IN_FIGHT     = 	0x17e61608; 		// 刀灵已被带入战斗,不允许装备到刀匣
-
-    //追回系统 - 刘勇
-    RETRIEVE_HAVE_GOT           =   0x17e61701;         // 物品已追回，不可再次追回
-    RETRIEVE_TYPE_ERROR         =   0x17e61702;         // 追回类型错误 0: exp 1: gold 2: skillPoint
-
-    GUARD_HAS_OWNER             =   0x17e61801;         // 该矿已经被占领
-    GUARD_NOT_FOUND             =   0x17e61802;         // 矿点找不到
-    GUARD_IS_EMPTY              =   0x17e61803;         // 该矿是空矿
-    GUARD_IS_YOURSELFS          =   0x17e61804;         // 矿点是你自己的,不允许攻打
-    GUARD_IN_FIGHTING           =   0x17e61805;         // 矿点正在被攻打,不允许重复攻打
-    GUARD_PROTECT_TIME          =   0x17e61806;         // 矿点在保护时间内,不允许被攻打
-    GUARD_TARGET_MISSED         =   0x17e61807;         // 复仇对象消失了
- 
 }
 
 

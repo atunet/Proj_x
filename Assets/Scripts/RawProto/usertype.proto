@@ -39,33 +39,19 @@ message UserInfo
     required uint64	gold			=	6;		//*< 金币币
     required uint32	cash			=	7;		//*< 人民币
     required uint64	exp	            =	8;		//*< 经验
-    required uint32	skillpoint		=	9;		//*< 灵子
-    required uint32 revivecoin      =   10;     //*< 复活币
     required uint32	strength        =	11;     //*< 体力
     required uint32	vipexp          =	12;     //*< vip经验
     required uint32	totalpay		=	13;     //*< 充值总额
     required uint32	totalconsume    =	14;     //*< 总消费额
     required uint64	moduleflag      =	15;		//*< 功能模块开放标志位
-    required uint32	soulmaxnum		=	16;		//*< 灵魂最大数量
     required uint32 strengthtime    =   17;     //*< 上次体力恢复时间
-	optional uint32 goldMachineCount =  18;		//*< 炼金次数
 	optional uint32 buyEnergyCount  =   19;     //*< 购买体力次数
-	optional uint32 opertime		=	20;		//*< 操作次数
     optional uint32 guide           =   21;     //*< 新手引导步骤 
-    optional Avatar useravatar      =   22;     //*< 角色形象
     required uint32	vipLevel        =	23;     //*< vip等级
     required uint32	copyStars       =	24;     //*< 副本星数
-    required uint32	lockStage       =	25;     //*< 锁结当前所处阶段
     required uint32	banChat			=	26;     //*< 禁言时间
-	optional uint32 lastGoldMachine =	27;	    //*< 上次炼金数量
 	required uint32 firstRecharge   =   28;     //*< 首次充值标识
 	required uint32 vipFlag		    =   29;     //*< vip奖励标志
-	required uint32 freeRewardFlag	=	30;		//*< 免费奖励标志
-	required uint32 soulDust		=   31;		//*< 灵魂之尘
-	required uint32 soulDustCount	=   32;		//*< 日购买灵魂之尘数量
-	required uint32 lastSoulDust	=   34;		//*< 上次获得的灵魂之尘 不算暴击
-    required uint32 strongtag       =   35;     //*< 变强的奖励index
-    required uint32 title			=   36;     //*< 称号id 0表示无
     required uint64	keyid           =	37;		//*< keyid
 }
 
