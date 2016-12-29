@@ -6,11 +6,6 @@ using System.Net.Sockets;
 
 public class UDPClient
 {
-    private static Byte HEAD_LEN = 4;
-    private static Byte MSG_ID_LEN = 2;
-    private static Byte SEQUENCE_LEN = 4;
-    private static int RCV_BUF_LEN = 256 * 1024;
-
     private String m_serverIP = null;
     private int m_serverPort = 0;
     private IPEndPoint m_serverAddr = null;
@@ -30,19 +25,19 @@ public class UDPClient
         m_serverAddr = new IPEndPoint(IPAddress.Parse(m_serverIP), m_serverPort);
         m_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp); 
 
-        m_rcvBuf = new byte[RCV_BUF_LEN];
+        m_rcvBuf = new byte[TCPClient.RCV_BUF_LEN];
 
     }
 
     public Boolean SendMsg (UInt16 msgId_, byte[] msg_)
     {  
-        UInt32 packetLen = (UInt32)(MSG_ID_LEN + SEQUENCE_LEN + msg_.Length);
-        byte[] sendBytes = new byte[HEAD_LEN + packetLen];
+        UInt32 packetLen = (UInt32)(TCPClient.MSG_ID_LEN + TCPClient.SEQUENCE_LEN + msg_.Length);
+        byte[] sendBytes = new byte[TCPClient.HEAD_LEN + packetLen];
 
         BitConverter.GetBytes(packetLen).CopyTo(sendBytes, 0);
-        BitConverter.GetBytes(msgId_).CopyTo(sendBytes, HEAD_LEN);
-        BitConverter.GetBytes(++m_seqNO).CopyTo(sendBytes, HEAD_LEN + MSG_ID_LEN);
-        msg_.CopyTo(sendBytes, HEAD_LEN + MSG_ID_LEN + SEQUENCE_LEN);       
+        BitConverter.GetBytes(msgId_).CopyTo(sendBytes, TCPClient.HEAD_LEN);
+        BitConverter.GetBytes(++m_seqNO).CopyTo(sendBytes, TCPClient.HEAD_LEN + TCPClient.MSG_ID_LEN);
+        msg_.CopyTo(sendBytes, TCPClient.HEAD_LEN + TCPClient.MSG_ID_LEN + TCPClient.SEQUENCE_LEN);       
 
         int offset = 0;
         while (offset < sendBytes.Length)
@@ -64,7 +59,7 @@ public class UDPClient
         }
         else if(m_socket.Poll(10*1000, SelectMode.SelectRead))
         {
-            code = m_socket.Receive(m_rcvBuf, m_bufWriteOffset, RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None);
+            code = m_socket.Receive(m_rcvBuf, m_bufWriteOffset, TCPClient.RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None);
             if (code > 0)
             {
 
@@ -74,6 +69,32 @@ public class UDPClient
         return code;
 
     }
+
+    public int bufToMsg(ref byte[] msgBuf_)
+    {
+        if (m_bufWriteOffset - m_bufReadOffset < (TCPClient.HEAD_LEN + TCPClient.MSG_ID_LEN))
+            return 0;
+
+        int msgLen = BitConverter.ToInt32(m_rcvBuf, m_bufReadOffset);                          
+        if (m_bufWriteOffset - m_bufReadOffset < msgLen + TCPClient.HEAD_LEN)
+            return 0;
+
+        Array.Copy(m_rcvBuf, m_bufReadOffset + TCPClient.HEAD_LEN, msgBuf_, 0, msgLen);
+        m_bufReadOffset += (msgLen + TCPClient.HEAD_LEN);
+
+        if (m_bufReadOffset > TCPClient.RCV_BUF_LEN/2)
+        {
+            if (m_bufWriteOffset > m_bufReadOffset)
+            {
+                Array.Copy(m_rcvBuf, m_bufReadOffset, m_rcvBuf, 0, m_bufWriteOffset - m_bufReadOffset);
+                m_bufWriteOffset -= m_bufReadOffset;
+                m_bufReadOffset = 0;
+            }
+        }
+
+        return msgLen;
+    }
+
 
     public void Close()
     {

@@ -8,7 +8,7 @@ public class TCPClient
     internal static Byte HEAD_LEN = 4;
     internal static Byte MSG_ID_LEN = 2;
     internal static Byte SEQUENCE_LEN = 4;
-    private static int RCV_BUF_LEN = 256 * 1024;
+    internal static int RCV_BUF_LEN = 256 * 1024;
 
     private String m_serverIP = null;
     private int m_serverPort = 0;
@@ -37,7 +37,6 @@ public class TCPClient
 
         IPEndPoint serverAddr = new IPEndPoint(IPAddress.Parse(m_serverIP), m_serverPort);
         m_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);	
-        //m_socket.SendTimeout = 1000;               
 		try
 		{
 			m_socket.Connect (serverAddr);
@@ -56,10 +55,11 @@ public class TCPClient
 
 	public void Close ()
 	{
-		if (m_socket.Connected) 
+		if (null != m_socket && m_socket.Connected) 
 		{
 			m_socket.Shutdown (SocketShutdown.Both);
 			m_socket.Disconnect (true);
+            m_socket = null;
 		}
         Console.WriteLine("TCPClient closed!");
 	}
@@ -116,7 +116,7 @@ public class TCPClient
 	
     public int bufToMsg(ref byte[] msgBuf_)
     {
-        if (m_bufWriteOffset - m_bufReadOffset <= (TCPClient.HEAD_LEN + TCPClient.MSG_ID_LEN))
+        if (m_bufWriteOffset - m_bufReadOffset < (TCPClient.HEAD_LEN + TCPClient.MSG_ID_LEN))
             return 0;
         
         int msgLen = BitConverter.ToInt32(m_rcvBuf, m_bufReadOffset);                          

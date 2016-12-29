@@ -20,22 +20,19 @@ public class NetController : MonoBehaviour
                 GameObject obj = new GameObject("NetController");
                 s_instance = obj.AddComponent<NetController>(); 
                 GameObject.DontDestroyOnLoad(obj);
-            }
-            
+            }            
             return s_instance;
         }
     }
 
     private NetController()
     {
-    	m_serverType = 0;
-
-        m_loginIP = "";
-        m_loginPort = 0;
-        m_gateIP = "";
-        m_gatePort = 0;
-        m_crossIP = "";
-        m_crossPort = 0;
+        m_loginIP = "192.168.0.75";
+        m_loginPort = 4444;
+        m_gateIP = "192.168.0.75";
+        m_gatePort = 4021;
+        m_crossIP = "192.168.0.75";
+        m_crossPort = 8999;
     }
 
     private string m_loginIP;
@@ -43,28 +40,10 @@ public class NetController : MonoBehaviour
 
     private string m_gateIP;
     private int m_gatePort;
+    private DateTime m_lastSendGateTime = null;
 
     private string m_crossIP;
     private int m_crossPort;
-
-    private string m_serverIP;
-    public string ServerIP
-    {
-    	get { return m_serverIP; }
-    	set { m_serverIP = value; }
-    }
-    private ushort m_serverPort;
-    public ushort ServerPort
-    {
-    	get { return m_serverPort; }
-    	set { m_serverPort = value; }
-    }
-    private byte m_serverType;
-    public byte ServerType
-    {
-    	get { return m_serverType; }
-    	set { m_serverType = value; }
-    }
 
 	private NetThread m_thread = null;
     private ArrayList m_cmdList = new ArrayList();
@@ -87,7 +66,9 @@ public class NetController : MonoBehaviour
         
     public void LoginToLoginServer(string ip_, int port_)
     {
-        if (m_thread.InitLoginClient(ip_, port_))
+        m_loginIP = ip_;
+        m_loginPort = port_;
+        if (m_thread.InitLoginClient(m_loginIP, m_loginPort))
         {
             Cmd.VerifyVersion verify = new Cmd.VerifyVersion();
             verify.clientversion = 2017;
@@ -104,7 +85,9 @@ public class NetController : MonoBehaviour
 
     public void LoginToGateServer(string ip_, int port_)
     {
-        if (m_thread.InitGateClient(ip_, port_))
+        m_gateIP = ip_;
+        m_gatePort = port_;
+        if (m_thread.InitGateClient(m_gateIP, m_gatePort))
         {
             Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
             login.accountid = 9529;
@@ -116,7 +99,9 @@ public class NetController : MonoBehaviour
 
     public void LoginToCrossServer(string ip_, int port_)
     {
-        if (m_thread.InitCrossClient(ip_, port_))
+        m_crossIP = ip_;
+        m_crossPort = port_;
+        if (m_thread.InitCrossClient(m_crossIP, m_crossPort))
         {
             Cmd.LoginCrossReq login = new Cmd.LoginCrossReq();
             login.userid = 868686868686;
@@ -124,6 +109,33 @@ public class NetController : MonoBehaviour
             Serializer.Serialize<Cmd.LoginCrossReq>(m_pbStream, login);
             SendMsgToCross(login.id, m_pbStream.ToArray());
         }
+    }
+
+    public bool SendMsgToLogin(Cmd.EMessageID protoId_, byte[] buf_)
+    {
+        return m_thread.SendMsgToLogin((UInt16)protoId_, buf_);
+    }
+
+    public bool SendMsgToGate(Cmd.EMessageID protoId_, byte[] buf_)
+    {
+        return m_thread.SendMsgToGate((UInt16)protoId_, buf_);
+    }
+
+    public bool SendMsgToCross(Cmd.EMessageID protoId_, byte[] buf_)
+    {
+        return m_thread.SendMsgToCross((UInt16)protoId_, buf_);
+    }
+
+
+    public void AddCmd(byte[] cmd_, int len_)
+    {
+        Monitor.Enter(m_cmdList);  
+
+        byte[] msgBytes = new byte[len_];
+        Array.Copy(cmd_, msgBytes, len_);
+        m_cmdList.Add(msgBytes);       
+
+        Monitor.Exit(m_cmdList);
     }
 
     void LateUpdate()
@@ -139,7 +151,7 @@ public class NetController : MonoBehaviour
 				Array.Copy(recvCmd, TCPClient.MSG_ID_LEN, realCmd, 0, realCmd.Length);
 
                 if (0 == CSInterface.s_recvProtoId)
-                {   // TODO ... send to which server ???
+                {
                     Debug.Log("recv tickcmd,just send back");
                     SendMsgToGate((Cmd.EMessageID)CSInterface.s_recvProtoId, realCmd);
                 }
@@ -177,38 +189,13 @@ public class NetController : MonoBehaviour
         
         Monitor.Exit(m_cmdList);
     }   
-  
-    public void AddCmd(byte[] cmd_, int len_)
-    {
-        Monitor.Enter(m_cmdList);  
-
-        byte[] msgBytes = new byte[len_];
-        Array.Copy(cmd_, msgBytes, len_);
-        m_cmdList.Add(msgBytes);       
-        
-		Monitor.Exit(m_cmdList);
-    }
-
-    public bool SendMsgToLogin(Cmd.EMessageID protoId_, byte[] buf_)
-    {
-        return m_thread.SendMsgToLogin((UInt16)protoId_, buf_);
-    }
-
-    public bool SendMsgToGate(Cmd.EMessageID protoId_, byte[] buf_)
-    {
-        return m_thread.SendMsgToGate((UInt16)protoId_, buf_);
-    }
-
-    public bool SendMsgToCross(Cmd.EMessageID protoId_, byte[] buf_)
-    {
-        return m_thread.SendMsgToCross((UInt16)protoId_, buf_);
-    }
+      
 
     public void Reset()
     {
         if(null != m_thread)
         {
-            m_thread.Final();
+            m_thread.Terminate();
             m_thread = null;
         }
     }

@@ -16,6 +16,7 @@ internal class NetThread
     private byte[] m_gateRcvBuf = null;
     private byte[] m_crossRcvBuf = null;
 
+    private bool m_terminate = true;
 
     public NetThread()
     {
@@ -25,15 +26,44 @@ internal class NetThread
         m_gateRcvBuf = new byte[64*1024];
         m_crossRcvBuf = new byte[64*1024];
     }
-    public void Start() { m_thread.Start(); }
 
+    public void Start() 
+    { 
+        m_thread.Start(); 
+        m_terminate = false; 
+    }
+
+    public void Terminate()
+    { 
+        if (!m_terminate)
+        {
+            m_terminate = true; 
+            if (null != m_loginClient)
+            {
+                m_loginClient.Close();
+                m_loginClient = null;
+            }
+            if (null != m_gateClient)
+            {
+                m_gateClient.Close();
+                m_gateClient = null;
+            }
+            if (null != m_crossClient)
+            {
+                m_crossClient.Close();
+                m_crossClient = null;
+            }
+            m_thread.Join();
+            m_thread = null;
+        }
+    }
 
     public bool InitLoginClient(string ip_, int port_)
     {
         if (null != m_loginClient)
         {
             Console.WriteLine("tcp login client is not null, init ignored!!!");
-            return true;
+            return false;
         }
 
         m_loginClient = new TCPClient(ip_, port_);
@@ -54,7 +84,7 @@ internal class NetThread
         if (null != m_gateClient)
         {
             Console.WriteLine("tcp gate client is not null, init ignored!!!");
-            return true;
+            return false;
         }
 
         m_gateClient = new TCPClient(ip_, port_);
@@ -72,15 +102,13 @@ internal class NetThread
 
     public bool InitCrossClient(string ip_, int port_)
     {
-        if (null == m_crossClient)
-        {
-            m_crossClient = new UDPClient(ip_, port_);
-        }
-        else
+        if (null != m_crossClient)
         {
             Console.WriteLine("udp cross client is not null, init ignored!!!");
+            return false;
         }
 
+        m_crossClient = new UDPClient(ip_, port_);
         return true;
     }
 
@@ -117,7 +145,7 @@ internal class NetThread
 	
 	private void Run()
 	{
-        while(m_thread.IsAlive)
+        while(!m_terminate)
 		{	
 			Thread.Sleep(5);
 			
@@ -163,35 +191,10 @@ internal class NetThread
                     {
                         int msgLen = m_loginClient.bufToMsg(ref m_crossRcvBuf);
                         if(msgLen <= 0) break;
-                        NetController.Instance.AddCmd(m_loginRcvBuf, msgLen);
+                        NetController.Instance.AddCmd(m_crossRcvBuf, msgLen);
                     }
                 }
             }
-		}
-	}
-	
-
-	public void Final()
-	{
-        if(null != m_thread && m_thread.IsAlive)
-		{
-            if (null != m_loginClient)
-            {
-                m_loginClient.Close();
-                m_loginClient = null;
-            }
-            if (null != m_gateClient)
-            {
-                m_gateClient.Close();
-                m_gateClient = null;
-            }
-            if (null != m_crossClient)
-            {
-                m_crossClient.Close();
-                m_crossClient = null;
-            }
-			m_thread.Join();
-            m_thread = null;
 		}
 	}
 };
