@@ -143,54 +143,68 @@ internal class NetThread
         return (null != m_crossClient) ? m_crossClient.SendMsg(msgId_, msg_) : false;
     }
 	
+    public bool CheckGateConnected()
+    {
+        return (null != m_gateClient && m_gateClient.Connected());
+    }
+
 	private void Run()
 	{
         while(!m_terminate)
 		{	
-			Thread.Sleep(5);
+			Thread.Sleep(10);
 			
             if (null != m_loginClient)
             {
-                int retCode = m_loginClient.Receive();
-                if (retCode >= 0)
+                TCPClient.EReceiveCode retCode = m_loginClient.Receive();
+                if (retCode == TCPClient.EReceiveCode.RCV_CODE_OK)
                 {
                     while (true)
                     {
                         int msgLen = m_loginClient.bufToMsg(ref m_loginRcvBuf);
-                        if(msgLen <= 0) break;                        
+                        if (msgLen <= 0) 
+                            break;                        
                         NetController.Instance.AddCmd(m_loginRcvBuf, msgLen);
                     }
                 }
-                else if (retCode < 0)
+                else if (retCode == TCPClient.EReceiveCode.RCV_CODE_CLOSE)
+                {
+                }
+                else if (retCode == TCPClient.EReceiveCode.RCV_CODE_ERR)
                 {
                 }
             }
             if (null != m_gateClient)
             {
-                int retCode = m_gateClient.Receive();
-                if (retCode >= 0)
+                TCPClient.EReceiveCode retCode = m_gateClient.Receive();
+                if (retCode == TCPClient.EReceiveCode.RCV_CODE_OK)
                 {
                     while (true)
                     {
                         int msgLen = m_gateClient.bufToMsg(ref m_gateRcvBuf);
-                        if(msgLen <= 0) break;
+                        if(msgLen <= 0) 
+                            break;
                         NetController.Instance.AddCmd(m_gateRcvBuf, msgLen);
                     }
                 }
-                else if (retCode < 0)
+                else if (retCode == TCPClient.EReceiveCode.RCV_CODE_CLOSE)
                 {
-                    
                 }
+                else if (retCode == TCPClient.EReceiveCode.RCV_CODE_ERR)
+                {
+                }
+
             }
             if (null != m_crossClient)
             {
-                int retCode = m_loginClient.Receive();
+                int retCode = m_crossClient.Receive();
                 if (retCode >= 0)
                 {
                     while (true)
                     {
-                        int msgLen = m_loginClient.bufToMsg(ref m_crossRcvBuf);
-                        if(msgLen <= 0) break;
+                        int msgLen = m_crossClient.bufToMsg(ref m_crossRcvBuf);
+                        if(msgLen <= 0) 
+                            break;
                         NetController.Instance.AddCmd(m_crossRcvBuf, msgLen);
                     }
                 }

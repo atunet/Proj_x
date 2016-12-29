@@ -8,10 +8,7 @@ public class CSInterfaceWrap
 	{
 		L.BeginStaticLibs("CSInterface");
 		L.RegFunction("SendCmd", SendCmd);
-		L.RegFunction("SetServerAddr", SetServerAddr);
-		L.RegFunction("GetServerType", GetServerType);
-		L.RegFunction("SetServerType", SetServerType);
-		L.RegFunction("DisconnectToServer", DisconnectToServer);
+		L.RegFunction("SendMsgToCross", SendMsgToCross);
 		L.RegFunction("UIRoot", UIRoot);
 		L.RegFunction("SceneRoot", SceneRoot);
 		L.RegFunction("AddComponent", AddComponent);
@@ -43,62 +40,14 @@ public class CSInterfaceWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SetServerAddr(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 2);
-			string arg0 = ToLua.CheckString(L, 1);
-			ushort arg1 = (ushort)LuaDLL.luaL_checknumber(L, 2);
-			CSInterface.SetServerAddr(arg0, arg1);
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int GetServerType(IntPtr L)
+	static int SendMsgToCross(IntPtr L)
 	{
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			byte o = CSInterface.GetServerType();
-			LuaDLL.lua_pushnumber(L, o);
+			bool o = CSInterface.SendMsgToCross();
+			LuaDLL.lua_pushboolean(L, o);
 			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SetServerType(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 1);
-			byte arg0 = (byte)LuaDLL.luaL_checknumber(L, 1);
-			CSInterface.SetServerType(arg0);
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int DisconnectToServer(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			CSInterface.DisconnectToServer();
-			return 0;
 		}
 		catch(Exception e)
 		{

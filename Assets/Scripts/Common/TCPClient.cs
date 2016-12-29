@@ -10,6 +10,13 @@ public class TCPClient
     internal static Byte SEQUENCE_LEN = 4;
     internal static int RCV_BUF_LEN = 256 * 1024;
 
+    public enum EReceiveCode
+    {
+        RCV_CODE_OK,
+        RCV_CODE_ERR,
+        RCV_CODE_CLOSE,
+    };
+
     private String m_serverIP = null;
     private int m_serverPort = 0;
     private Socket m_socket = null;
@@ -94,24 +101,29 @@ public class TCPClient
         }
 	}
 
-	public int Receive ()
-	{		
-		int code = 0;
-		if(m_socket.Poll(0, SelectMode.SelectError))
-		{
-            Console.WriteLine("socket poll get error, may be disconnected!");
-			code = -1;
-		}
-		else if(m_socket.Poll(10*1000, SelectMode.SelectRead))
-		{
-            code = m_socket.Receive(m_rcvBuf, m_bufWriteOffset, RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None);
-            if (code > 0)
+    public TCPClient.EReceiveCode Receive ()
+	{	
+        if(null != m_socket && m_socket.Connected)
+        {
+            try
             {
-                
+                int rcvCount = m_socket.Receive(m_rcvBuf, m_bufWriteOffset, RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None);
+                m_bufWriteOffset += rcvCount;
+                return TCPClient.EReceiveCode.RCV_CODE_OK;
+            }
+            catch(ObjectDisposedException e_)
+            {
+                Console.WriteLine("remote server close the connection:" + e_.ToString());
+                return TCPClient.EReceiveCode.RCV_CODE_CLOSE;
+            }
+            catch(Exception e_)
+            {
+                Console.WriteLine("tcp client receive error:" + e_.ToString());
+                return TCPClient.EReceiveCode.RCV_CODE_ERR;
             }
 		}
-		
-		return code;
+
+        return TCPClient.EReceiveCode.RCV_CODE_ERR;
 	}
 	
     public int bufToMsg(ref byte[] msgBuf_)
@@ -141,7 +153,6 @@ public class TCPClient
 
 	public bool Connected ()
 	{
-		return m_socket.Connected;
+        return (null != m_socket && m_socket.Connected);
 	}
-
 }

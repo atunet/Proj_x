@@ -24,7 +24,7 @@ public sealed class CSInterface
         return NetController.Instance.SendMsgToCross((Cmd.EMessageID)s_sendProtoId, s_sendBytes.buffer);
     }
 
-	public static void SetServerAddr(string ip_, ushort port_)
+	/*public static void SetServerAddr(string ip_, ushort port_)
 	{
 		NetController.Instance.ServerIP = ip_;
 		NetController.Instance.ServerPort = port_;
@@ -46,7 +46,7 @@ public sealed class CSInterface
 	{
 		NetController.Instance.Reset();
 	}
-    /*
+    
 	public static void LoginToServer()
 	{
 		NetController.Instance.Connect();

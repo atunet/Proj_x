@@ -25,6 +25,21 @@ public class NetController : MonoBehaviour
         }
     }
 
+    private string m_loginIP;
+    private int m_loginPort;
+
+    private string m_gateIP;
+    private int m_gatePort;
+    private DateTime m_lastSendGateTime = DateTime.Now;
+
+    private string m_crossIP;
+    private int m_crossPort;
+
+	private NetThread m_thread = null;
+    private ArrayList m_cmdList = new ArrayList();
+    private MemoryStream m_pbStream = new MemoryStream();
+
+
     private NetController()
     {
         m_loginIP = "192.168.0.75";
@@ -34,20 +49,6 @@ public class NetController : MonoBehaviour
         m_crossIP = "192.168.0.75";
         m_crossPort = 8999;
     }
-
-    private string m_loginIP;
-    private int m_loginPort;
-
-    private string m_gateIP;
-    private int m_gatePort;
-    private DateTime m_lastSendGateTime = null;
-
-    private string m_crossIP;
-    private int m_crossPort;
-
-	private NetThread m_thread = null;
-    private ArrayList m_cmdList = new ArrayList();
-    private MemoryStream m_pbStream = new MemoryStream();
 
     public bool Init()
     {
@@ -140,8 +141,7 @@ public class NetController : MonoBehaviour
 
     void LateUpdate()
     {
-        Monitor.Enter(m_cmdList);
-        
+        Monitor.Enter(m_cmdList);        
         if(m_cmdList.Count > 0)
         {
             foreach (byte[] recvCmd in m_cmdList)
@@ -185,13 +185,21 @@ public class NetController : MonoBehaviour
             }
             
             m_cmdList.Clear();
-        }
-        
+        }        
         Monitor.Exit(m_cmdList);
+
+        if (DateTime.Now.Second - m_lastSendGateTime.Second > 4)
+        {
+            if (m_thread.CheckGateConnected())
+            {
+                Debug.LogWarning("tcp gate client is disconnected!!!");
+            }
+            m_lastSendGateTime = DateTime.Now;
+        }
     }   
       
 
-    public void Reset()
+    public void DestroyThread()
     {
         if(null != m_thread)
         {
@@ -202,12 +210,12 @@ public class NetController : MonoBehaviour
 
 	void OnDestroy()
     {
-        Reset();
+        DestroyThread();
     }
 
 	void OnApplicationQuit()
 	{
-		Reset ();
+        DestroyThread ();
 		CmdHandler.Instance.Dispose ();
 	}
 }

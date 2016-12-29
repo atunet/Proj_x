@@ -8,7 +8,7 @@ public class UDPClient
 {
     private String m_serverIP = null;
     private int m_serverPort = 0;
-    private IPEndPoint m_serverAddr = null;
+    private EndPoint m_serverAddr = null;
     private Socket m_socket = null;
     private UInt32 m_seqNO = 0;
 
@@ -16,13 +16,12 @@ public class UDPClient
     private int m_bufReadOffset = 0;
     private int m_bufWriteOffset = 0;
 
-
     public UDPClient (string ip_, int port_)
     {   
         m_serverIP = ip_;
         m_serverPort = port_;
 
-        m_serverAddr = new IPEndPoint(IPAddress.Parse(m_serverIP), m_serverPort);
+        m_serverAddr = (EndPoint)new IPEndPoint(IPAddress.Parse(m_serverIP), m_serverPort);
         m_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp); 
 
         m_rcvBuf = new byte[TCPClient.RCV_BUF_LEN];
@@ -51,23 +50,7 @@ public class UDPClient
 
     public int Receive()
     {
-        int code = 0;
-        if(m_socket.Poll(0, SelectMode.SelectError))
-        {
-            Console.WriteLine("socket poll get error, may be disconnected!");
-            code = -1;
-        }
-        else if(m_socket.Poll(10*1000, SelectMode.SelectRead))
-        {
-            code = m_socket.Receive(m_rcvBuf, m_bufWriteOffset, TCPClient.RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None);
-            if (code > 0)
-            {
-
-            }
-        }
-
-        return code;
-
+        return m_socket.ReceiveFrom(m_rcvBuf, m_bufWriteOffset, TCPClient.RCV_BUF_LEN-m_bufWriteOffset, SocketFlags.None, ref m_serverAddr);
     }
 
     public int bufToMsg(ref byte[] msgBuf_)
