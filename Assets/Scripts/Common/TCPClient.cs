@@ -62,7 +62,7 @@ public class TCPClient
 
 	public void Close ()
 	{
-		if (null != m_socket && m_socket.Connected) 
+		if (null != m_socket/* && m_socket.Connected*/) 
 		{
 			m_socket.Shutdown (SocketShutdown.Both);
 			m_socket.Disconnect (true);

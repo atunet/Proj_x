@@ -67,10 +67,11 @@ public class NetController : MonoBehaviour
         
     public void LoginToLoginServer(string ip_, int port_)
     {
-        m_loginIP = ip_;
-        m_loginPort = port_;
-        if (m_thread.InitLoginClient(m_loginIP, m_loginPort))
+        if (m_thread.InitLoginClient(ip_, port_))
         {
+            m_loginIP = ip_;
+            m_loginPort = port_;
+
             Cmd.VerifyVersion verify = new Cmd.VerifyVersion();
             verify.clientversion = 2017;
             Serializer.Serialize<Cmd.VerifyVersion>(m_pbStream, verify);
@@ -82,34 +83,42 @@ public class NetController : MonoBehaviour
             Serializer.Serialize<Cmd.LoginReq>(m_pbStream, login);
             SendMsgToLogin(login.id, m_pbStream.ToArray());
         }
+        else
+            Debug.LogError("login to login server failed (ip:" + ip_ + ":" + port_ + ")");
     }
 
     public void LoginToGateServer(string ip_, int port_)
-    {
-        m_gateIP = ip_;
-        m_gatePort = port_;
-        if (m_thread.InitGateClient(m_gateIP, m_gatePort))
+    {      
+        if (m_thread.InitGateClient(ip_, port_))
         {
+            m_gateIP = ip_;
+            m_gatePort = port_;
+
             Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
             login.accountid = 9529;
             login.tempid = 7777;
             Serializer.Serialize<Cmd.LoginGatewayReq>(m_pbStream, login);
             SendMsgToGate(login.id, m_pbStream.ToArray());          
         }
+        else
+            Debug.LogError("login to gate server failed (ip:" + ip_ + ":" + port_ + ")");
     }
 
-    public void LoginToCrossServer(string ip_, int port_)
-    {
-        m_crossIP = ip_;
-        m_crossPort = port_;
-        if (m_thread.InitCrossClient(m_crossIP, m_crossPort))
+    public void LoginToCrossServer(string ip_, int port_, UInt64 uid_, UInt32 tempId_)
+    {        
+        if (m_thread.InitCrossClient(ip_, port_))
         {
+            m_crossIP = ip_;
+            m_crossPort = port_;
+
             Cmd.LoginCrossReq login = new Cmd.LoginCrossReq();
-            login.userid = 868686868686;
-            login.tempid = 6666;
+            login.userid = uid_;
+            login.tempid = tempId_;
             Serializer.Serialize<Cmd.LoginCrossReq>(m_pbStream, login);
             SendMsgToCross(login.id, m_pbStream.ToArray());
         }
+        else
+            Debug.LogError("login to cross server failed (ip:" + ip_ + ":" + port_ + ")");
     }
 
     public bool SendMsgToLogin(Cmd.EMessageID protoId_, byte[] buf_)
@@ -128,7 +137,7 @@ public class NetController : MonoBehaviour
     }
 
 
-    public void AddCmd(byte[] cmd_, int len_)
+    public void AddMsg(byte[] cmd_, int len_)
     {
         Monitor.Enter(m_cmdList);  
 
@@ -163,8 +172,8 @@ public class NetController : MonoBehaviour
                     if (m_thread.InitGateClient(ret.gatewayip, (int)ret.gatewayport))
                     {
                         Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
-                        login.accountid = 9529;
-                        login.tempid = 7777;
+                        login.accountid = ret.accountid;
+                        login.tempid = ret.tempid;
                         login.appVersion = "1.1.1";
                         login.deviceId = 100;
 
