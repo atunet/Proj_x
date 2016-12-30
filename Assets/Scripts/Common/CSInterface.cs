@@ -14,7 +14,7 @@ public sealed class CSInterface
 	public static int s_sendProtoId = 0;
 	public static LuaByteBuffer s_sendBytes = null; 
 
-	public static bool SendCmd()
+	public static bool SendMsg()
 	{
         return NetController.Instance.SendMsgToGate((Cmd.EMessageID)s_sendProtoId, s_sendBytes.buffer);
 	}

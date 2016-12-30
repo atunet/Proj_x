@@ -7,7 +7,7 @@ public class CSInterfaceWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginStaticLibs("CSInterface");
-		L.RegFunction("SendCmd", SendCmd);
+		L.RegFunction("SendMsg", SendMsg);
 		L.RegFunction("SendMsgToCross", SendMsgToCross);
 		L.RegFunction("UIRoot", UIRoot);
 		L.RegFunction("SceneRoot", SceneRoot);
@@ -24,12 +24,12 @@ public class CSInterfaceWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SendCmd(IntPtr L)
+	static int SendMsg(IntPtr L)
 	{
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			bool o = CSInterface.SendCmd();
+			bool o = CSInterface.SendMsg();
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}

@@ -78,7 +78,7 @@ public class NetController : MonoBehaviour
             SendMsgToLogin(verify.id, m_pbStream.ToArray());
 
             Cmd.LoginReq login = new Cmd.LoginReq();
-            login.accountid = 9529;
+            login.accountid = 129599;
             login.verifier = "this is verifier code";
             Serializer.Serialize<Cmd.LoginReq>(m_pbStream, login);
             SendMsgToLogin(login.id, m_pbStream.ToArray());
@@ -87,7 +87,7 @@ public class NetController : MonoBehaviour
             Debug.LogError("login to login server failed (ip:" + ip_ + ":" + port_ + ")");
     }
 
-    public void LoginToGateServer(string ip_, int port_)
+    public void LoginToGateServer(string ip_, int port_, UInt64 accId_, UInt32 tempId_)
     {      
         if (m_thread.InitGateClient(ip_, port_))
         {
@@ -95,8 +95,8 @@ public class NetController : MonoBehaviour
             m_gatePort = port_;
 
             Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
-            login.accountid = 9529;
-            login.tempid = 7777;
+            login.accountid = accId_;
+            login.tempid = tempId_;
             Serializer.Serialize<Cmd.LoginGatewayReq>(m_pbStream, login);
             SendMsgToGate(login.id, m_pbStream.ToArray());          
         }
@@ -169,17 +169,7 @@ public class NetController : MonoBehaviour
                     MemoryStream ms = new MemoryStream(realCmd, 0, realCmd.Length);
                     Cmd.LoginRet ret = Serializer.Deserialize<Cmd.LoginRet>(ms);
 
-                    if (m_thread.InitGateClient(ret.gatewayip, (int)ret.gatewayport))
-                    {
-                        Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
-                        login.accountid = ret.accountid;
-                        login.tempid = ret.tempid;
-                        login.appVersion = "1.1.1";
-                        login.deviceId = 100;
-
-                        Serializer.Serialize<Cmd.LoginGatewayReq>(m_pbStream, login);
-                        SendMsgToGate(login.id, m_pbStream.ToArray());          
-                    }
+                    LoginToGateServer(ret.gatewayip, (int)ret.gatewayport, ret.accountid, ret.tempid);
                     m_thread.DestroyLoginClient();
                 }
                 else if (Cmd.EMessageID.PVP_CMD == (Cmd.EMessageID)(CSInterface.s_recvProtoId | 0xff00))

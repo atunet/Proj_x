@@ -1,8 +1,6 @@
 
 
 require("LuaRoute")
-require("Login.LoginSvr")
-
 
 function LuaMain()
 	local cmdFunc = LuaRoute.controllers[CSInterface.s_recvProtoId]
@@ -14,15 +12,10 @@ function LuaMain()
 end
 
 
-function SendCmd(protoId_, bytes_)
+function SendMsg(protoId_, bytes_)
 	CSInterface.s_sendProtoId = protoId_
 	CSInterface.s_sendBytes = bytes_
-	CSInterface.SendCmd()
-end
-
-
-function LoginToServer()
-	Login.LoginSvr.LoginToServer()
+	CSInterface.SendMsg()
 end
 
 function UIRoot()

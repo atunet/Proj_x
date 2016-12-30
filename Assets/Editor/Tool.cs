@@ -382,8 +382,8 @@ public class Tool : MonoBehaviour
 			return;
 		}
 
-		string currDir = Directory.GetCurrentDirectory();
-		string exeDir = string.Empty;
+		//string currDir = Directory.GetCurrentDirectory();
+		//string exeDir = string.Empty;
 
 		ProcessStartInfo processInfo = new ProcessStartInfo();	
 		processInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -391,23 +391,23 @@ public class Tool : MonoBehaviour
 
 		if (Application.platform == RuntimePlatform.WindowsEditor) 
 		{
-			processInfo.FileName = "luajit.exe";
+            processInfo.FileName = AppConst.PROJECT_PATH + "/LuaEncoder/luajit/luajit.exe";
 			processInfo.Arguments = "-b " + srcFile_ + " " + outFile_;
 			processInfo.UseShellExecute = true;
-			exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luajit/";
+			//exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luajit/";
 		}
 		else if (Application.platform == RuntimePlatform.OSXEditor) 
 		{
-			processInfo.FileName = "./luac";
+            processInfo.FileName = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/luac";
 			processInfo.Arguments = "-o " + outFile_ + " " + srcFile_;
 			processInfo.UseShellExecute = false;
-			exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/";
+			//exeDir = AppConst.PROJECT_PATH + "/LuaEncoder/luavm/";
 		}
 
 		Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
-		Directory.SetCurrentDirectory(exeDir);
+		//Directory.SetCurrentDirectory(exeDir);
 		Process.Start(processInfo).WaitForExit();
-		Directory.SetCurrentDirectory(currDir);
+		//Directory.SetCurrentDirectory(currDir);
 	}
 
     static void UpdateProgress(int currentNum_, int maxNum_, string title_) 
@@ -535,7 +535,7 @@ public class Tool : MonoBehaviour
 	        processInfo.ErrorDialog = true;
 	        if (Application.platform == RuntimePlatform.WindowsEditor) 
 	        {
-	            processInfo.FileName = "pscp.exe";
+                processInfo.FileName = AppConst.PROJECT_PATH + "/putty/pscp.exe";
 	            processInfo.Arguments = "-pw sunrise -r " + fileList[i] + " " + "   tfx@" + AppConst.RES_SERVER_IP + ":" + remotePath;
 	            processInfo.UseShellExecute = true;
 				Debug.Log(processInfo.FileName + " " + processInfo.Arguments);
@@ -543,9 +543,9 @@ public class Tool : MonoBehaviour
 	            string currDir = Directory.GetCurrentDirectory();
 	            string exeDir = AppConst.PROJECT_PATH + "/putty/";
 
-			    Directory.SetCurrentDirectory(exeDir);
+			    //Directory.SetCurrentDirectory(exeDir);
 				Process.Start(processInfo).WaitForExit();
-				Directory.SetCurrentDirectory(currDir);
+				//Directory.SetCurrentDirectory(currDir);
 	        }
 	        else if (Application.platform == RuntimePlatform.OSXEditor) 
 	        {
