@@ -128,6 +128,21 @@ internal class NetThread
         }
     }
 
+    public void DestroyGateClient()
+    {
+        if (null != m_gateClient)
+        {
+            m_gateClient.Close();
+            m_gateClient = null;
+
+            Console.WriteLine("tcp gate client destroy ok");
+        }
+        else
+        {
+            Console.WriteLine("tcp gate client is null,destroy ignored!!!");
+        }
+    }
+
     public bool SendMsgToLogin(UInt16 msgId_, byte[] msg_)
     {
         return (null != m_loginClient) ? m_loginClient.SendMsg(msgId_, msg_) : false;

@@ -74,8 +74,7 @@ public class TCPClient
 
     public Boolean SendMsg (UInt16 msgId_, byte[] msg_)
 	{	        
-        if (m_socket.Connected && 
-           !m_socket.Poll(10 * 1000, SelectMode.SelectError))
+        if (null != m_socket && m_socket.Connected)
         {
             UInt32 packetLen = (UInt32)(MSG_ID_LEN + SEQUENCE_LEN + msg_.Length);
             byte[] sendBytes = new byte[HEAD_LEN + packetLen];
@@ -88,7 +87,16 @@ public class TCPClient
             int offset = 0;
             while (offset < sendBytes.Length)
             {
-                offset += m_socket.Send(sendBytes, offset, sendBytes.Length - offset, SocketFlags.None);
+                try
+                {
+                    offset += m_socket.Send(sendBytes, offset, sendBytes.Length - offset, SocketFlags.None);
+                }
+                catch(Exception e_)
+                {
+                    Console.WriteLine("tcpclient sendmsg error:" + e_.ToString());
+                    //Close();
+                    return false;
+                }
             }
 
             Console.WriteLine("TCPClient send msgid:{0} ok,msg len:{1},total len:{2}", msgId_.ToString("X"), msg_.Length, packetLen);

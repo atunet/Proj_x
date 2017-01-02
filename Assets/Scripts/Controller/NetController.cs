@@ -30,6 +30,8 @@ public class NetController : MonoBehaviour
 
     private string m_gateIP;
     private int m_gatePort;
+    private UInt64 m_accId;
+    private UInt32 m_tempId;
     private DateTime m_lastSendGateTime = DateTime.Now;
 
     private string m_crossIP;
@@ -39,6 +41,7 @@ public class NetController : MonoBehaviour
     private ArrayList m_cmdList = new ArrayList();
     private MemoryStream m_pbStream = new MemoryStream();
 
+    private GameObject m_reconnectingPanel = null;
 
     private NetController()
     {
@@ -48,6 +51,9 @@ public class NetController : MonoBehaviour
         m_gatePort = 4021;
         m_crossIP = "192.168.0.75";
         m_crossPort = 8999;
+
+        m_accId = 0;
+        m_tempId = 0;
     }
 
     public bool Init()
@@ -60,6 +66,12 @@ public class NetController : MonoBehaviour
 
         m_thread = new NetThread();
         m_thread.Start();
+
+        m_reconnectingPanel = CSInterface.UIRoot().FindChild("panel_reconnecting").gameObject;
+        if (null == m_reconnectingPanel)
+        {
+            Debug.Log("NetController init,reconnectingpanel not found");
+        }
 
         Debug.Log("NetController init ok,netthread start working!!!");
         return true;
@@ -93,10 +105,12 @@ public class NetController : MonoBehaviour
         {
             m_gateIP = ip_;
             m_gatePort = port_;
+            m_accId = accId_;
+            m_tempId = tempId_;
 
             Cmd.LoginGatewayReq login = new Cmd.LoginGatewayReq();
-            login.accountid = accId_;
-            login.tempid = tempId_;
+            login.accountid = m_accId;
+            login.tempid = m_tempId;
             Serializer.Serialize<Cmd.LoginGatewayReq>(m_pbStream, login);
             SendMsgToGate(login.id, m_pbStream.ToArray());          
         }
@@ -172,6 +186,10 @@ public class NetController : MonoBehaviour
                     LoginToGateServer(ret.gatewayip, (int)ret.gatewayport, ret.accountid, ret.tempid);
                     m_thread.DestroyLoginClient();
                 }
+                else if (Cmd.EMessageID.LOGIN_GATEW_SC == (Cmd.EMessageID)CSInterface.s_recvProtoId)
+                {
+                    Debug.Log("Login gateway server return ok!");
+                }
                 else if (Cmd.EMessageID.PVP_CMD == (Cmd.EMessageID)(CSInterface.s_recvProtoId | 0xff00))
                 {
                     // recv battle msg, do fighting logic in c#
@@ -189,9 +207,20 @@ public class NetController : MonoBehaviour
 
         if (DateTime.Now.Second - m_lastSendGateTime.Second > 4)
         {
-            if (m_thread.CheckGateConnected())
+            if (!m_thread.CheckGateConnected())
             {
                 Debug.LogWarning("tcp gate client is disconnected!!!");
+                m_reconnectingPanel.SetActive(true);
+                m_thread.DestroyGateClient();
+                LoginToGateServer(m_gateIP, m_gatePort, m_accId, m_tempId);
+            }
+            else
+            {
+                Debug.Log("tcp gate client is connected");
+                if (m_reconnectingPanel && m_reconnectingPanel.activeSelf)
+                {
+                    m_reconnectingPanel.SetActive(false);
+                }
             }
             m_lastSendGateTime = DateTime.Now;
         }
@@ -217,4 +246,20 @@ public class NetController : MonoBehaviour
         DestroyThread ();
 		CmdHandler.Instance.Dispose ();
 	}
+        
+    void OnApplicationFocus(bool focus_)
+    {
+        if (focus_)
+        {
+            Debug.Log("application get focus");
+
+            if (!m_thread.CheckGateConnected())
+            {
+                Debug.LogWarning("tcp gate client is disconnected!!!");
+                m_reconnectingPanel.SetActive(true);
+                m_thread.DestroyGateClient();
+                LoginToGateServer(m_gateIP, m_gatePort, m_accId, m_tempId);
+            }
+        }
+    }
 }

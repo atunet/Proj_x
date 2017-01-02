@@ -3,12 +3,12 @@
 require("LuaRoute")
 
 function LuaMain()
-	local cmdFunc = LuaRoute.controllers[CSInterface.s_recvProtoId]
-	if nil == cmdFunc then
-		print("unknown cmd, function  not found: 0x" .. string.format("%04x",CSInterface.s_recvProtoId))
+	local handle = LuaRoute.controllers[CSInterface.s_recvProtoId]
+	if nil == handle then
+		print("unknown msg,handle not found: 0x" .. string.format("%04x",CSInterface.s_recvProtoId))
 		return
 	end
-	cmdFunc()
+	handle()
 end
 
 

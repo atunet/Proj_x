@@ -36,6 +36,12 @@ function ParseCreateUserRet()
 	print("select user online:" .. revCmd.userbase.userid .. revCmd.userbase.username)
 end
 
+function ParseUserBaseData()
+	local revCmd = UserPb.SendUserBaseData()
+	revCmd:ParseFromString(CSInterface.s_recvBytes)
+	print("recv user base data")
+end
+
 function ParseUserDataLoadOk()
 	print("User data load ok")
 	
