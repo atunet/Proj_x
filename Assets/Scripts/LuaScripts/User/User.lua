@@ -45,6 +45,6 @@ end
 function ParseUserDataLoadOk()
 	print("User data load ok")
 	
-	CSInterface.LoadLevel("MainScene")
+	CSBridge.LoadLevel("MainScene")
   end
  

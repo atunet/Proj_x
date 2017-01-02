@@ -26,7 +26,7 @@ public static class CustomSettings
         typeof(UnityEngine.QualitySettings),
         typeof(UnityEngine.GL),
 		 
-		typeof(CSInterface),
+		typeof(CSBridge),
         typeof(ABManager),
     };
 
@@ -138,7 +138,7 @@ public static class CustomSettings
         _GT(typeof(BlendWeights)),           
         _GT(typeof(RenderTexture)),
 		
-		_GT(typeof(CSInterface)),
+		_GT(typeof(CSBridge)),
         _GT(typeof(ABManager)),
 		_GT(typeof(LuaBehaviour)),
     };

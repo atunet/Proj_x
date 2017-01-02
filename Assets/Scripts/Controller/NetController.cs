@@ -67,7 +67,7 @@ public class NetController : MonoBehaviour
         m_thread = new NetThread();
         m_thread.Start();
 
-        m_reconnectingPanel = CSInterface.UIRoot().FindChild("panel_reconnecting").gameObject;
+        m_reconnectingPanel = CSBridge.UIRoot().FindChild("panel_reconnecting").gameObject;
         if (null == m_reconnectingPanel)
         {
             Debug.Log("NetController init,reconnectingpanel not found");
@@ -169,16 +169,16 @@ public class NetController : MonoBehaviour
         {
             foreach (byte[] recvCmd in m_cmdList)
 			{	
-				CSInterface.s_recvProtoId = BitConverter.ToUInt16(recvCmd, 0);
+				CSBridge.s_recvProtoId = BitConverter.ToUInt16(recvCmd, 0);
 				byte[] realCmd = new byte[recvCmd.Length-TCPClient.MSG_ID_LEN];
 				Array.Copy(recvCmd, TCPClient.MSG_ID_LEN, realCmd, 0, realCmd.Length);
 
-                if (0 == CSInterface.s_recvProtoId)
+                if (0 == CSBridge.s_recvProtoId)
                 {
                     Debug.Log("recv tickcmd,just send back");
-                    SendMsgToGate((Cmd.EMessageID)CSInterface.s_recvProtoId, realCmd);
+                    SendMsgToGate((Cmd.EMessageID)CSBridge.s_recvProtoId, realCmd);
                 }
-                else if (Cmd.EMessageID.LOGIN_LOGIN_SC == (Cmd.EMessageID)CSInterface.s_recvProtoId)
+                else if (Cmd.EMessageID.LOGIN_LOGIN_SC == (Cmd.EMessageID)CSBridge.s_recvProtoId)
                 {  
                     MemoryStream ms = new MemoryStream(realCmd, 0, realCmd.Length);
                     Cmd.LoginRet ret = Serializer.Deserialize<Cmd.LoginRet>(ms);
@@ -186,18 +186,18 @@ public class NetController : MonoBehaviour
                     LoginToGateServer(ret.gatewayip, (int)ret.gatewayport, ret.accountid, ret.tempid);
                     m_thread.DestroyLoginClient();
                 }
-                else if (Cmd.EMessageID.LOGIN_GATEW_SC == (Cmd.EMessageID)CSInterface.s_recvProtoId)
+                else if (Cmd.EMessageID.LOGIN_GATEW_SC == (Cmd.EMessageID)CSBridge.s_recvProtoId)
                 {
                     Debug.Log("Login gateway server return ok!");
                 }
-                else if (Cmd.EMessageID.PVP_CMD == (Cmd.EMessageID)(CSInterface.s_recvProtoId | 0xff00))
+                else if (Cmd.EMessageID.PVP_CMD == (Cmd.EMessageID)(CSBridge.s_recvProtoId | 0xff00))
                 {
                     // recv battle msg, do fighting logic in c#
                 }
                 else
 				{		// default do other logic in lua 			
-					CSInterface.s_recvBytes = new LuaInterface.LuaByteBuffer(realCmd);
-    	            CmdHandler.Instance.CmdParse();
+					CSBridge.s_recvBytes = new LuaInterface.LuaByteBuffer(realCmd);
+    	            MsgHandler.Instance.CmdParse();
             	}
             }
             
@@ -244,7 +244,7 @@ public class NetController : MonoBehaviour
 	void OnApplicationQuit()
 	{
         DestroyThread ();
-		CmdHandler.Instance.Dispose ();
+		MsgHandler.Instance.Dispose ();
 	}
         
     void OnApplicationFocus(bool focus_)

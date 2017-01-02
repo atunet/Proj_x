@@ -44,7 +44,7 @@ public class ZoneListController : MonoBehaviour
 		}
 
 		GameObject loginBtnGo = GameObject.Instantiate (loginBtnPrefab);
-        loginBtnGo.transform.SetParent(CSInterface.s_uiRoot, false);
+        loginBtnGo.transform.SetParent(CSBridge.s_uiRoot, false);
         //loginBtnGo.transform.localPosition = new Vector3(0f, -425f, 0f);
         //loginBtnGo.transform.localScale = new Vector3(1f, 1f, 1f);
 

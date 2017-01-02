@@ -27,7 +27,7 @@ public class AccountController : MonoBehaviour
             if (null != zongListPrefab)
             {
                 GameObject zoneListGo = GameObject.Instantiate(zongListPrefab);
-                zoneListGo.transform.SetParent(CSInterface.s_uiRoot, false);
+                zoneListGo.transform.SetParent(CSBridge.s_uiRoot, false);
                 Destroy(this.gameObject);   // destroy account controller instance
             }
             else

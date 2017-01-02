@@ -15,9 +15,9 @@ public class InitAppController : MonoBehaviour
 	{
         AppConst.PrintPath();
 
-        CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
-        CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
-        if(null == CSInterface.s_uiRoot || null == CSInterface.s_sceneRoot)
+        CSBridge.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
+        CSBridge.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
+        if(null == CSBridge.s_uiRoot || null == CSBridge.s_sceneRoot)
         {
             Debug.LogError("uiRoot or sceneRoot not found!!!");
             return;
@@ -38,13 +38,13 @@ public class InitAppController : MonoBehaviour
         	if(null != defaultBG)
 			{	
                 GameObject bgGo = GameObject.Instantiate(defaultBG) as GameObject;
-                bgGo.transform.SetParent(CSInterface.s_sceneRoot, false);
+                bgGo.transform.SetParent(CSBridge.s_sceneRoot, false);
         	}
             GameObject defaultText = Resources.Load("default_text") as GameObject;
             if(null != defaultText)
             {   
                 GameObject textGo = GameObject.Instantiate(defaultText) as GameObject;
-                textGo.transform.SetParent(CSInterface.s_uiRoot, false);
+                textGo.transform.SetParent(CSBridge.s_uiRoot, false);
             }
 
         	StartCoroutine(InitPersistentPath());
@@ -53,9 +53,9 @@ public class InitAppController : MonoBehaviour
 
     void CheckResUpdate()
     {
-        Transform bgTrans = CSInterface.s_sceneRoot.FindChild("default_bg(clone)");
+        Transform bgTrans = CSBridge.s_sceneRoot.FindChild("default_bg(clone)");
         if (bgTrans) GameObject.Destroy(bgTrans.gameObject);
-        Transform textTrans = CSInterface.s_uiRoot.FindChild("default_text(clone)");
+        Transform textTrans = CSBridge.s_uiRoot.FindChild("default_text(clone)");
         if (textTrans) GameObject.Destroy(textTrans.gameObject);
 
         AssetBundle loginAB = ABManager.get(AppConst.AB_LOGIN);
@@ -73,7 +73,7 @@ public class InitAppController : MonoBehaviour
 		else
 		{		
             bgTrans = GameObject.Instantiate(bgPrefab).transform;
-            bgTrans.SetParent(CSInterface.s_sceneRoot, false);
+            bgTrans.SetParent(CSBridge.s_sceneRoot, false);
 		}
 
 		if (s_resUpdateChecked) 
@@ -85,7 +85,7 @@ public class InitAppController : MonoBehaviour
 				return;
 			}
 			GameObject accountGo = GameObject.Instantiate (accountPrefab);
-            accountGo.transform.SetParent(CSInterface.s_uiRoot, false);
+            accountGo.transform.SetParent(CSBridge.s_uiRoot, false);
 
             Destroy(this.gameObject);   // destroy appstartcontroller instance
 		} 
@@ -98,7 +98,7 @@ public class InitAppController : MonoBehaviour
 				return;
 			}			
 			GameObject resUpdateGo = GameObject.Instantiate (resUpdatePrefab);
-            resUpdateGo.transform.SetParent(CSInterface.s_uiRoot, false);
+            resUpdateGo.transform.SetParent(CSBridge.s_uiRoot, false);
 		}
 	}
 

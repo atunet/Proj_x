@@ -5,9 +5,9 @@ public class InitMainController : MonoBehaviour
 {
 	void Start () 
     {
-        CSInterface.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
-        CSInterface.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
-        if (null == CSInterface.s_uiRoot || null == CSInterface.s_sceneRoot)
+        CSBridge.s_uiRoot = GameObject.Find("UIRoot/UICanvas").transform;
+        CSBridge.s_sceneRoot = GameObject.Find("SceneRoot/SceneCanvas").transform;
+        if (null == CSBridge.s_uiRoot || null == CSBridge.s_sceneRoot)
         {
             Debug.LogError("uiRoot or sceneRoot not found!!!");
             return;

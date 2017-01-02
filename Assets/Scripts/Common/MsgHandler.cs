@@ -3,24 +3,24 @@ using System.IO;
 using LuaInterface;
 using UnityEngine;
 
-public class CmdHandler : IDisposable
+public class MsgHandler : IDisposable
 {
 	private LuaState m_ls = null;
 	private LuaFunction m_cmdHander = null;
 	
-	public static CmdHandler s_instance = null;
-	public static CmdHandler Instance
+	public static MsgHandler s_instance = null;
+	public static MsgHandler Instance
 	{
 		get 
 		{
 			if(s_instance == null)
 			{
-				s_instance = new CmdHandler();
+				s_instance = new MsgHandler();
 			}
 			return s_instance;
 		}
 	}	
-	private CmdHandler() 
+	private MsgHandler() 
     {
         LuaResLoader loader = new LuaResLoader();
 

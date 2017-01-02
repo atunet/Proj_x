@@ -20,7 +20,7 @@ public sealed class LuaBehaviour : MonoBehaviour
 
     public void Awake()
     {
-        LuaTable metatable = (LuaTable)CmdHandler.Instance.Require(s_luaFileName);
+        LuaTable metatable = (LuaTable)MsgHandler.Instance.Require(s_luaFileName);
         if(metatable == null)
         {
             Debug.LogError("[LuaBehaviour] require lua file failed: " + s_luaFileName);
@@ -146,7 +146,7 @@ public sealed class LuaBehaviour : MonoBehaviour
         luaFunc.Push(m_self);
         luaFunc.PushArgs(args_);
         luaFunc.PCall();
-        object[] objs = CmdHandler.Instance.GetLuaState().CheckObjects(oldTop);
+        object[] objs = MsgHandler.Instance.GetLuaState().CheckObjects(oldTop);
         luaFunc.EndPCall();
         return objs;
     }

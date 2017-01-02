@@ -21,7 +21,7 @@ public class LoginBtnController : MonoBehaviour
 		//loadingGo.transform.SetParent (this.transform.parent);
 
 		// lua init: load the config data and cached role data ...
-		if(CmdHandler.Instance.Init())
+		if(MsgHandler.Instance.Init())
 		{
             if (NetController.Instance.Init())
             {

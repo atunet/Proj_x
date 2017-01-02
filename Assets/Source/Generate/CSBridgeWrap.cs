@@ -2,15 +2,15 @@
 using System;
 using LuaInterface;
 
-public class CSInterfaceWrap
+public class CSBridgeWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginStaticLibs("CSInterface");
-		L.RegFunction("SendMsg", SendMsg);
-		L.RegFunction("SendMsgToCross", SendMsgToCross);
+		L.BeginStaticLibs("CSBridge");
 		L.RegFunction("UIRoot", UIRoot);
 		L.RegFunction("SceneRoot", SceneRoot);
+		L.RegFunction("SendMsg", SendMsg);
+		L.RegFunction("SendMsgToCross", SendMsgToCross);
 		L.RegFunction("AddComponent", AddComponent);
 		L.RegFunction("AddClick", AddClick);
 		L.RegFunction("LoadLevel", LoadLevel);
@@ -24,44 +24,12 @@ public class CSInterfaceWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SendMsg(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			bool o = CSInterface.SendMsg();
-			LuaDLL.lua_pushboolean(L, o);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SendMsgToCross(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			bool o = CSInterface.SendMsgToCross();
-			LuaDLL.lua_pushboolean(L, o);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int UIRoot(IntPtr L)
 	{
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			UnityEngine.Transform o = CSInterface.UIRoot();
+			UnityEngine.Transform o = CSBridge.UIRoot();
 			ToLua.Push(L, o);
 			return 1;
 		}
@@ -77,8 +45,40 @@ public class CSInterfaceWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			UnityEngine.Transform o = CSInterface.SceneRoot();
+			UnityEngine.Transform o = CSBridge.SceneRoot();
 			ToLua.Push(L, o);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SendMsg(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 0);
+			bool o = CSBridge.SendMsg();
+			LuaDLL.lua_pushboolean(L, o);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SendMsgToCross(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 0);
+			bool o = CSBridge.SendMsgToCross();
+			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
 		catch(Exception e)
@@ -95,7 +95,7 @@ public class CSInterfaceWrap
 			ToLua.CheckArgsCount(L, 2);
 			UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.GameObject));
 			string arg1 = ToLua.CheckString(L, 2);
-			LuaInterface.LuaTable o = CSInterface.AddComponent(arg0, arg1);
+			LuaInterface.LuaTable o = CSBridge.AddComponent(arg0, arg1);
 			ToLua.Push(L, o);
 			return 1;
 		}
@@ -113,7 +113,7 @@ public class CSInterfaceWrap
 			ToLua.CheckArgsCount(L, 2);
 			UnityEngine.UI.Button arg0 = (UnityEngine.UI.Button)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.UI.Button));
 			LuaFunction arg1 = ToLua.CheckLuaFunction(L, 2);
-			CSInterface.AddClick(arg0, arg1);
+			CSBridge.AddClick(arg0, arg1);
 			return 0;
 		}
 		catch(Exception e)
@@ -129,7 +129,7 @@ public class CSInterfaceWrap
 		{
 			ToLua.CheckArgsCount(L, 1);
 			string arg0 = ToLua.CheckString(L, 1);
-			CSInterface.LoadLevel(arg0);
+			CSBridge.LoadLevel(arg0);
 			return 0;
 		}
 		catch(Exception e)
@@ -143,7 +143,7 @@ public class CSInterfaceWrap
 	{
 		try
 		{
-			ToLua.Push(L, CSInterface.s_uiRoot);
+			ToLua.Push(L, CSBridge.s_uiRoot);
 			return 1;
 		}
 		catch(Exception e)
@@ -157,7 +157,7 @@ public class CSInterfaceWrap
 	{
 		try
 		{
-			ToLua.Push(L, CSInterface.s_sceneRoot);
+			ToLua.Push(L, CSBridge.s_sceneRoot);
 			return 1;
 		}
 		catch(Exception e)
@@ -171,7 +171,7 @@ public class CSInterfaceWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushinteger(L, CSInterface.s_recvProtoId);
+			LuaDLL.lua_pushinteger(L, CSBridge.s_recvProtoId);
 			return 1;
 		}
 		catch(Exception e)
@@ -185,7 +185,7 @@ public class CSInterfaceWrap
 	{
 		try
 		{
-			ToLua.Push(L, CSInterface.s_recvBytes);
+			ToLua.Push(L, CSBridge.s_recvBytes);
 			return 1;
 		}
 		catch(Exception e)
@@ -199,7 +199,7 @@ public class CSInterfaceWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushinteger(L, CSInterface.s_sendProtoId);
+			LuaDLL.lua_pushinteger(L, CSBridge.s_sendProtoId);
 			return 1;
 		}
 		catch(Exception e)
@@ -213,7 +213,7 @@ public class CSInterfaceWrap
 	{
 		try
 		{
-			ToLua.Push(L, CSInterface.s_sendBytes);
+			ToLua.Push(L, CSBridge.s_sendBytes);
 			return 1;
 		}
 		catch(Exception e)
@@ -228,7 +228,7 @@ public class CSInterfaceWrap
 		try
 		{
 			UnityEngine.Transform arg0 = (UnityEngine.Transform)ToLua.CheckUnityObject(L, 2, typeof(UnityEngine.Transform));
-			CSInterface.s_uiRoot = arg0;
+			CSBridge.s_uiRoot = arg0;
 			return 0;
 		}
 		catch(Exception e)
@@ -243,7 +243,7 @@ public class CSInterfaceWrap
 		try
 		{
 			UnityEngine.Transform arg0 = (UnityEngine.Transform)ToLua.CheckUnityObject(L, 2, typeof(UnityEngine.Transform));
-			CSInterface.s_sceneRoot = arg0;
+			CSBridge.s_sceneRoot = arg0;
 			return 0;
 		}
 		catch(Exception e)
@@ -258,7 +258,7 @@ public class CSInterfaceWrap
 		try
 		{
 			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			CSInterface.s_recvProtoId = arg0;
+			CSBridge.s_recvProtoId = arg0;
 			return 0;
 		}
 		catch(Exception e)
@@ -273,7 +273,7 @@ public class CSInterfaceWrap
 		try
 		{
 			LuaByteBuffer arg0 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
-			CSInterface.s_recvBytes = arg0;
+			CSBridge.s_recvBytes = arg0;
 			return 0;
 		}
 		catch(Exception e)
@@ -288,7 +288,7 @@ public class CSInterfaceWrap
 		try
 		{
 			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			CSInterface.s_sendProtoId = arg0;
+			CSBridge.s_sendProtoId = arg0;
 			return 0;
 		}
 		catch(Exception e)
@@ -303,7 +303,7 @@ public class CSInterfaceWrap
 		try
 		{
 			LuaByteBuffer arg0 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
-			CSInterface.s_sendBytes = arg0;
+			CSBridge.s_sendBytes = arg0;
 			return 0;
 		}
 		catch(Exception e)
