@@ -41,5 +41,5 @@ function OnClickLv(go_)
 
 	print ("OnClickLv called: " .. go_.name)
 
-	CSInterface.LoadLevel("BattleScene")
+	CSBridge.LoadLevel("BattleScene")
 end

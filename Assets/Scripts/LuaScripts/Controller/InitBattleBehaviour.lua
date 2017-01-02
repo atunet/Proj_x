@@ -35,12 +35,12 @@ function Start()
     battleuiGo.transform:SetParent(UIRoot(), false)
     battleuiGo.name = "panel_battle_ui"
 
-    local uiBehaviour = CSInterface.AddComponent(battleuiGo, "UIBattleBehaviour")
+    local uiBehaviour = CSBridge.AddComponent(battleuiGo, "UIBattleBehaviour")
     local quitBtnTrans = battleuiGo.transform:FindChild("btn_quit")
     if nil ~= quitBtnTrans then
         local quitBtn = quitBtnTrans.gameObject:GetComponent("Button")
         if nil ~= quitBtn then
-            CSInterface.AddClick(quitBtn, uiBehaviour.OnClickQuit)
+            CSBridge.AddClick(quitBtn, uiBehaviour.OnClickQuit)
         end
     end
 end
@@ -69,5 +69,5 @@ function OnClickQuit(go_)
 	
 	print ("OnClickQuit called: " .. go_.name)
 
-	CSInterface.LoadLevel("MainScene")
+	CSBridge.LoadLevel("MainScene")
 end

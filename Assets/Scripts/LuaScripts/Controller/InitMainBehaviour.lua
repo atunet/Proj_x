@@ -36,12 +36,12 @@ function Start()
     mainuiGo.transform:SetParent(UIRoot(), false)
     mainuiGo.name = "panel_main_ui"
 
-    local uiBehaviour = CSInterface.AddComponent(mainuiGo, "UIMainBehaviour")
+    local uiBehaviour = CSBridge.AddComponent(mainuiGo, "UIMainBehaviour")
     local lvBtnTrans = mainuiGo.transform:FindChild("btn_level")
     if nil ~= lvBtnTrans then
         local lvBtn = lvBtnTrans.gameObject:GetComponent("Button")
         if nil ~= lvBtn then
-            CSInterface.AddClick(lvBtn, uiBehaviour.OnClickLv)
+            CSBridge.AddClick(lvBtn, uiBehaviour.OnClickLv)
         end
     end
 
@@ -65,9 +65,9 @@ function Start()
     --levelBtnGo.transform:SetParent(UIRoot(), false)
     --levelBtnGo.name = "btn_level"
 
-    --local test = CSInterface.AddComponent(levelBtnGo, "BehaviourTest")
+    --local test = CSBridge.AddComponent(levelBtnGo, "BehaviourTest")
     --local btn = levelBtnGo:GetComponent("Button")
-    --CSInterface.AddClick(btn, test.OnClick)
+    --CSBridge.AddClick(btn, test.OnClick)
 end
 
 function Update()

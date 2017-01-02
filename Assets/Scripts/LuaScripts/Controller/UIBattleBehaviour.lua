@@ -41,5 +41,5 @@ function OnClickQuit(go_)
 	
 	print ("OnClickQuit called: " .. go_.name)
 
-	CSInterface.LoadLevel("MainScene")
+	CSBridge.LoadLevel("MainScene")
 end

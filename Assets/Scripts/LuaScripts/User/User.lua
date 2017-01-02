@@ -7,9 +7,8 @@ local UserPb = Protol.user_pb
 module(..., package.seeall)
 
 function ParseUserList()
-	--print("recv byte length:" .. string.len(CSInterface.s_recvBytes))
 	local revCmd = UserPb.UserList()
-	revCmd:ParseFromString(CSInterface.s_recvBytes)
+	revCmd:ParseFromString(CSBridge.s_recvBytes)
 
 	if 0 == table.getn(revCmd.userbase) then		
 		local createCmd = UserPb.CreateUserReq()
@@ -27,7 +26,7 @@ end
 
 function ParseCreateUserRet()
 	local revCmd = UserPb.CreateUserRet()
-	revCmd:ParseFromString(CSInterface.s_recvBytes)
+	revCmd:ParseFromString(CSBridge.s_recvBytes)
 	print ("create user success: " .. revCmd.userbase.userid .. "," .. revCmd.userbase.username)
 
 	local onlineCmd = UserPb.SelectUserOnline()
@@ -38,7 +37,7 @@ end
 
 function ParseUserBaseData()
 	local revCmd = UserPb.SendUserBaseData()
-	revCmd:ParseFromString(CSInterface.s_recvBytes)
+	revCmd:ParseFromString(CSBridge.s_recvBytes)
 	print("recv user base data")
 end
 

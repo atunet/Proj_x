@@ -42,6 +42,11 @@ public class NetController : MonoBehaviour
     private MemoryStream m_pbStream = new MemoryStream();
 
     private GameObject m_reconnectingPanel = null;
+    public GameObject ReconnectingUI
+    {
+        get { return m_reconnectingPanel; }
+        set { m_reconnectingPanel = value; }
+    }
 
     private NetController()
     {
@@ -197,7 +202,7 @@ public class NetController : MonoBehaviour
                 else
 				{		// default do other logic in lua 			
 					CSBridge.s_recvBytes = new LuaInterface.LuaByteBuffer(realCmd);
-    	            MsgHandler.Instance.CmdParse();
+    	            MsgHandler.Instance.MsgParse();
             	}
             }
             

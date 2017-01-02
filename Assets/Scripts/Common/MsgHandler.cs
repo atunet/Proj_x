@@ -112,7 +112,7 @@ public class MsgHandler : IDisposable
 		Debugger.Log("CmdHander instance dispose");
 	}
 
-    public void CmdParse()
+    public void MsgParse()
 	{
        m_cmdHander.Call();
 	}

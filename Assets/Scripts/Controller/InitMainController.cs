@@ -13,6 +13,8 @@ public class InitMainController : MonoBehaviour
             return;
         }
 
+        NetController.Instance.ReconnectingUI = GameObject.Find("UIRoot/UICanvas/panel_reconnecting").gameObject;
+
         LuaBehaviour.LuaFileName = "InitMainBehaviour";
         gameObject.AddComponent<LuaBehaviour>();
 	}
