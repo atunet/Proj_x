@@ -140,6 +140,11 @@ public class NetController : MonoBehaviour
             Debug.LogError("login to cross server failed (ip:" + ip_ + ":" + port_ + ")");
     }
 
+    public void DestroyLoginClient()
+    {
+        m_thread.DestroyLoginClient();
+    }
+
     public bool SendMsgToLogin(Cmd.EMessageID protoId_, byte[] buf_)
     {
         return m_thread.SendMsgToLogin((UInt16)protoId_, buf_);
@@ -183,6 +188,19 @@ public class NetController : MonoBehaviour
                     Debug.Log("recv tickcmd,just send back");
                     SendMsgToGate((Cmd.EMessageID)CSBridge.s_recvProtoId, realCmd);
                 }
+                else
+                {
+                    HandleMgr.MsgHandle handle = HandleMgr.getHandle((Cmd.EMessageID)CSBridge.s_recvProtoId);
+                    if (null != handle)
+                    {
+                        handle(realCmd, realCmd.Length);
+                    }
+                    else
+                    {
+                        Debug.LogError("recv unknown proto msg id:" + CSBridge.s_recvProtoId);
+                    }
+                }
+                    /*
                 else if (Cmd.EMessageID.LOGIN_LOGIN_SC == (Cmd.EMessageID)CSBridge.s_recvProtoId)
                 {  
                     MemoryStream ms = new MemoryStream(realCmd, 0, realCmd.Length);
@@ -203,7 +221,7 @@ public class NetController : MonoBehaviour
 				{		// default do other logic in lua 			
 					CSBridge.s_recvBytes = new LuaInterface.LuaByteBuffer(realCmd);
     	            MsgHandler.Instance.MsgParse();
-            	}
+            	}*/
             }
             
             m_cmdList.Clear();
