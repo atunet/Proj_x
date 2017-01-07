@@ -50,11 +50,11 @@ public class NetController : MonoBehaviour
 
     private NetController()
     {
-        m_loginIP = "192.168.0.75";
+        m_loginIP = "127.0.0.1";
         m_loginPort = 4444;
-        m_gateIP = "192.168.0.75";
+        m_gateIP = "127.0.0.1";
         m_gatePort = 4021;
-        m_crossIP = "192.168.0.75";
+        m_crossIP = "127.0.0.1";
         m_crossPort = 8999;
 
         m_accId = 0;
@@ -95,7 +95,7 @@ public class NetController : MonoBehaviour
             SendMsgToLogin(verify.id, m_pbStream.ToArray());
 
             Cmd.LoginReq login = new Cmd.LoginReq();
-            login.accountid = 129599;
+            login.accountid = 9527;
             login.verifier = "this is verifier code";
             Serializer.Serialize<Cmd.LoginReq>(m_pbStream, login);
             SendMsgToLogin(login.id, m_pbStream.ToArray());
@@ -197,7 +197,7 @@ public class NetController : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError("recv unknown proto msg id:" + CSBridge.s_recvProtoId);
+                        Debug.LogError("recv unknown proto msg id:0x0" + CSBridge.s_recvProtoId.ToString("X"));
                     }
                 }
                     /*

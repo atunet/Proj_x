@@ -19,9 +19,10 @@ public static class HandleMgr
         s_msgDict[EMessageID.LOGIN_LOGIN_SC]        =   LoginHandle.ParseLoginLoginRet;
         s_msgDict[EMessageID.LOGIN_GATEW_SC]        =   LoginHandle.ParseLoginGatewayRet;
         s_msgDict[EMessageID.LOGIN_CROSS_SC]        =   LoginHandle.ParseLoginCrossRet;
+        s_msgDict[EMessageID.USER_LIST_S]           =   UserHandle.ParseUserList;
         s_msgDict[EMessageID.USER_BASE_DATA_SC]     =   UserHandle.ParseUserBaseData;
         s_msgDict[EMessageID.CREATE_USER_SC]        =   UserHandle.ParseCreateUserRet;
-        s_msgDict[EMessageID.ITEM_LIST_S]           =   UserHandle.ParseUserItemList;
+        s_msgDict[EMessageID.DATA_LOAD_OK_S]        =   UserHandle.ParseLoadOk;
 
         return true;
 	}
