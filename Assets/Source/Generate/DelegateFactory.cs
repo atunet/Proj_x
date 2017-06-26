@@ -23,6 +23,7 @@ public static class DelegateFactory
 		dict.Add(typeof(System.Action<int>), System_Action_int);
 		dict.Add(typeof(System.Comparison<int>), System_Comparison_int);
 		dict.Add(typeof(UnityEngine.Camera.CameraCallback), UnityEngine_Camera_CameraCallback);
+		dict.Add(typeof(UnityEngine.Application.LowMemoryCallback), UnityEngine_Application_LowMemoryCallback);
 		dict.Add(typeof(UnityEngine.Application.AdvertisingIdentifierCallback), UnityEngine_Application_AdvertisingIdentifierCallback);
 		dict.Add(typeof(UnityEngine.Application.LogCallback), UnityEngine_Application_LogCallback);
 		dict.Add(typeof(UnityEngine.AudioClip.PCMReaderCallback), UnityEngine_AudioClip_PCMReaderCallback);
@@ -421,6 +422,49 @@ public static class DelegateFactory
 		{
 			UnityEngine_Camera_CameraCallback_Event target = new UnityEngine_Camera_CameraCallback_Event(func, self);
 			UnityEngine.Camera.CameraCallback d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	class UnityEngine_Application_LowMemoryCallback_Event : LuaDelegate
+	{
+		public UnityEngine_Application_LowMemoryCallback_Event(LuaFunction func) : base(func) { }
+		public UnityEngine_Application_LowMemoryCallback_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call()
+		{
+			func.Call();
+		}
+
+		public void CallWithSelf()
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public static Delegate UnityEngine_Application_LowMemoryCallback(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			UnityEngine.Application.LowMemoryCallback fn = delegate() { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			UnityEngine_Application_LowMemoryCallback_Event target = new UnityEngine_Application_LowMemoryCallback_Event(func);
+			UnityEngine.Application.LowMemoryCallback d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			UnityEngine_Application_LowMemoryCallback_Event target = new UnityEngine_Application_LowMemoryCallback_Event(func, self);
+			UnityEngine.Application.LowMemoryCallback d = target.CallWithSelf;
 			target.method = d.Method;
 			return d;
 		}
