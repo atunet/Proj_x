@@ -40,3 +40,4 @@ public class AccountController : MonoBehaviour
         Debug.Log("account controller destroy");
     }
 }
+//asdjfa;lsdkjfa;sd
