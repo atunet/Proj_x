@@ -3,20 +3,6 @@ unity demo based on tolua#
 
 Unity5.3.2
 
-// abcdefsdfafasdjs
-// fasdfasdffddfasdas
-// jkdjafklfadsdfjas
-// asldjf;alksjdf
-// asdjfa;sdkjf
-j//a/sdfadj
-m,dfalsdkjf;akj
-jfa;sdjf;asdj
-falskdjf;
-
-fasdfasd
-
-asdfaslkdj;j//a/sdfadj
-fasdf;ajslkdjf
-fajs;dlkjfasd
-a/sdfadjfsdfasd
-asdfasd
+// 123456789 asdadfasdf
+adj;kj;1312o3i3
+fa;lsdkjf;alsd
