@@ -40,3 +40,6 @@ public class AccountController : MonoBehaviour
         Debug.Log("account controller destroy");
     }
 }
+
+//afsdfj;asdkf
+//fasj;dlfkjasd;flkjasd;
